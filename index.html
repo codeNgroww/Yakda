@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Yakda - Best-In-Class Stationery & Office Supplies</title>
+  <meta name="description"
+    content="Yakda Dubai - Leading supplier of office stationery, furniture, paper, and printers in UAE with fast next day delivery.">
+
+  <!-- Google Fonts & Material Symbols -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fira+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap"
+    rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+    rel="stylesheet">
+
+  <!-- Tailwind CSS Engine -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#006a63",
+            "primary-container": "#00a69c",
+            "primary-fixed": "#7af6eb",
+            "primary-fixed-dim": "#5bdacf",
+            "on-primary": "#ffffff",
+            "on-primary-container": "#003330",
+            "secondary": "#5f5e5e",
+            "secondary-container": "#e2dfde",
+            "on-secondary": "#ffffff",
+            "on-secondary-container": "#636262",
+            "tertiary": "#984624",
+            "tertiary-container": "#db7a53",
+            "on-tertiary": "#ffffff",
+            "surface": "#f9f9f9",
+            "surface-white": "#FFFFFF",
+            "surface-dim": "#dadada",
+            "surface-bright": "#f9f9f9",
+            "surface-container": "#eeeeee",
+            "surface-container-low": "#f4f3f3",
+            "surface-container-high": "#e8e8e8",
+            "surface-container-highest": "#e2e2e2",
+            "surface-container-lowest": "#ffffff",
+            "on-surface": "#1a1c1c",
+            "on-surface-variant": "#3c4947",
+            "outline": "#6c7a78",
+            "outline-variant": "#bbc9c7",
+            "background": "#f9f9f9",
+            "on-background": "#1a1c1c",
+            "inverse-surface": "#2f3131",
+            "inverse-on-surface": "#f1f1f1",
+            "error": "#ba1a1a",
+            "error-container": "#ffdad6"
+          },
+          borderRadius: {
+            DEFAULT: "0.125rem",
+            lg: "0.25rem",
+            xl: "0.5rem",
+            full: "0.75rem"
+          },
+          spacing: {
+            "margin-mobile": "16px",
+            "container-max": "1280px",
+            "unit": "4px",
+            "gutter": "24px",
+            "margin-desktop": "64px"
+          },
+          fontFamily: {
+            body: ["Fira Sans", "sans-serif"],
+            display: ["Fira Sans", "sans-serif"]
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Custom Stylesheet -->
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+
+<body class="bg-surface font-body text-on-surface flex flex-col min-h-screen">
+
+  <!-- Desktop & Mobile Header -->
+  <header class="fixed top-0 inset-x-0 z-50 glass-nav shadow-[0_1px_8px_rgba(0,0,0,0.04)] pt-safe">
+    <div class="max-w-[1280px] mx-auto h-16 px-margin-mobile flex items-center justify-between gap-4">
+
+      <!-- Brand Logo -->
+      <a href="#" class="flex items-center gap-3">
+        <img alt="Yakda" class="h-9 w-auto object-contain"
+          src="https://lh3.googleusercontent.com/aida-public/AB6AXuDfiAFqssJJ_1fc3ANVbJN-iR5QxVMuMCFPdB9RNNn9OzRdgQidvKt3b41HyMG6AS1XgS4MBxHWHeBWe7rToYhMp8IvP0U8WY3TvXFvVevOHgzIACn_Svl-oZYqy_AFvPr6UPqUOhminfGG8elZiQdVH5ZuTtCfiW-bsIPWYUrh2qijocyplBliGqt2W07Fe7PVKbtKo0OnPpV9EuOq-4h3uRSHfjMAJzlX1FjEURgINrZnleTmnF-iDpZNHjZIPxk0kjU">
+      </a>
+
+      <!-- Desktop Navigation Menu -->
+      <nav class="hidden md:flex items-center gap-8 font-label-md font-semibold text-on-surface-variant">
+        <a href="#" class="text-primary hover:text-primary transition-colors border-b-2 border-primary py-1">Home</a>
+        <a href="#categories-section" class="hover:text-primary transition-colors py-1">Categories</a>
+        <a href="#favorites-section" class="hover:text-primary transition-colors py-1">Favorites</a>
+        <a href="admin.html" id="nav-admin-link"
+          class="hidden hover:text-primary transition-colors py-1 text-primary font-bold items-center gap-1">
+          <span class="material-symbols-outlined text-[16px]">admin_panel_settings</span> Admin
+        </a>
+      </nav>
+
+      <!-- Header Action Icons -->
+      <div class="flex items-center gap-3">
+        <!-- Search Trigger -->
+        <button
+          class="toggle-search w-11 h-11 flex items-center justify-center text-on-surface-variant hover:text-primary transition-colors rounded-full hover:bg-surface-container"
+          title="Search">
+          <span class="material-symbols-outlined text-[24px]">search</span>
+        </button>
+
+        <!-- Cart Drawer Trigger -->
+        <button
+          class="toggle-cart relative w-11 h-11 flex items-center justify-center text-on-surface-variant hover:text-primary transition-colors rounded-full hover:bg-surface-container"
+          title="Shopping Cart">
+          <span class="material-symbols-outlined text-[24px]">shopping_cart</span>
+          <span
+            class="cart-badge absolute top-1 right-1 min-w-[18px] h-[18px] px-1 bg-primary text-on-primary text-[10px] font-bold rounded-full flex items-center justify-center">2</span>
+        </button>
+
+        <!-- User Profile Button -->
+        <button
+          class="toggle-auth w-10 h-10 rounded-full bg-primary text-on-primary flex items-center justify-center hover:bg-primary-container transition-colors shadow-sm"
+          title="Account / Sign In">
+          <span class="material-symbols-outlined text-[20px]">person</span>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- Main Body Content -->
+  <main class="flex-1 w-full pt-16 pb-20 md:pb-12 bg-surface">
+
+    <!-- Hero Carousel Section -->
+    <section class="relative w-full overflow-hidden bg-surface-container-highest">
+      <div class="max-w-[1280px] mx-auto">
+        <!-- Slide 1 -->
+        <div class="hero-slide relative w-full h-[360px] md:h-[480px] flex">
+          <div class="w-full h-full bg-cover bg-center"
+            style="background-image: url('https://lh3.googleusercontent.com/aida/AP1WRLuFtUM5jri8plhM7-6H0I-WPKqInNE5sX7qmQEaxELuwLmmJRjUqWyNOiu6AsaCEndJBIZO1aECl1Rn5MB-06eBNCKEFM_PJZY0RPxiqd4vvF-scl0jYT-H51fmN3UQAN8oSMAudz_TNIY6igMLQER1bKSXFKf74eIMknjDJ44L-XnFQrbSIxIFCmqCz5q9EAgGWCwvqMJ_vCxVMLbp7oaZ9rlCMYfFYqv58Kg3nSIYOM4yqe29BBWqbUc');">
+          </div>
+          <div class="absolute inset-0 hero-gradient"></div>
+          <div
+            class="absolute bottom-0 left-0 w-full p-margin-mobile md:p-12 flex flex-col items-start gap-3 max-w-2xl">
+            <span
+              class="px-3 py-1 bg-primary text-on-primary font-bold text-xs uppercase tracking-wider rounded-sm shadow-md">
+              Best-In-Class Stationery
+            </span>
+            <h2 class="text-3xl md:text-5xl font-bold text-on-primary leading-tight">
+              Fastest Delivery in Town
+            </h2>
+            <p class="text-on-primary/90 text-sm md:text-base mb-2">
+              Our logistics team works 24/7 to deliver your stationery orders next day across the UAE.
+            </p>
+            <a href="#favorites-section"
+              class="px-6 py-3 bg-primary text-on-primary font-semibold text-sm rounded shadow-lg hover:bg-primary-container transition-all btn-press">
+              Shop Now
+            </a>
+          </div>
+        </div>
+
+        <!-- Slide 2 -->
+        <div class="hero-slide relative w-full h-[360px] md:h-[480px] hidden">
+          <div class="w-full h-full bg-cover bg-center"
+            style="background-image: url('https://lh3.googleusercontent.com/aida/AP1WRLuemKyAopu8TYMFmd1dkt5OAJaEDOisPcFEUuVe-VUYrUQGy3vLKtWBeFyGDpqd1qzVSJuGwocGPfd7yepmlKIM0RLItt5q3esrzP_olS3MIyERhqJqG2hRetpK06hEfGNXiZL6HzKdN01EzbrJze8Sc2c_CxUnewUSyYnWpL9IwmMTZGKwTPAix8t2D5WxMhjvsjCFfGFcRTLcfX5-L1G0Zxp6WgFhnxiGGAKIvw1S2geMur22DhOm12Rh');">
+          </div>
+          <div class="absolute inset-0 hero-gradient"></div>
+          <div
+            class="absolute bottom-0 left-0 w-full p-margin-mobile md:p-12 flex flex-col items-start gap-3 max-w-2xl">
+            <span
+              class="px-3 py-1 bg-secondary text-on-secondary font-bold text-xs uppercase tracking-wider rounded-sm shadow-md">
+              Free Delivery
+            </span>
+            <h2 class="text-3xl md:text-5xl font-bold text-on-primary leading-tight">
+              Free Shipping Over AED 300
+            </h2>
+            <p class="text-on-primary/90 text-sm md:text-base mb-2">
+              Stock up on premium office essentials, paper reams, and ergonomic chairs with complimentary delivery.
+            </p>
+            <button onclick="setCategory('all')"
+              class="px-6 py-3 bg-on-primary text-primary font-semibold text-sm rounded shadow-lg hover:bg-surface-container-low transition-all btn-press">
+              View Catalog
+            </button>
+          </div>
+        </div>
+
+        <!-- Carousel Slide Indicators -->
+        <div class="absolute bottom-4 right-4 md:bottom-8 md:right-8 flex gap-2 z-20">
+          <button aria-label="Slide 1"
+            class="hero-dot w-6 h-2 rounded-full bg-primary transition-all duration-300"></button>
+          <button aria-label="Slide 2"
+            class="hero-dot w-2 h-2 rounded-full bg-on-primary/50 transition-all duration-300"></button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Quick Categories Row -->
+    <section id="categories-section" class="py-8 bg-surface-container-lowest border-b border-outline-variant">
+      <div class="max-w-[1280px] mx-auto">
+        <div class="px-margin-mobile mb-4 flex justify-between items-center">
+          <div>
+            <h3 class="text-xl md:text-2xl font-bold text-on-surface">Browse Categories</h3>
+            <p class="text-xs md:text-sm text-on-surface-variant">Find essential products for your office</p>
+          </div>
+          <button onclick="setCategory('all')"
+            class="text-sm font-semibold text-primary flex items-center gap-1 hover:underline">
+            View All <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+          </button>
+        </div>
+
+        <div class="flex overflow-x-auto gap-4 px-margin-mobile pb-2 hide-scrollbar snap-x">
+          <!-- All Category -->
+          <button onclick="setCategory('all', this)"
+            class="category-btn snap-start flex flex-col items-center gap-2 min-w-[84px] p-2 rounded-xl border border-primary bg-primary-container/20 transition-all btn-press">
+            <div class="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center shadow-sm">
+              <span class="material-symbols-outlined text-[28px] text-primary">grid_view</span>
+            </div>
+            <span class="text-xs font-semibold text-on-surface">All Items</span>
+          </button>
+
+          <!-- Writing Category -->
+          <button onclick="setCategory('writing', this)"
+            class="category-btn snap-start flex flex-col items-center gap-2 min-w-[84px] p-2 rounded-xl border border-outline-variant bg-surface-container transition-all btn-press">
+            <div class="w-14 h-14 rounded-full bg-surface-container-high flex items-center justify-center shadow-sm">
+              <span class="material-symbols-outlined text-[28px] text-primary"
+                style="font-variation-settings: 'FILL' 1;">edit</span>
+            </div>
+            <span class="text-xs font-semibold text-on-surface">Writing</span>
+          </button>
+
+          <!-- Paper Category -->
+          <button onclick="setCategory('paper', this)"
+            class="category-btn snap-start flex flex-col items-center gap-2 min-w-[84px] p-2 rounded-xl border border-outline-variant bg-surface-container transition-all btn-press">
+            <div class="w-14 h-14 rounded-full bg-surface-container-high flex items-center justify-center shadow-sm">
+              <span class="material-symbols-outlined text-[28px] text-primary"
+                style="font-variation-settings: 'FILL' 1;">description</span>
+            </div>
+            <span class="text-xs font-semibold text-on-surface">Paper</span>
+          </button>
+
+          <!-- Furniture Category -->
+          <button onclick="setCategory('furniture', this)"
+            class="category-btn snap-start flex flex-col items-center gap-2 min-w-[84px] p-2 rounded-xl border border-outline-variant bg-surface-container transition-all btn-press">
+            <div class="w-14 h-14 rounded-full bg-surface-container-high flex items-center justify-center shadow-sm">
+              <span class="material-symbols-outlined text-[28px] text-primary"
+                style="font-variation-settings: 'FILL' 1;">chair</span>
+            </div>
+            <span class="text-xs font-semibold text-on-surface">Furniture</span>
+          </button>
+
+          <!-- Machines Category -->
+          <button onclick="setCategory('machines', this)"
+            class="category-btn snap-start flex flex-col items-center gap-2 min-w-[84px] p-2 rounded-xl border border-outline-variant bg-surface-container transition-all btn-press">
+            <div class="w-14 h-14 rounded-full bg-surface-container-high flex items-center justify-center shadow-sm">
+              <span class="material-symbols-outlined text-[28px] text-primary"
+                style="font-variation-settings: 'FILL' 1;">print</span>
+            </div>
+            <span class="text-xs font-semibold text-on-surface">Machines</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Products Catalog / Favorites Section -->
+    <section id="favorites-section" class="py-10 px-margin-mobile">
+      <div class="max-w-[1280px] mx-auto">
+        <div class="mb-8 text-center">
+          <h3 class="text-2xl md:text-3xl font-bold text-on-surface uppercase tracking-wide">
+            This Week's Favorites
+          </h3>
+          <p class="text-sm md:text-base text-on-surface-variant">Top picks engineered for your modern workspace</p>
+        </div>
+
+        <!-- Dynamic Product Grid -->
+        <div id="products-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+          <!-- Populated dynamically by app.js -->
+        </div>
+
+        <div class="mt-8 text-center max-w-xs mx-auto">
+          <button onclick="setCategory('all')"
+            class="px-6 py-3 border border-primary text-primary font-semibold text-sm rounded hover:bg-primary/5 transition-colors w-full btn-press">
+            View All Favorites
+          </button>
+        </div>
+      </div>
+    </section>
+
+
+
+    <!-- Testimonials Section -->
+    <section class="py-12 px-margin-mobile bg-surface">
+      <div class="max-w-[1280px] mx-auto">
+        <div class="mb-8 text-center">
+          <span class="material-symbols-outlined text-[36px] text-primary mb-1">format_quote</span>
+          <h3 class="text-2xl md:text-3xl font-bold text-on-surface">What Our Clients Say</h3>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div
+            class="bg-surface-container-lowest border border-outline-variant p-6 rounded-xl shadow-sm flex flex-col justify-between">
+            <div class="flex text-primary mb-3">
+              <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+              <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+              <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+              <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+              <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+            </div>
+            <p class="text-sm text-on-surface-variant italic mb-4">
+              "We had to be ready with our new office by Sunday. Thursday we ordered Yakda Supplies for 40 workplaces -
+              we received everything by Saturday lunchtime! Great Team."
+            </p>
+            <span class="text-xs font-bold text-on-surface">- Mohammed L., Dubai</span>
+          </div>
+
+          <div
+            class="bg-surface-container-lowest border border-outline-variant p-6 rounded-xl shadow-sm flex flex-col justify-between">
+            <div class="flex text-primary mb-3">
+              <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+              <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+              <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+              <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+              <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+            </div>
+            <p class="text-sm text-on-surface-variant italic mb-4">
+              "Very clean and well organized, with everything you need from ink pens, chairs, or desks. A great staff
+              will take good care of you."
+            </p>
+            <span class="text-xs font-bold text-on-surface">- Greg C., Dubai</span>
+          </div>
+
+          <div
+            class="bg-surface-container-lowest border border-outline-variant p-6 rounded-xl shadow-sm flex flex-col justify-between">
+            <div class="flex text-primary mb-3">
+              <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+              <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+              <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+              <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+              <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+            </div>
+            <p class="text-sm text-on-surface-variant italic mb-4">
+              "I just wanted to give feedback on the delivery person. He was very polite, respectful and professional
+              over the phone and until delivery."
+            </p>
+            <span class="text-xs font-bold text-on-surface">- Fatima K., Abu Dhabi</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Interactive Shopping Cart Drawer Overlay -->
+  <div id="cart-overlay" class="fixed inset-0 glass-modal z-50 hidden transition-opacity"></div>
+  <div id="cart-drawer"
+    class="fixed top-0 right-0 h-full w-full max-w-md bg-surface-container-lowest z-50 shadow-2xl transform translate-x-full drawer-transition flex flex-col">
+    <div class="p-4 bg-surface border-b border-outline-variant flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <span class="material-symbols-outlined text-primary text-[24px]">shopping_cart</span>
+        <h3 class="text-lg font-bold text-on-surface">Shopping Cart</h3>
+      </div>
+      <button id="close-cart"
+        class="w-8 h-8 rounded-full flex items-center justify-center text-on-surface-variant hover:bg-surface-container transition-colors">
+        <span class="material-symbols-outlined text-[20px]">close</span>
+      </button>
+    </div>
+
+    <!-- Items List Container -->
+    <div id="cart-items-container" class="flex-1 overflow-y-auto p-4 flex flex-col gap-3">
+      <!-- Items dynamically injected here -->
+    </div>
+
+    <!-- Drawer Summary Footer -->
+    <div class="p-4 bg-surface border-t border-outline-variant flex flex-col gap-3">
+      <div class="flex justify-between text-sm text-on-surface-variant">
+        <span>Subtotal</span>
+        <span id="cart-subtotal" class="font-bold text-on-surface">AED 0.00</span>
+      </div>
+      <div class="flex justify-between text-base font-bold text-on-surface">
+        <span>Total (Incl. VAT)</span>
+        <span id="cart-total" class="text-primary text-lg font-bold">AED 0.00</span>
+      </div>
+      <button onclick="initiateCheckout()"
+        class="w-full py-3 bg-primary text-on-primary font-bold text-sm rounded-lg shadow-md hover:bg-primary-container transition-all btn-press">
+        Proceed to Checkout
+      </button>
+    </div>
+  </div>
+
+  <!-- Instant Search Overlay Modal -->
+  <div id="search-modal" class="fixed inset-0 glass-modal z-50 hidden items-center justify-center p-4">
+    <div
+      class="w-full max-w-xl bg-surface-container-lowest rounded-2xl shadow-2xl border border-outline-variant overflow-hidden flex flex-col max-h-[80vh]">
+      <div class="p-4 bg-surface border-b border-outline-variant flex items-center gap-3">
+        <span class="material-symbols-outlined text-primary text-[24px]">search</span>
+        <input id="search-input" type="text" placeholder="Search stationery, paper, pens, chairs..."
+          class="flex-1 bg-transparent border-none outline-none text-base text-on-surface placeholder:text-on-surface-variant/60" />
+        <button id="close-search" class="text-on-surface-variant hover:text-on-surface">
+          <span class="material-symbols-outlined text-[20px]">close</span>
+        </button>
+      </div>
+      <div id="search-results" class="p-4 overflow-y-auto flex flex-col gap-2 min-h-[160px]">
+        <p class="text-on-surface-variant text-center py-6">Start typing to search products...</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Login / Sign Up Auth Modal -->
+  <div id="auth-modal" class="fixed inset-0 glass-modal z-50 hidden items-center justify-center p-4">
+    <div
+      class="w-full max-w-md bg-surface-container-lowest rounded-2xl shadow-2xl border border-outline-variant overflow-hidden flex flex-col">
+
+      <!-- Modal Header -->
+      <div class="p-4 bg-primary text-on-primary flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <span class="material-symbols-outlined text-[24px]">account_circle</span>
+          <h3 id="auth-modal-title" class="text-lg font-bold">Account Access</h3>
+        </div>
+        <button id="close-auth" class="text-on-primary hover:opacity-80">
+          <span class="material-symbols-outlined text-[20px]">close</span>
+        </button>
+      </div>
+
+      <!-- Auth Tabs Switcher -->
+      <div class="flex border-b border-outline-variant bg-surface">
+        <button id="tab-btn-signin" onclick="switchAuthTab('signin')"
+          class="flex-1 py-3 text-sm font-bold text-primary border-b-2 border-primary transition-colors">
+          Sign In
+        </button>
+        <button id="tab-btn-signup" onclick="switchAuthTab('signup')"
+          class="flex-1 py-3 text-sm font-bold text-on-surface-variant hover:text-primary transition-colors">
+          Create Account
+        </button>
+      </div>
+
+      <!-- Sign In Tab Form -->
+      <form id="auth-signin-form" class="p-6 flex flex-col gap-4">
+        <!-- Admin Shortcut Banner -->
+        <div class="bg-primary/10 border border-primary/20 p-3 rounded-lg text-xs text-primary flex items-start gap-2">
+          <span class="material-symbols-outlined text-[18px] flex-shrink-0 mt-0.5">info</span>
+          <div>
+            <span class="font-bold">Admin Login:</span> Use <code
+              class="bg-white px-1 rounded font-mono">admin@officeone.ae</code> / <code
+              class="bg-white px-1 rounded font-mono">admin123</code> to access the Admin Panel.
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-on-surface mb-1">Email / Username *</label>
+          <div class="relative flex items-center">
+            <span class="material-symbols-outlined absolute left-3 text-on-surface-variant text-[18px]">mail</span>
+            <input required id="auth-signin-email" type="email" placeholder="admin@officeone.ae or user@example.com"
+              class="w-full pl-9 pr-3 py-2 border border-outline-variant rounded-lg bg-surface text-sm outline-none focus:border-primary" />
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-on-surface mb-1">Password *</label>
+          <div class="relative flex items-center">
+            <span class="material-symbols-outlined absolute left-3 text-on-surface-variant text-[18px]">lock</span>
+            <input required id="auth-signin-password" type="password" placeholder="••••••••"
+              class="w-full pl-9 pr-3 py-2 border border-outline-variant rounded-lg bg-surface text-sm outline-none focus:border-primary" />
+          </div>
+        </div>
+
+        <button type="submit"
+          class="mt-2 w-full py-3 bg-primary text-on-primary font-bold text-sm rounded-lg shadow-md hover:bg-primary-container transition-all btn-press">
+          Sign In
+        </button>
+      </form>
+
+      <!-- Create Account Tab Form (Hidden initially) -->
+      <form id="auth-signup-form" class="p-6 flex flex-col gap-4 hidden">
+        <div>
+          <label class="block text-xs font-semibold text-on-surface mb-1">Full Name / Company Name <span
+              class="text-on-surface-variant/70 font-normal">(Optional)</span></label>
+          <input id="auth-signup-name" type="text" placeholder="John Doe or Acme LLC"
+            class="w-full px-3 py-2 border border-outline-variant rounded-lg bg-surface text-sm outline-none focus:border-primary" />
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-on-surface mb-1">Email Address *</label>
+          <input required id="auth-signup-email" type="email" placeholder="user@example.com"
+            class="w-full px-3 py-2 border border-outline-variant rounded-lg bg-surface text-sm outline-none focus:border-primary" />
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-on-surface mb-1">Password *</label>
+          <input required id="auth-signup-password" type="password" placeholder="At least 6 characters"
+            class="w-full px-3 py-2 border border-outline-variant rounded-lg bg-surface text-sm outline-none focus:border-primary" />
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-on-surface mb-1">Account Type</label>
+          <div class="flex gap-4">
+            <label class="flex items-center gap-2 text-xs text-on-surface cursor-pointer">
+              <input type="radio" name="acc_type" value="individual" checked class="text-primary focus:ring-primary" />
+              Individual Customer
+            </label>
+            <label class="flex items-center gap-2 text-xs text-on-surface cursor-pointer">
+              <input type="radio" name="acc_type" value="corporate" class="text-primary focus:ring-primary" /> Corporate
+              / B2B Credit
+            </label>
+          </div>
+        </div>
+
+        <button type="submit"
+          class="mt-2 w-full py-3 bg-primary text-on-primary font-bold text-sm rounded-lg shadow-md hover:bg-primary-container transition-all btn-press">
+          Create Account
+        </button>
+      </form>
+
+    </div>
+  </div>
+
+  <!-- Checkout & Order Dispatch Modal -->
+  <div id="checkout-modal" class="fixed inset-0 glass-modal z-50 hidden items-center justify-center p-4">
+    <div class="w-full max-w-lg bg-surface-container-lowest rounded-2xl shadow-2xl border border-outline-variant overflow-hidden flex flex-col">
+      <div class="p-4 bg-primary text-on-primary flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <span class="material-symbols-outlined text-[24px]">local_shipping</span>
+          <h3 class="text-lg font-bold">Checkout & Order Dispatch</h3>
+        </div>
+        <button id="close-checkout" class="text-on-primary hover:opacity-80">
+          <span class="material-symbols-outlined text-[20px]">close</span>
+        </button>
+      </div>
+
+      <form id="checkout-form" class="p-6 flex flex-col gap-4">
+        <!-- Logged in Customer Info -->
+        <div class="bg-surface p-3 rounded-lg border border-outline-variant flex items-center justify-between text-xs">
+          <span class="text-on-surface-variant">Customer:</span>
+          <span id="checkout-user-email" class="font-bold text-primary">user@example.com</span>
+        </div>
+
+        <!-- Order Total Breakdown -->
+        <div class="bg-primary/5 p-3 rounded-lg border border-primary/20 flex items-center justify-between text-sm">
+          <span class="font-semibold text-on-surface">Order Total (Incl. VAT):</span>
+          <span id="checkout-total-price" class="text-lg font-bold text-primary">AED 0.00</span>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-on-surface mb-1">Contact Phone Number *</label>
+          <div class="relative flex items-center">
+            <span class="material-symbols-outlined absolute left-3 text-on-surface-variant text-[18px]">phone</span>
+            <input required id="checkout-phone" type="tel" placeholder="+971 50 123 4567" class="w-full pl-9 pr-3 py-2 border border-outline-variant rounded-lg bg-surface text-sm outline-none focus:border-primary" />
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-on-surface mb-1">Delivery Address & Emirate *</label>
+          <textarea required id="checkout-address" rows="3" placeholder="Street address, building name, office number, Dubai/Abu Dhabi/Sharjah..." class="w-full px-3 py-2 border border-outline-variant rounded-lg bg-surface text-sm outline-none focus:border-primary"></textarea>
+        </div>
+
+        <!-- Dispatch Notice -->
+        <div class="p-3 bg-surface-container rounded-lg text-xs text-on-surface-variant flex items-start gap-2">
+          <span class="material-symbols-outlined text-primary text-[18px] flex-shrink-0 mt-0.5">verified</span>
+          <div>
+            Order confirmation will be sent to <span class="font-bold text-on-surface">inquiry@alyakda.com</span> and WhatsApp <span class="font-bold text-on-surface">+971 4 553 4286</span> upon placing the order.
+          </div>
+        </div>
+
+        <button type="submit" class="mt-2 w-full py-3.5 bg-primary text-on-primary font-bold text-sm rounded-lg shadow-lg hover:bg-primary-container transition-all btn-press flex items-center justify-center gap-2">
+          <span class="material-symbols-outlined text-[20px]">send</span> Place Order & Trigger Dispatch
+      </form>
+    </div>
+  </div>
+
+  <!-- Active User Profile & Sign Out Modal -->
+  <div id="user-profile-modal" class="fixed inset-0 glass-modal z-50 hidden items-center justify-center p-4">
+    <div class="w-full max-w-sm bg-surface-container-lowest rounded-2xl shadow-2xl border border-outline-variant overflow-hidden flex flex-col p-6 text-center gap-4">
+      <div id="profile-modal-avatar" class="w-16 h-16 rounded-full bg-primary text-on-primary font-bold text-xl flex items-center justify-center mx-auto shadow-md">
+        U
+      </div>
+      <div>
+        <h3 id="profile-modal-email" class="text-base font-bold text-on-surface">user@example.com</h3>
+        <span id="profile-modal-type" class="px-2.5 py-0.5 bg-primary/10 text-primary font-bold text-[11px] rounded-full uppercase mt-1 inline-block">Individual Account</span>
+      </div>
+
+      <div class="pt-2 border-t border-outline-variant flex flex-col gap-2">
+        <button id="profile-logout-btn" class="w-full py-2.5 bg-error/10 text-error font-bold text-xs rounded-lg hover:bg-error/20 transition-colors flex items-center justify-center gap-2">
+          <span class="material-symbols-outlined text-[18px]">logout</span> Sign Out
+        </button>
+        <button id="close-user-profile" class="w-full py-2 bg-surface text-on-surface-variant font-semibold text-xs rounded-lg hover:bg-surface-container transition-colors">
+          Close Window
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile Bottom Navigation Bar -->
+  <nav
+    class="md:hidden fixed bottom-0 inset-x-0 z-40 pb-safe glass-nav shadow-[0_-1px_8px_rgba(0,0,0,0.06)] border-t border-outline-variant">
+    <div class="flex justify-around items-center h-16 px-2">
+      <a href="#" class="flex flex-col items-center justify-center gap-1 w-1/5 h-full text-primary font-semibold">
+        <span class="material-symbols-outlined text-[24px]">home</span>
+        <span class="text-[11px]">Home</span>
+      </a>
+      <a href="#categories-section"
+        class="flex flex-col items-center justify-center gap-1 w-1/5 h-full text-on-surface-variant hover:text-primary">
+        <span class="material-symbols-outlined text-[24px]">grid_view</span>
+        <span class="text-[11px]">Categories</span>
+      </a>
+      <button onclick="setCategory('all')"
+        class="flex flex-col items-center justify-center gap-1 w-1/5 h-full text-on-surface-variant hover:text-primary">
+        <span class="material-symbols-outlined text-[24px]">favorite</span>
+        <span class="text-[11px]">Favorites</span>
+      </button>
+      <button
+        class="toggle-auth flex flex-col items-center justify-center gap-1 w-1/5 h-full text-on-surface-variant hover:text-primary">
+        <span class="material-symbols-outlined text-[24px]">account_circle</span>
+        <span class="text-[11px]">Account</span>
+      </button>
+      <button
+        class="toggle-cart flex flex-col items-center justify-center gap-1 w-1/5 h-full text-on-surface-variant hover:text-primary relative">
+        <span class="material-symbols-outlined text-[24px]">shopping_cart</span>
+        <span class="text-[11px]">Cart</span>
+        <span
+          class="cart-badge absolute top-1 right-3 min-w-[16px] h-[16px] px-1 bg-primary text-on-primary text-[9px] font-bold rounded-full flex items-center justify-center">2</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Global Footer -->
+  <footer class="bg-inverse-surface text-inverse-on-surface pt-12 pb-24 md:pb-12 border-t border-outline-variant">
+    <div class="max-w-[1280px] mx-auto px-margin-mobile grid grid-cols-1 md:grid-cols-4 gap-8">
+      <div class="flex flex-col gap-3">
+        <h4 class="text-lg font-bold text-white">Yakda</h4>
+        <p class="text-xs text-inverse-on-surface/70">
+          Leading supplier of office stationery, paper, pens, executive furniture, and high-performance printers in the
+          UAE.
+        </p>
+      </div>
+
+      <div>
+        <h5 class="text-sm font-bold text-white mb-3 uppercase tracking-wider">Quick Links</h5>
+        <ul class="flex flex-col gap-2 text-xs text-inverse-on-surface/80">
+          <li><a href="#categories-section" class="hover:text-primary-fixed">Categories</a></li>
+          <li><a href="#favorites-section" class="hover:text-primary-fixed">This Week's Favorites</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h5 class="text-sm font-bold text-white mb-3 uppercase tracking-wider">Customer Support</h5>
+        <ul class="flex flex-col gap-2 text-xs text-inverse-on-surface/80">
+          <li>Shipping & Next Day Delivery</li>
+          <li>Returns & Warranty Policy</li>
+          <li>Terms & Conditions</li>
+          <li>Privacy Policy</li>
+        </ul>
+      </div>
+
+      <div>
+        <h5 class="text-sm font-bold text-white mb-3 uppercase tracking-wider">Contact Us</h5>
+        <p class="text-xs text-inverse-on-surface/80 mb-2">Dubai, United Arab Emirates</p>
+        <p class="text-xs text-inverse-on-surface/80 mb-2">Email: support@officeone.ae</p>
+        <p class="text-xs text-inverse-on-surface/80">Phone: +971 4 000 0000</p>
+      </div>
+    </div>
+
+    <div
+      class="max-w-[1280px] mx-auto px-margin-mobile mt-8 pt-6 border-t border-inverse-on-surface/10 flex flex-col sm:flex-row justify-between items-center text-xs text-inverse-on-surface/60 gap-4">
+      <p>© 2026 Yakda UAE. All rights reserved.</p>
+      <p class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">local_shipping</span> 24/7
+        Next-Day Express Logistics</p>
+    </div>
+  </footer>
+
+  <!-- Supabase JS Client SDK & Helper -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase.js"></script>
+  <script src="js/app.js"></script>
+</body>
+
+</html>
