@@ -75,7 +75,7 @@ const MAX_FILE_SIZE_BYTES = 200 * 1024; // 200 KB limit
  */
 function validateFileSize(file) {
   if (!file) return { valid: false, message: 'No file selected' };
-  
+
   if (file.size > MAX_FILE_SIZE_BYTES) {
     const fileSizeKB = (file.size / 1024).toFixed(1);
     return {
@@ -145,9 +145,9 @@ async function saveUserToCloud(userData) {
     }
   }
 
-  const users = JSON.parse(localStorage.getItem('officeone_users_collection') || '[]');
+  const users = JSON.parse(localStorage.getItem('yakda_users_collection') || '[]');
   users.push(userData);
-  localStorage.setItem('officeone_users_collection', JSON.stringify(users));
+  localStorage.setItem('yakda_users_collection', JSON.stringify(users));
   return userData;
 }
 
@@ -167,7 +167,7 @@ async function findUserInCloud(email, password) {
     }
   }
 
-  const users = JSON.parse(localStorage.getItem('officeone_users_collection') || '[]');
+  const users = JSON.parse(localStorage.getItem('yakda_users_collection') || '[]');
   return users.find(u => u.email.toLowerCase() === email.toLowerCase() && u.password === password) || null;
 }
 
@@ -233,8 +233,8 @@ const INITIAL_DB_PRODUCTS = [
   }
 ];
 
-if (!localStorage.getItem('officeone_custom_products')) {
-  localStorage.setItem('officeone_custom_products', JSON.stringify(INITIAL_DB_PRODUCTS));
+if (!localStorage.getItem('yakda_custom_products')) {
+  localStorage.setItem('yakda_custom_products', JSON.stringify(INITIAL_DB_PRODUCTS));
 }
 
 async function getProductsFromCloud() {
@@ -251,7 +251,7 @@ async function getProductsFromCloud() {
     }
   }
 
-  return JSON.parse(localStorage.getItem('officeone_custom_products') || '[]');
+  return JSON.parse(localStorage.getItem('yakda_custom_products') || '[]');
 }
 
 async function saveProductToCloud(productData) {
@@ -280,9 +280,9 @@ async function saveProductToCloud(productData) {
     }
   }
 
-  const existing = JSON.parse(localStorage.getItem('officeone_custom_products') || '[]');
+  const existing = JSON.parse(localStorage.getItem('yakda_custom_products') || '[]');
   existing.unshift(record);
-  localStorage.setItem('officeone_custom_products', JSON.stringify(existing));
+  localStorage.setItem('yakda_custom_products', JSON.stringify(existing));
 }
 
 async function updateProductInCloud(productData) {
@@ -311,14 +311,14 @@ async function updateProductInCloud(productData) {
     }
   }
 
-  let existing = JSON.parse(localStorage.getItem('officeone_custom_products') || '[]');
+  let existing = JSON.parse(localStorage.getItem('yakda_custom_products') || '[]');
   const idx = existing.findIndex(p => p.id === productData.id);
   if (idx !== -1) {
     existing[idx] = { ...existing[idx], ...record };
   } else {
     existing.unshift(record);
   }
-  localStorage.setItem('officeone_custom_products', JSON.stringify(existing));
+  localStorage.setItem('yakda_custom_products', JSON.stringify(existing));
 }
 
 async function deleteProductFromCloud(productId) {
@@ -333,9 +333,9 @@ async function deleteProductFromCloud(productId) {
     }
   }
 
-  let existing = JSON.parse(localStorage.getItem('officeone_custom_products') || '[]');
+  let existing = JSON.parse(localStorage.getItem('yakda_custom_products') || '[]');
   existing = existing.filter(p => p.id !== productId);
-  localStorage.setItem('officeone_custom_products', JSON.stringify(existing));
+  localStorage.setItem('yakda_custom_products', JSON.stringify(existing));
 }
 
 // ==========================================
@@ -371,9 +371,9 @@ async function createOrderInCloud(orderData) {
     }
   }
 
-  const orders = JSON.parse(localStorage.getItem('officeone_orders_collection') || '[]');
+  const orders = JSON.parse(localStorage.getItem('yakda_orders_collection') || '[]');
   orders.unshift(record);
-  localStorage.setItem('officeone_orders_collection', JSON.stringify(orders));
+  localStorage.setItem('yakda_orders_collection', JSON.stringify(orders));
   return record;
 }
 

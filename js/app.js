@@ -1,5 +1,5 @@
 /**
- * OfficeOne E-Commerce Frontend Interactive Controller
+ * yakda E-Commerce Frontend Interactive Controller
  */
 
 // Application State
@@ -25,7 +25,7 @@ const state = {
   wishlist: new Set(['8494']),
   currentHeroSlide: 0,
   activeCategory: 'all',
-  currentUser: JSON.parse(sessionStorage.getItem('officeone_logged_in_user') || 'null')
+  currentUser: JSON.parse(sessionStorage.getItem('yakda_logged_in_user') || 'null')
 };
 
 // Helper to retrieve live catalog from Supabase Database / Local Store
@@ -38,7 +38,7 @@ async function getStorefrontProducts() {
       console.warn("Error fetching products from cloud DB:", e);
     }
   }
-  return JSON.parse(localStorage.getItem('officeone_custom_products') || '[]');
+  return JSON.parse(localStorage.getItem('yakda_custom_products') || '[]');
 }
 
 let products = [];
@@ -47,7 +47,7 @@ let products = [];
 // Admin Header Link Visibility Check
 function checkAdminNavVisibility() {
   const adminNavBtn = document.getElementById('nav-admin-link');
-  const isAdmin = sessionStorage.getItem('officeone_admin_logged_in') === 'true';
+  const isAdmin = sessionStorage.getItem('yakda_admin_logged_in') === 'true';
   if (adminNavBtn) {
     if (isAdmin) {
       adminNavBtn.classList.remove('hidden');
@@ -61,7 +61,7 @@ function checkAdminNavVisibility() {
 
 // Update User Auth UI based on active login session
 function updateUserAuthUI() {
-  const currentUser = state.currentUser || JSON.parse(sessionStorage.getItem('officeone_logged_in_user') || 'null');
+  const currentUser = state.currentUser || JSON.parse(sessionStorage.getItem('yakda_logged_in_user') || 'null');
   const authButtons = document.querySelectorAll('.toggle-auth');
 
   if (currentUser) {
@@ -420,7 +420,7 @@ function setupEventListeners() {
   }
 
   function openUserProfile() {
-    const currentUser = state.currentUser || JSON.parse(sessionStorage.getItem('officeone_logged_in_user') || 'null');
+    const currentUser = state.currentUser || JSON.parse(sessionStorage.getItem('yakda_logged_in_user') || 'null');
     if (!currentUser) return;
 
     const profileAvatar = document.getElementById('profile-modal-avatar');
@@ -443,7 +443,7 @@ function setupEventListeners() {
   }
 
   authButtons.forEach(btn => btn.addEventListener('click', () => {
-    const currentUser = state.currentUser || JSON.parse(sessionStorage.getItem('officeone_logged_in_user') || 'null');
+    const currentUser = state.currentUser || JSON.parse(sessionStorage.getItem('yakda_logged_in_user') || 'null');
     if (currentUser) {
       openUserProfile();
     } else {
@@ -484,7 +484,7 @@ function setupEventListeners() {
   });
 
   logoutBtn?.addEventListener('click', () => {
-    sessionStorage.removeItem('officeone_logged_in_user');
+    sessionStorage.removeItem('yakda_logged_in_user');
     state.currentUser = null;
     closeUserProfile();
     updateUserAuthUI();
@@ -499,7 +499,7 @@ function setupEventListeners() {
 
     // Admin Credentials Check -> Redirect to Admin Panel
     if ((email === 'admin@yakda.ae' || email === 'admin') && password === 'admin123') {
-      sessionStorage.setItem('officeone_admin_logged_in', 'true');
+      sessionStorage.setItem('yakda_admin_logged_in', 'true');
       showToast('Admin Credentials verified! Redirecting to Admin Panel...');
       setTimeout(() => {
         window.location.href = 'admin.html';
@@ -515,7 +515,7 @@ function setupEventListeners() {
 
     const userObj = registeredUser || { id: Date.now().toString(), email: email };
     state.currentUser = userObj;
-    sessionStorage.setItem('officeone_logged_in_user', JSON.stringify(userObj));
+    sessionStorage.setItem('yakda_logged_in_user', JSON.stringify(userObj));
 
     closeAuth();
     updateUserAuthUI();
@@ -547,7 +547,7 @@ function setupEventListeners() {
     }
 
     state.currentUser = userRecord;
-    sessionStorage.setItem('officeone_logged_in_user', JSON.stringify(userRecord));
+    sessionStorage.setItem('yakda_logged_in_user', JSON.stringify(userRecord));
 
     closeAuth();
     updateUserAuthUI();
@@ -574,7 +574,7 @@ function setupEventListeners() {
   checkoutForm?.addEventListener('submit', async (e) => {
     e.preventDefault();
 
-    const currentUser = state.currentUser || JSON.parse(sessionStorage.getItem('officeone_logged_in_user') || 'null');
+    const currentUser = state.currentUser || JSON.parse(sessionStorage.getItem('yakda_logged_in_user') || 'null');
     const phone = document.getElementById('checkout-phone').value.trim();
     const address = document.getElementById('checkout-address').value.trim();
     const totalPrice = state.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
@@ -639,7 +639,7 @@ function setupEventListeners() {
 
 // Initiate Checkout Logic (Mandatory User Login Guard)
 function initiateCheckout() {
-  const currentUser = state.currentUser || JSON.parse(sessionStorage.getItem('officeone_logged_in_user') || 'null');
+  const currentUser = state.currentUser || JSON.parse(sessionStorage.getItem('yakda_logged_in_user') || 'null');
 
   if (!currentUser) {
     showToast('Please sign in or create an account to proceed to checkout');

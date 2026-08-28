@@ -1,5 +1,5 @@
 /**
- * OfficeOne Admin Dashboard Controller
+ * Yakda Admin Dashboard Controller
  */
 
 // Default Base Products for Inventory View
@@ -54,7 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Authentication Handling
 function checkAuth() {
-  const isLoggedIn = sessionStorage.getItem('officeone_admin_logged_in') === 'true';
+  const isLoggedIn = sessionStorage.getItem('yakda_admin_logged_in') === 'true';
   const loginView = document.getElementById('login-view');
   const dashboardView = document.getElementById('dashboard-view');
 
@@ -78,7 +78,7 @@ function setupLoginHandler() {
     const password = document.getElementById('login-password').value.trim();
 
     if (email === 'admin@yakda.ae' && password === 'admin123') {
-      sessionStorage.setItem('officeone_admin_logged_in', 'true');
+      sessionStorage.setItem('yakda_admin_logged_in', 'true');
       checkAuth();
       showToast('Welcome back, Admin!');
     } else {
@@ -87,7 +87,7 @@ function setupLoginHandler() {
   });
 
   logoutBtn?.addEventListener('click', () => {
-    sessionStorage.removeItem('officeone_admin_logged_in');
+    sessionStorage.removeItem('yakda_admin_logged_in');
     checkAuth();
     showToast('Logged out of Admin Console');
   });
@@ -207,19 +207,19 @@ function setupAddProductForm() {
       if (typeof updateProductInCloud === 'function') {
         await updateProductInCloud(productRecord);
       } else {
-        let customProducts = JSON.parse(localStorage.getItem('officeone_custom_products') || '[]');
+        let customProducts = JSON.parse(localStorage.getItem('yakda_custom_products') || '[]');
         const idx = customProducts.findIndex(p => p.id === editingProductId);
         if (idx !== -1) customProducts[idx] = productRecord;
-        localStorage.setItem('officeone_custom_products', JSON.stringify(customProducts));
+        localStorage.setItem('yakda_custom_products', JSON.stringify(customProducts));
       }
       showToast(`Product "${name.substring(0, 20)}..." updated successfully!`);
     } else {
       if (typeof saveProductToCloud === 'function') {
         await saveProductToCloud(productRecord);
       } else {
-        const customProducts = JSON.parse(localStorage.getItem('officeone_custom_products') || '[]');
+        const customProducts = JSON.parse(localStorage.getItem('yakda_custom_products') || '[]');
         customProducts.unshift(productRecord);
-        localStorage.setItem('officeone_custom_products', JSON.stringify(customProducts));
+        localStorage.setItem('yakda_custom_products', JSON.stringify(customProducts));
       }
       showToast(`Product "${name.substring(0, 20)}..." saved successfully!`);
     }
@@ -292,7 +292,7 @@ async function getAllProducts() {
   if (typeof getProductsFromCloud === 'function') {
     return await getProductsFromCloud();
   }
-  return JSON.parse(localStorage.getItem('officeone_custom_products') || '[]');
+  return JSON.parse(localStorage.getItem('yakda_custom_products') || '[]');
 }
 
 // Render Inventory Table
@@ -360,9 +360,9 @@ async function deleteProduct(id) {
   if (typeof deleteProductFromCloud === 'function') {
     await deleteProductFromCloud(id);
   } else {
-    let customProducts = JSON.parse(localStorage.getItem('officeone_custom_products') || '[]');
+    let customProducts = JSON.parse(localStorage.getItem('yakda_custom_products') || '[]');
     customProducts = customProducts.filter(p => p.id !== id);
-    localStorage.setItem('officeone_custom_products', JSON.stringify(customProducts));
+    localStorage.setItem('yakda_custom_products', JSON.stringify(customProducts));
   }
 
   if (editingProductId === id) {
