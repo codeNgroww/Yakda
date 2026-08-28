@@ -51,21 +51,61 @@
  * );
  */
 
-// Supabase Credentials
-const SUPABASE_URL = window.SUPABASE_CONFIG?.url || "https://your-project.supabase.co";
-const SUPABASE_ANON_KEY = window.SUPABASE_CONFIG?.key || "your-anon-key";
-
 // Target Notification Contacts
 const NOTIFICATION_WHATSAPP = "97145534286";
 const NOTIFICATION_EMAIL = "inquiry@alyakda.com";
 
+// Dynamic Supabase Credentials Helper
+function getSupabaseCredentials() {
+  const savedUrl = localStorage.getItem('yakda_supabase_url');
+  const savedKey = localStorage.getItem('yakda_supabase_key');
+  const url = savedUrl || window.SUPABASE_CONFIG?.url || "https://aljcnbyzixcqfhqmcqqn.supabase.co";
+  const key = savedKey || window.SUPABASE_CONFIG?.key || "sb_publishable_UXTg0SKcG9ErZPj53XaLeg_HtpUc_EK";
+  return { url, key, isSaved: Boolean(savedUrl && savedKey) };
+}
+
 // Initialize Supabase Client
 let supabaseClient = null;
-if (typeof supabase !== 'undefined' && SUPABASE_URL !== "https://your-project.supabase.co") {
-  supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-  console.log("Supabase Client initialized successfully.");
-} else {
-  console.log("Supabase SDK ready. Operating with local persistent database fallback.");
+
+function initSupabaseClient() {
+  const { url, key } = getSupabaseCredentials();
+  if (typeof supabase !== 'undefined' && url && url !== "https://your-project.supabase.co" && key && key !== "your-anon-key") {
+    try {
+      supabaseClient = supabase.createClient(url, key);
+      console.log("Supabase Client initialized successfully for URL:", url);
+      return true;
+    } catch (e) {
+      console.warn("Failed to initialize Supabase client:", e);
+      supabaseClient = null;
+      return false;
+    }
+  }
+  supabaseClient = null;
+  return false;
+}
+
+// Auto-initialize on script load
+initSupabaseClient();
+
+// Save Supabase Configuration
+function saveSupabaseConfig(url, key) {
+  const cleanUrl = (url || '').trim();
+  const cleanKey = (key || '').trim();
+  if (cleanUrl) localStorage.setItem('yakda_supabase_url', cleanUrl);
+  if (cleanKey) localStorage.setItem('yakda_supabase_key', cleanKey);
+  return initSupabaseClient();
+}
+
+// Clear Supabase Configuration
+function clearSupabaseConfig() {
+  localStorage.removeItem('yakda_supabase_url');
+  localStorage.removeItem('yakda_supabase_key');
+  supabaseClient = null;
+}
+
+// Connection Status Check
+function isSupabaseConnected() {
+  return initSupabaseClient() && Boolean(supabaseClient);
 }
 
 const MAX_FILE_SIZE_BYTES = 200 * 1024; // 200 KB limit
