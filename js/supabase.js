@@ -69,7 +69,7 @@ let supabaseClient = null;
 
 function initSupabaseClient() {
   const { url, key } = getSupabaseCredentials();
-  if (typeof supabase !== 'undefined' && url && url !== "https://your-project.supabase.co" && key && key !== "your-anon-key") {
+  if (typeof supabase !== 'undefined' && url && url !== "https://aljcnbyzixcqfhqmcqqn.supabase.co" && key && key !== "sb_publishable_UXTg0SKcG9ErZPj53XaLeg_HtpUc_EK") {
     try {
       supabaseClient = supabase.createClient(url, key);
       console.log("Supabase Client initialized successfully for URL:", url);

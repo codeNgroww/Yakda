@@ -1,0 +1,150 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #006a63;
+  --color-primary-container: #00a69c;
+  --color-primary-fixed: #7af6eb;
+  --color-primary-fixed-dim: #5bdacf;
+  --color-on-primary: #ffffff;
+  --color-on-primary-container: #003330;
+  --color-secondary: #5f5e5e;
+  --color-secondary-container: #e2dfde;
+  --color-on-secondary: #ffffff;
+  --color-on-secondary-container: #636262;
+  --color-tertiary: #984624;
+  --color-tertiary-container: #db7a53;
+  --color-on-tertiary: #ffffff;
+  --color-surface: #f9f9f9;
+  --color-surface-white: #FFFFFF;
+  --color-surface-dim: #dadada;
+  --color-surface-bright: #f9f9f9;
+  --color-surface-container: #eeeeee;
+  --color-surface-container-low: #f4f3f3;
+  --color-surface-container-high: #e8e8e8;
+  --color-surface-container-highest: #e2e2e2;
+  --color-surface-container-lowest: #ffffff;
+  --color-on-surface: #1a1c1c;
+  --color-on-surface-variant: #3c4947;
+  --color-outline: #6c7a78;
+  --color-outline-variant: #bbc9c7;
+  --color-background: #f9f9f9;
+  --color-on-background: #1a1c1c;
+  --color-inverse-surface: #2f3131;
+  --color-inverse-on-surface: #f1f1f1;
+  --color-error: #ba1a1a;
+  --color-error-container: #ffdad6;
+}
+
+@layer base {
+  html,
+  body {
+    min-height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    scroll-behavior: smooth;
+    background-color: #f9f9f9;
+    color: #1a1c1c;
+    font-family: var(--font-fira-sans), sans-serif;
+  }
+
+  body {
+    overscroll-behavior-y: auto;
+  }
+
+  .pb-safe {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  .pt-safe {
+    padding-top: env(safe-area-inset-top, 0px);
+  }
+}
+
+/* Hide horizontal and vertical scrollbars for smooth horizontal swipe rows */
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Custom Scrollbar for Drawer & Body */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #006a63;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #00504b;
+}
+
+/* Glassmorphism & Backdrop blur effects */
+.glass-nav {
+  background-color: rgba(249, 249, 249, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+.glass-modal {
+  background-color: rgba(26, 28, 28, 0.6);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+/* Micro-animations */
+.card-hover-effect {
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.card-hover-effect:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px -8px rgba(0, 106, 99, 0.15);
+}
+
+.btn-press {
+  transition: transform 0.1s ease, background-color 0.2s ease;
+}
+
+.btn-press:active {
+  transform: scale(0.96);
+}
+
+/* Slide Drawer Animation */
+.drawer-transition {
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Modal Fade Animation */
+.modal-fade-enter {
+  opacity: 0;
+  transform: scale(0.95);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.modal-fade-enter-active {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* Banner Gradients */
+.hero-gradient {
+  background: linear-gradient(180deg, rgba(26, 28, 28, 0.1) 0%, rgba(26, 28, 28, 0.85) 100%);
+}
+
+.b2b-pattern {
+  background-image: radial-gradient(rgba(255, 255, 255, 0.15) 1px, transparent 1px);
+  background-size: 16px 16px;
+}
