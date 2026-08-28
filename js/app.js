@@ -63,7 +63,7 @@ function checkAdminNavVisibility() {
 function updateUserAuthUI() {
   const currentUser = state.currentUser || JSON.parse(sessionStorage.getItem('officeone_logged_in_user') || 'null');
   const authButtons = document.querySelectorAll('.toggle-auth');
-  
+
   if (currentUser) {
     const userInitial = (currentUser.email || 'U')[0].toUpperCase();
     authButtons.forEach(btn => {
@@ -105,7 +105,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 function initHeroCarousel() {
   const slides = document.querySelectorAll('.hero-slide');
   const dots = document.querySelectorAll('.hero-dot');
-  
+
   if (!slides.length) return;
 
   function showSlide(index) {
@@ -154,8 +154,8 @@ function renderProducts(filterCategory = 'all') {
   const container = document.getElementById('products-grid');
   if (!container) return;
 
-  const filtered = filterCategory === 'all' 
-    ? products 
+  const filtered = filterCategory === 'all'
+    ? products
     : products.filter(p => p.category === filterCategory);
 
   container.innerHTML = filtered.map(product => {
@@ -309,7 +309,7 @@ function toggleWishlist(productId) {
 // Category Filter Controller
 function setCategory(category, btnElement) {
   state.activeCategory = category;
-  
+
   // Highlight active category button UI
   document.querySelectorAll('.category-btn').forEach(btn => {
     btn.classList.remove('border-primary', 'bg-primary-container/20');
@@ -498,7 +498,7 @@ function setupEventListeners() {
     const password = document.getElementById('auth-signin-password').value.trim();
 
     // Admin Credentials Check -> Redirect to Admin Panel
-    if ((email === 'admin@officeone.ae' || email === 'admin') && password === 'admin123') {
+    if ((email === 'admin@yakda.ae' || email === 'admin') && password === 'admin123') {
       sessionStorage.setItem('officeone_admin_logged_in', 'true');
       showToast('Admin Credentials verified! Redirecting to Admin Panel...');
       setTimeout(() => {
@@ -599,7 +599,7 @@ function setupEventListeners() {
 
     // Construct Notification Links
     const itemsSummary = state.cart.map(i => `• ${i.title} (x${i.quantity}) - AED ${(i.price * i.quantity).toFixed(2)}`).join('\n');
-    
+
     // 1. WhatsApp Text Payload for 97145534286
     const waText = encodeURIComponent(
       `*New Order Placed - Yakda*\n` +
@@ -640,7 +640,7 @@ function setupEventListeners() {
 // Initiate Checkout Logic (Mandatory User Login Guard)
 function initiateCheckout() {
   const currentUser = state.currentUser || JSON.parse(sessionStorage.getItem('officeone_logged_in_user') || 'null');
-  
+
   if (!currentUser) {
     showToast('Please sign in or create an account to proceed to checkout');
     const authModal = document.getElementById('auth-modal');

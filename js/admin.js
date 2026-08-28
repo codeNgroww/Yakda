@@ -77,12 +77,12 @@ function setupLoginHandler() {
     const email = document.getElementById('login-email').value.trim();
     const password = document.getElementById('login-password').value.trim();
 
-    if (email === 'admin@officeone.ae' && password === 'admin123') {
+    if (email === 'admin@yakda.ae' && password === 'admin123') {
       sessionStorage.setItem('officeone_admin_logged_in', 'true');
       checkAuth();
       showToast('Welcome back, Admin!');
     } else {
-      alert('Invalid admin credentials. Please use admin@officeone.ae / admin123');
+      alert('Invalid admin credentials. Please use admin@yakda.ae / admin123');
     }
   });
 

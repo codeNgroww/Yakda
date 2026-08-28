@@ -449,7 +449,7 @@
           <span class="material-symbols-outlined text-[18px] flex-shrink-0 mt-0.5">info</span>
           <div>
             <span class="font-bold">Admin Login:</span> Use <code
-              class="bg-white px-1 rounded font-mono">admin@officeone.ae</code> / <code
+              class="bg-white px-1 rounded font-mono">admin@yakda.ae</code> / <code
               class="bg-white px-1 rounded font-mono">admin123</code> to access the Admin Panel.
           </div>
         </div>
@@ -458,7 +458,7 @@
           <label class="block text-xs font-semibold text-on-surface mb-1">Email / Username *</label>
           <div class="relative flex items-center">
             <span class="material-symbols-outlined absolute left-3 text-on-surface-variant text-[18px]">mail</span>
-            <input required id="auth-signin-email" type="email" placeholder="admin@officeone.ae or user@example.com"
+            <input required id="auth-signin-email" type="email" placeholder="admin@yakda.ae or user@example.com"
               class="w-full pl-9 pr-3 py-2 border border-outline-variant rounded-lg bg-surface text-sm outline-none focus:border-primary" />
           </div>
         </div>
@@ -524,7 +524,8 @@
 
   <!-- Checkout & Order Dispatch Modal -->
   <div id="checkout-modal" class="fixed inset-0 glass-modal z-50 hidden items-center justify-center p-4">
-    <div class="w-full max-w-lg bg-surface-container-lowest rounded-2xl shadow-2xl border border-outline-variant overflow-hidden flex flex-col">
+    <div
+      class="w-full max-w-lg bg-surface-container-lowest rounded-2xl shadow-2xl border border-outline-variant overflow-hidden flex flex-col">
       <div class="p-4 bg-primary text-on-primary flex items-center justify-between">
         <div class="flex items-center gap-2">
           <span class="material-symbols-outlined text-[24px]">local_shipping</span>
@@ -552,24 +553,29 @@
           <label class="block text-xs font-semibold text-on-surface mb-1">Contact Phone Number *</label>
           <div class="relative flex items-center">
             <span class="material-symbols-outlined absolute left-3 text-on-surface-variant text-[18px]">phone</span>
-            <input required id="checkout-phone" type="tel" placeholder="+971 50 123 4567" class="w-full pl-9 pr-3 py-2 border border-outline-variant rounded-lg bg-surface text-sm outline-none focus:border-primary" />
+            <input required id="checkout-phone" type="tel" placeholder="+971 50 123 4567"
+              class="w-full pl-9 pr-3 py-2 border border-outline-variant rounded-lg bg-surface text-sm outline-none focus:border-primary" />
           </div>
         </div>
 
         <div>
           <label class="block text-xs font-semibold text-on-surface mb-1">Delivery Address & Emirate *</label>
-          <textarea required id="checkout-address" rows="3" placeholder="Street address, building name, office number, Dubai/Abu Dhabi/Sharjah..." class="w-full px-3 py-2 border border-outline-variant rounded-lg bg-surface text-sm outline-none focus:border-primary"></textarea>
+          <textarea required id="checkout-address" rows="3"
+            placeholder="Street address, building name, office number, Dubai/Abu Dhabi/Sharjah..."
+            class="w-full px-3 py-2 border border-outline-variant rounded-lg bg-surface text-sm outline-none focus:border-primary"></textarea>
         </div>
 
         <!-- Dispatch Notice -->
         <div class="p-3 bg-surface-container rounded-lg text-xs text-on-surface-variant flex items-start gap-2">
           <span class="material-symbols-outlined text-primary text-[18px] flex-shrink-0 mt-0.5">verified</span>
           <div>
-            Order confirmation will be sent to <span class="font-bold text-on-surface">inquiry@alyakda.com</span> and WhatsApp <span class="font-bold text-on-surface">+971 4 553 4286</span> upon placing the order.
+            Order confirmation will be sent to <span class="font-bold text-on-surface">inquiry@alyakda.com</span> and
+            WhatsApp <span class="font-bold text-on-surface">+971 4 553 4286</span> upon placing the order.
           </div>
         </div>
 
-        <button type="submit" class="mt-2 w-full py-3.5 bg-primary text-on-primary font-bold text-sm rounded-lg shadow-lg hover:bg-primary-container transition-all btn-press flex items-center justify-center gap-2">
+        <button type="submit"
+          class="mt-2 w-full py-3.5 bg-primary text-on-primary font-bold text-sm rounded-lg shadow-lg hover:bg-primary-container transition-all btn-press flex items-center justify-center gap-2">
           <span class="material-symbols-outlined text-[20px]">send</span> Place Order & Trigger Dispatch
       </form>
     </div>
@@ -577,20 +583,26 @@
 
   <!-- Active User Profile & Sign Out Modal -->
   <div id="user-profile-modal" class="fixed inset-0 glass-modal z-50 hidden items-center justify-center p-4">
-    <div class="w-full max-w-sm bg-surface-container-lowest rounded-2xl shadow-2xl border border-outline-variant overflow-hidden flex flex-col p-6 text-center gap-4">
-      <div id="profile-modal-avatar" class="w-16 h-16 rounded-full bg-primary text-on-primary font-bold text-xl flex items-center justify-center mx-auto shadow-md">
+    <div
+      class="w-full max-w-sm bg-surface-container-lowest rounded-2xl shadow-2xl border border-outline-variant overflow-hidden flex flex-col p-6 text-center gap-4">
+      <div id="profile-modal-avatar"
+        class="w-16 h-16 rounded-full bg-primary text-on-primary font-bold text-xl flex items-center justify-center mx-auto shadow-md">
         U
       </div>
       <div>
         <h3 id="profile-modal-email" class="text-base font-bold text-on-surface">user@example.com</h3>
-        <span id="profile-modal-type" class="px-2.5 py-0.5 bg-primary/10 text-primary font-bold text-[11px] rounded-full uppercase mt-1 inline-block">Individual Account</span>
+        <span id="profile-modal-type"
+          class="px-2.5 py-0.5 bg-primary/10 text-primary font-bold text-[11px] rounded-full uppercase mt-1 inline-block">Individual
+          Account</span>
       </div>
 
       <div class="pt-2 border-t border-outline-variant flex flex-col gap-2">
-        <button id="profile-logout-btn" class="w-full py-2.5 bg-error/10 text-error font-bold text-xs rounded-lg hover:bg-error/20 transition-colors flex items-center justify-center gap-2">
+        <button id="profile-logout-btn"
+          class="w-full py-2.5 bg-error/10 text-error font-bold text-xs rounded-lg hover:bg-error/20 transition-colors flex items-center justify-center gap-2">
           <span class="material-symbols-outlined text-[18px]">logout</span> Sign Out
         </button>
-        <button id="close-user-profile" class="w-full py-2 bg-surface text-on-surface-variant font-semibold text-xs rounded-lg hover:bg-surface-container transition-colors">
+        <button id="close-user-profile"
+          class="w-full py-2 bg-surface text-on-surface-variant font-semibold text-xs rounded-lg hover:bg-surface-container transition-colors">
           Close Window
         </button>
       </div>
