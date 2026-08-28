@@ -2,46 +2,6 @@
  * Yakda Admin Dashboard Controller
  */
 
-// Default Base Products for Inventory View
-const defaultProducts = [
-  {
-    id: '8494',
-    sku: '8494',
-    title: "CARAN d'ACHE 849 Ballpoint Pen with Box, Fluo Green",
-    category: 'writing',
-    price: 105.00,
-    badge: null,
-    image: "https://lh3.googleusercontent.com/aida/AP1WRLudFMyR7esMcv47JKmGuefiRNQAsGj7ylblt214Xtsq1InvpFG6D9fenxgnyVfv25QvzAcrrrwaisKG7n_Hy8QC-20mERJF-GS1QmL9RZcG5nEHvum-HMBkC2CEQeFAzBl8KJbNxQVCClRRXaR01zBjPZgbqLRPP-Gmn9SG856c0fTXR7EfdWon9xzdAYoKapiIJlOZtipO4umABNQCfhAaoh6QfHSmb-LBz1SQNXDszr8bmtFkIt_Gr50"
-  },
-  {
-    id: '10558',
-    sku: '10558',
-    title: "Durable Idealbox Pen Tray, 240 x 36 x 340 mm, Charcoal",
-    category: 'writing',
-    price: 32.00,
-    badge: null,
-    image: "https://lh3.googleusercontent.com/aida/AP1WRLsP4BxBYis1NyQH4HmpKJEII5OG52HmSmF18yj0lSwFzw3ritum_BQGrcurmOLgwX_dRFCbygHV4QFxuonOeBg7fif4aoJ6s0xHC_V3uYuVGIEez4PrmT_hFShsVzC79ki8XRnSUnCFMo3vof48IlZsAEcXygYVex8j4opAxcbCAg2AAG7QIoXdlobg2wuzm-u8IjeMbKZG3cCfp-O3_n4j8qXvXFpv3ylTlhqdSQK3xrTZ8VM8IhQcNxqw"
-  },
-  {
-    id: '18280',
-    sku: '18280',
-    title: "HP SMART TANK 581 All-In-One PRINTER",
-    category: 'machines',
-    price: 567.00,
-    badge: "Best Seller",
-    image: "https://lh3.googleusercontent.com/aida/AP1WRLsnXIkp71JNtw6q2E5Vj_pNQ25N1EXtsDrIZItQzafRMaxnp8LcCyZ0R_OBytNWZJjGMGtTJx5joTFD0ntF2oNoxPciBe8Gn419QlCOTIdTPODbmaHCtDbTWHwFpRUZxM2I_sVjjyJIFENAMfc1oFt6ZcETgzgCR_f9Mz1Fxm1kKIpQCURfE1JqhEbTviprZUsIn5A-Mbc0lpieyYGthGx4atU0r936RNnat5fX2zw83D_o8BkIrwa0avIU"
-  },
-  {
-    id: '10764',
-    sku: '10764',
-    title: "Topstar OPEN POINT SY Mesh Office Chair",
-    category: 'furniture',
-    price: 1732.00,
-    badge: null,
-    image: "https://lh3.googleusercontent.com/aida/AP1WRLtMLxM-gE6v9qIjQeEynaHEgfovn2cQzVlVbxB1h1wB85brtNLctEv2RvtWd2iMjRfjXNgbKe7rXFYfbZfzItwFeiM4bNJ4O3abbJfXgptL6DE47vaiNQK-g2l7A-8HAmFkdjlolg2153frNS5alBCzb308Lqj7XPdqy6NvVMPYa65wccTe83-zhVm8TmTT8FsMox-FwXVvhqXJHG38eJePLIqHVbUhqa1RFwjGMTD2hS6nPZpQ2rdLzoO_"
-  }
-];
-
 let previewImageDataUrl = '';
 
 document.addEventListener('DOMContentLoaded', () => {

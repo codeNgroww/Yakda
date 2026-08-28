@@ -175,68 +175,6 @@ async function findUserInCloud(email, password) {
 // PRODUCT COLLECTION API
 // ==========================================
 
-// Seed default database catalog if uninitialized
-const INITIAL_DB_PRODUCTS = [
-  {
-    id: '8494',
-    sku: '8494',
-    title: "CARAN d'ACHE 849 Ballpoint Pen with Box, Fluo Green",
-    category: 'writing',
-    price: 105.00,
-    badge: null,
-    image: "https://lh3.googleusercontent.com/aida/AP1WRLudFMyR7esMcv47JKmGuefiRNQAsGj7ylblt214Xtsq1InvpFG6D9fenxgnyVfv25QvzAcrrrwaisKG7n_Hy8QC-20mERJF-GS1QmL9RZcG5nEHvum-HMBkC2CEQeFAzBl8KJbNxQVCClRRXaR01zBjPZgbqLRPP-Gmn9SG856c0fTXR7EfdWon9xzdAYoKapiIJlOZtipO4umABNQCfhAaoh6QfHSmb-LBz1SQNXDszr8bmtFkIt_Gr50"
-  },
-  {
-    id: '10558',
-    sku: '10558',
-    title: "Durable Idealbox Pen Tray, 240 x 36 x 340 mm, Charcoal",
-    category: 'writing',
-    price: 32.00,
-    badge: null,
-    image: "https://lh3.googleusercontent.com/aida/AP1WRLsP4BxBYis1NyQH4HmpKJEII5OG52HmSmF18yj0lSwFzw3ritum_BQGrcurmOLgwX_dRFCbygHV4QFxuonOeBg7fif4aoJ6s0xHC_V3uYuVGIEez4PrmT_hFShsVzC79ki8XRnSUnCFMo3vof48IlZsAEcXygYVex8j4opAxcbCAg2AAG7QIoXdlobg2wuzm-u8IjeMbKZG3cCfp-O3_n4j8qXvXFpv3ylTlhqdSQK3xrTZ8VM8IhQcNxqw"
-  },
-  {
-    id: '18280',
-    sku: '18280',
-    title: "HP SMART TANK 581 All-In-One PRINTER",
-    category: 'machines',
-    price: 567.00,
-    badge: "Best Seller",
-    image: "https://lh3.googleusercontent.com/aida/AP1WRLsnXIkp71JNtw6q2E5Vj_pNQ25N1EXtsDrIZItQzafRMaxnp8LcCyZ0R_OBytNWZJjGMGtTJx5joTFD0ntF2oNoxPciBe8Gn419QlCOTIdTPODbmaHCtDbTWHwFpRUZxM2I_sVjjyJIFENAMfc1oFt6ZcETgzgCR_f9Mz1Fxm1kKIpQCURfE1JqhEbTviprZUsIn5A-Mbc0lpieyYGthGx4atU0r936RNnat5fX2zw83D_o8BkIrwa0avIU"
-  },
-  {
-    id: '10764',
-    sku: '10764',
-    title: "Topstar OPEN POINT SY Mesh Office Chair",
-    category: 'furniture',
-    price: 1732.00,
-    badge: null,
-    image: "https://lh3.googleusercontent.com/aida/AP1WRLtMLxM-gE6v9qIjQeEynaHEgfovn2cQzVlVbxB1h1wB85brtNLctEv2RvtWd2iMjRfjXNgbKe7rXFYfbZfzItwFeiM4bNJ4O3abbJfXgptL6DE47vaiNQK-g2l7A-8HAmFkdjlolg2153frNS5alBCzb308Lqj7XPdqy6NvVMPYa65wccTe83-zhVm8TmTT8FsMox-FwXVvhqXJHG38eJePLIqHVbUhqa1RFwjGMTD2hS6nPZpQ2rdLzoO_"
-  },
-  {
-    id: '0095',
-    sku: '0095',
-    title: "Double A Copy Paper A4 Ream 80gsm 500 Sheets",
-    category: 'paper',
-    price: 18.50,
-    badge: "Popular",
-    image: "https://lh3.googleusercontent.com/aida/AP1WRLu3CD2EWiRf9i92cI2Fhnm6GV8ONxU6fzB8onJEkIe8bgRBn03SuuhsvE7LirqzP07FEyumtobzV2WBBUvAzkqo5zZ4KqXt4stbw6UfnSuoTWjkaH8kl3HXTsGYGRoGrjSmN4Wl1YvkeCmbXsAlKN-NOqlPOPuJm-TNuVEWisVRTsxcM2ihsvcI2HIRWvTFtfyFcNUevWha01leTLN_1n0XwbvT9NxlXA85Jt2db6IWqHxxMiaMV96cAKNH"
-  },
-  {
-    id: '11767',
-    sku: '11767',
-    title: "Durable Varicolor SAFE File Cabinet 4 Drawers",
-    category: 'furniture',
-    price: 485.00,
-    badge: null,
-    image: "https://lh3.googleusercontent.com/aida/AP1WRLvpf2gmdymXoTGN95-nVvD3tznFO6sipv_s0GTZzKZywIDFhLYUDK-YVV54wUPj8KypBkOwyR49UDOM0qDxs4wQkSRZeyLHTNaNpVqvwZFPhzPnPCk9KSVuWP4aXcrfGafXDaT59wE27Nom8vvsdGVWB9GVp2p7z-gzKkVFWTaOJPRZwEmxXMyxbZVHSCOPb88WJcHUrER_gTG7DC-43lt8V213XiES-9uPS_wBP45SH9t6bnZ3dAmNn-7D"
-  }
-];
-
-if (!localStorage.getItem('yakda_custom_products')) {
-  localStorage.setItem('yakda_custom_products', JSON.stringify(INITIAL_DB_PRODUCTS));
-}
-
 async function getProductsFromCloud() {
   if (supabaseClient) {
     try {
@@ -245,7 +183,7 @@ async function getProductsFromCloud() {
         .select('*')
         .order('created_at', { ascending: false });
 
-      if (!error && data && data.length > 0) return data;
+      if (!error && data) return data;
     } catch (e) {
       console.warn("Supabase products fetch error:", e);
     }
