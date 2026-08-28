@@ -141,66 +141,84 @@
   <!-- Main Body Content -->
   <main class="flex-1 w-full pt-16 pb-20 md:pb-12 bg-surface">
 
-    <!-- Hero Carousel Section -->
-    <section class="relative w-full overflow-hidden bg-surface-container-highest">
+    <!-- Hero Section -->
+    <section class="relative w-full overflow-hidden bg-surface-container-highest border-b border-outline-variant">
       <div class="max-w-[1280px] mx-auto">
-        <!-- Slide 1 -->
-        <div class="hero-slide relative w-full h-[360px] md:h-[480px] flex">
-          <div class="w-full h-full bg-cover bg-center"
-            style="background-image: url('https://lh3.googleusercontent.com/aida/AP1WRLuFtUM5jri8plhM7-6H0I-WPKqInNE5sX7qmQEaxELuwLmmJRjUqWyNOiu6AsaCEndJBIZO1aECl1Rn5MB-06eBNCKEFM_PJZY0RPxiqd4vvF-scl0jYT-H51fmN3UQAN8oSMAudz_TNIY6igMLQER1bKSXFKf74eIMknjDJ44L-XnFQrbSIxIFCmqCz5q9EAgGWCwvqMJ_vCxVMLbp7oaZ9rlCMYfFYqv58Kg3nSIYOM4yqe29BBWqbUc');">
-          </div>
-          <div class="absolute inset-0 hero-gradient"></div>
-          <div
-            class="absolute bottom-0 left-0 w-full p-margin-mobile md:p-12 flex flex-col items-start gap-3 max-w-2xl">
-            <span
-              class="px-3 py-1 bg-primary text-on-primary font-bold text-xs uppercase tracking-wider rounded-sm shadow-md">
-              Best-In-Class Stationery
+        
+        <!-- Hero Main Card -->
+        <div class="relative w-full h-[440px] md:h-[500px] flex items-center bg-cover bg-center" style="background-image: url('images/hero-desk.png');">
+          <!-- Light Gradient Overlay for crisp text contrast -->
+          <div class="absolute inset-0 bg-gradient-to-r from-white/95 via-white/80 to-transparent md:w-[65%]"></div>
+          
+          <!-- Content Box -->
+          <div class="relative z-10 p-6 md:p-14 max-w-xl flex flex-col items-start gap-4">
+            <span class="px-3.5 py-1 bg-[#004d40] text-white font-extrabold text-xs uppercase tracking-wider rounded shadow-sm">
+              FREE DELIVERY
             </span>
-            <h2 class="text-3xl md:text-5xl font-bold text-on-primary leading-tight">
-              Fastest Delivery in Town
-            </h2>
-            <p class="text-on-primary/90 text-sm md:text-base mb-2">
-              Our logistics team works 24/7 to deliver your stationery orders next day across the UAE.
-            </p>
-            <a href="#favorites-section"
-              class="px-6 py-3 bg-primary text-on-primary font-semibold text-sm rounded shadow-lg hover:bg-primary-container transition-all btn-press">
-              Shop Now
-            </a>
-          </div>
-        </div>
-
-        <!-- Slide 2 -->
-        <div class="hero-slide relative w-full h-[360px] md:h-[480px] hidden">
-          <div class="w-full h-full bg-cover bg-center"
-            style="background-image: url('https://lh3.googleusercontent.com/aida/AP1WRLuemKyAopu8TYMFmd1dkt5OAJaEDOisPcFEUuVe-VUYrUQGy3vLKtWBeFyGDpqd1qzVSJuGwocGPfd7yepmlKIM0RLItt5q3esrzP_olS3MIyERhqJqG2hRetpK06hEfGNXiZL6HzKdN01EzbrJze8Sc2c_CxUnewUSyYnWpL9IwmMTZGKwTPAix8t2D5WxMhjvsjCFfGFcRTLcfX5-L1G0Zxp6WgFhnxiGGAKIvw1S2geMur22DhOm12Rh');">
-          </div>
-          <div class="absolute inset-0 hero-gradient"></div>
-          <div
-            class="absolute bottom-0 left-0 w-full p-margin-mobile md:p-12 flex flex-col items-start gap-3 max-w-2xl">
-            <span
-              class="px-3 py-1 bg-secondary text-on-secondary font-bold text-xs uppercase tracking-wider rounded-sm shadow-md">
-              Free Delivery
-            </span>
-            <h2 class="text-3xl md:text-5xl font-bold text-on-primary leading-tight">
+            <h2 class="text-3xl sm:text-4xl md:text-5xl font-black text-[#003833] leading-tight tracking-tight">
               Free Shipping Over AED 300
             </h2>
-            <p class="text-on-primary/90 text-sm md:text-base mb-2">
+            <p class="text-[#2b3a38] text-sm md:text-base font-medium leading-relaxed">
               Stock up on premium office essentials, paper reams, and ergonomic chairs with complimentary delivery.
             </p>
-            <button onclick="setCategory('all')"
-              class="px-6 py-3 bg-on-primary text-primary font-semibold text-sm rounded shadow-lg hover:bg-surface-container-low transition-all btn-press">
-              View Catalog
+            <button onclick="document.getElementById('favorites-section')?.scrollIntoView({ behavior: 'smooth' })"
+              class="mt-2 px-6 py-3.5 bg-[#004d40] hover:bg-[#003833] text-white font-bold text-sm rounded-lg shadow-md transition-all btn-press flex items-center gap-2">
+              View Catalog <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
             </button>
           </div>
         </div>
 
-        <!-- Carousel Slide Indicators -->
-        <div class="absolute bottom-4 right-4 md:bottom-8 md:right-8 flex gap-2 z-20">
-          <button aria-label="Slide 1"
-            class="hero-dot w-6 h-2 rounded-full bg-primary transition-all duration-300"></button>
-          <button aria-label="Slide 2"
-            class="hero-dot w-2 h-2 rounded-full bg-on-primary/50 transition-all duration-300"></button>
+        <!-- Full-Width Bottom Feature Bar -->
+        <div class="w-full bg-[#004d40] text-white py-5 px-6 md:px-12 shadow-sm">
+          <div class="grid grid-cols-2 lg:grid-cols-4 gap-6 max-w-[1200px] mx-auto">
+            
+            <!-- Feature 1 -->
+            <div class="flex items-center gap-3.5">
+              <div class="w-11 h-11 rounded-full bg-white/10 border border-white/20 flex items-center justify-center flex-shrink-0">
+                <span class="material-symbols-outlined text-white text-[24px]">local_shipping</span>
+              </div>
+              <div>
+                <h4 class="font-bold text-sm text-white leading-tight">Free Delivery</h4>
+                <p class="text-xs text-white/80 mt-0.5">On orders over AED 300</p>
+              </div>
+            </div>
+
+            <!-- Feature 2 -->
+            <div class="flex items-center gap-3.5">
+              <div class="w-11 h-11 rounded-full bg-white/10 border border-white/20 flex items-center justify-center flex-shrink-0">
+                <span class="material-symbols-outlined text-white text-[24px]">verified</span>
+              </div>
+              <div>
+                <h4 class="font-bold text-sm text-white leading-tight">Quality Assured</h4>
+                <p class="text-xs text-white/80 mt-0.5">Premium office essentials</p>
+              </div>
+            </div>
+
+            <!-- Feature 3 -->
+            <div class="flex items-center gap-3.5">
+              <div class="w-11 h-11 rounded-full bg-white/10 border border-white/20 flex items-center justify-center flex-shrink-0">
+                <span class="material-symbols-outlined text-white text-[24px]">support_agent</span>
+              </div>
+              <div>
+                <h4 class="font-bold text-sm text-white leading-tight">Dedicated Support</h4>
+                <p class="text-xs text-white/80 mt-0.5">We're here to help</p>
+              </div>
+            </div>
+
+            <!-- Feature 4 -->
+            <div class="flex items-center gap-3.5">
+              <div class="w-11 h-11 rounded-full bg-white/10 border border-white/20 flex items-center justify-center flex-shrink-0">
+                <span class="material-symbols-outlined text-white text-[24px]">lock</span>
+              </div>
+              <div>
+                <h4 class="font-bold text-sm text-white leading-tight">Secure Payments</h4>
+                <p class="text-xs text-white/80 mt-0.5">Safe & trusted checkout</p>
+              </div>
+            </div>
+
+          </div>
         </div>
+
       </div>
     </section>
 
