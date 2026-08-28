@@ -22,16 +22,16 @@ export default function CategoryPills({
   ];
 
   return (
-    <section id="categories-section" className="py-8 bg-surface-container-lowest border-b border-outline-variant">
+    <section id="categories-section" className="py-8 bg-white border-b border-gray-200">
       <div className="max-w-[1280px] mx-auto">
         <div className="px-margin-mobile mb-4 flex justify-between items-center">
           <div>
-            <h3 className="text-xl md:text-2xl font-bold text-on-surface">Browse Categories</h3>
-            <p className="text-xs md:text-sm text-on-surface-variant">Find essential products for your office</p>
+            <h3 className="text-xl md:text-2xl font-bold text-[#1A2A4E]">Browse Categories</h3>
+            <p className="text-xs md:text-sm text-[#1A2A4E]/70">Find essential products for your office</p>
           </div>
           <button
             onClick={() => onSelectCategory('all')}
-            className="text-sm font-semibold text-primary flex items-center gap-1 hover:underline btn-press"
+            className="text-sm font-semibold text-[#16A2D4] flex items-center gap-1 hover:underline btn-press"
           >
             View All <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
           </button>
@@ -44,27 +44,25 @@ export default function CategoryPills({
               <button
                 key={cat.slug}
                 onClick={() => onSelectCategory(cat.slug)}
-                className={`snap-start flex flex-col items-center gap-2 min-w-[84px] p-2.5 rounded-xl border transition-all btn-press ${
+                className={`snap-start flex flex-col items-center gap-2 min-w-[88px] p-3 rounded-2xl border transition-all btn-press ${
                   isActive
-                    ? 'border-primary bg-primary-container/20 shadow-xs font-bold'
-                    : 'border-outline-variant bg-surface-container hover:border-primary/50'
+                    ? 'border-[#F4B21B] bg-[#F4B21B]/10 shadow-sm border-b-4 font-bold text-[#1A2A4E]'
+                    : 'border-gray-200 bg-gray-50 hover:border-[#F4B21B] hover:border-b-4 hover:bg-white text-[#1A2A4E]'
                 }`}
               >
                 <div
-                  className={`w-14 h-14 rounded-full flex items-center justify-center shadow-xs ${
-                    isActive ? 'bg-primary/20' : 'bg-surface-container-high'
+                  className={`w-12 h-12 rounded-full flex items-center justify-center transition-colors ${
+                    isActive ? 'bg-[#F4B21B]/20 text-[#16A2D4]' : 'bg-gray-200/70 text-[#1A2A4E]'
                   }`}
                 >
                   <span
-                    className={`material-symbols-outlined text-[28px] ${
-                      isActive ? 'text-primary' : 'text-primary'
-                    }`}
+                    className="material-symbols-outlined text-[26px]"
                     style={{ fontVariationSettings: "'FILL' 1" }}
                   >
                     {cat.icon}
                   </span>
                 </div>
-                <span className="text-xs font-semibold text-on-surface whitespace-nowrap">{cat.name}</span>
+                <span className="text-xs font-semibold whitespace-nowrap">{cat.name}</span>
               </button>
             );
           })}

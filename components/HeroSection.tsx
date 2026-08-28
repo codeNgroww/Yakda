@@ -11,7 +11,7 @@ export default function HeroSection() {
   };
 
   return (
-    <section className="relative w-full overflow-hidden bg-surface-container-highest border-b border-outline-variant">
+    <section className="relative w-full overflow-hidden bg-surface border-b border-outline-variant">
       <div className="max-w-[1280px] mx-auto">
         
         {/* Hero Main Card */}
@@ -20,73 +20,78 @@ export default function HeroSection() {
           style={{ backgroundImage: "url('/images/hero-desk.png')" }}
         >
           {/* Light Gradient Overlay for crisp text contrast */}
-          <div className="absolute inset-0 bg-gradient-to-r from-white/95 via-white/80 to-transparent md:w-[65%]"></div>
+          <div className="absolute inset-0 bg-gradient-to-r from-white/95 via-white/85 to-transparent md:w-[65%]"></div>
           
           {/* Content Box */}
           <div className="relative z-10 p-6 md:p-14 max-w-xl flex flex-col items-start gap-4">
-            <span className="px-3.5 py-1 bg-[#004d40] text-white font-extrabold text-xs uppercase tracking-wider rounded shadow-sm">
+            {/* FREE DELIVERY Tag in Vibrant Cyan */}
+            <span className="px-3.5 py-1 bg-[#16A2D4] text-white font-extrabold text-xs uppercase tracking-wider rounded shadow-xs">
               FREE DELIVERY
             </span>
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-[#003833] leading-tight tracking-tight">
+            {/* Headline in Primary Navy Blue */}
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-[#1A2A4E] leading-tight tracking-tight">
               Free Shipping Over AED 300
             </h2>
-            <p className="text-[#2b3a38] text-sm md:text-base font-medium leading-relaxed">
+            <p className="text-[#1A2A4E]/80 text-sm md:text-base font-medium leading-relaxed">
               Stock up on premium office essentials, paper reams, and ergonomic chairs with complimentary delivery.
             </p>
+            {/* CTA Button in Deep Red */}
             <button
               onClick={scrollToCatalog}
-              className="mt-2 px-6 py-3.5 bg-[#004d40] hover:bg-[#003833] text-white font-bold text-sm rounded-lg shadow-md transition-all btn-press flex items-center gap-2"
+              className="mt-2 px-6 py-3.5 bg-[#D93630] hover:bg-[#b82a25] text-white font-bold text-sm rounded-xl shadow-md transition-all btn-press flex items-center gap-2"
             >
               View Catalog <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
             </button>
           </div>
         </div>
 
-        {/* Full-Width Bottom Feature Bar */}
-        <div className="w-full bg-[#004d40] text-white py-5 px-6 md:px-12 shadow-sm">
+        {/* Feature Badges Container with 4 Brand Colors */}
+        <div className="w-full bg-white text-[#1A2A4E] py-6 px-6 md:px-12 border-t border-b border-gray-200 shadow-xs">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 max-w-[1200px] mx-auto">
             
-            {/* Feature 1 */}
+            {/* Feature 1: Shipping Icon in Vibrant Cyan (#16A2D4) */}
             <div className="flex items-center gap-3.5">
-              <div className="w-11 h-11 rounded-full bg-white/10 border border-white/20 flex items-center justify-center flex-shrink-0">
-                <span className="material-symbols-outlined text-white text-[24px]">local_shipping</span>
+              <div className="w-12 h-12 rounded-2xl bg-[#16A2D4]/10 border border-[#16A2D4]/20 flex items-center justify-center flex-shrink-0">
+                <span className="material-symbols-outlined text-[#16A2D4] text-[26px]">local_shipping</span>
               </div>
               <div>
-                <h4 className="font-bold text-sm text-white leading-tight">Free Delivery</h4>
-                <p className="text-xs text-white/80 mt-0.5">On orders over AED 300</p>
+                <h4 className="font-bold text-sm text-[#1A2A4E] leading-tight">Free Delivery</h4>
+                <p className="text-xs text-[#1A2A4E]/70 mt-0.5">On orders over AED 300</p>
               </div>
             </div>
 
-            {/* Feature 2 */}
+            {/* Feature 2: Quality Assured (Verified) Icon in Golden Yellow (#F4B21B) */}
             <div className="flex items-center gap-3.5">
-              <div className="w-11 h-11 rounded-full bg-white/10 border border-white/20 flex items-center justify-center flex-shrink-0">
-                <span className="material-symbols-outlined text-white text-[24px]">verified</span>
+              <div className="w-12 h-12 rounded-2xl bg-[#F4B21B]/10 border border-[#F4B21B]/20 flex items-center justify-center flex-shrink-0">
+                <span className="material-symbols-outlined text-[#F4B21B] text-[26px]" style={{ fontVariationSettings: "'FILL' 1" }}>
+                  verified
+                </span>
               </div>
               <div>
-                <h4 className="font-bold text-sm text-white leading-tight">Quality Assured</h4>
-                <p className="text-xs text-white/80 mt-0.5">Premium office essentials</p>
+                <h4 className="font-bold text-sm text-[#1A2A4E] leading-tight">Quality Assured</h4>
+                <p className="text-xs text-[#1A2A4E]/70 mt-0.5">Premium office essentials</p>
               </div>
             </div>
 
-            {/* Feature 3 */}
+            {/* Feature 3: Support Icon in Deep Red (#D93630) */}
             <div className="flex items-center gap-3.5">
-              <div className="w-11 h-11 rounded-full bg-white/10 border border-white/20 flex items-center justify-center flex-shrink-0">
-                <span className="material-symbols-outlined text-white text-[24px]">support_agent</span>
+              <div className="w-12 h-12 rounded-2xl bg-[#D93630]/10 border border-[#D93630]/20 flex items-center justify-center flex-shrink-0">
+                <span className="material-symbols-outlined text-[#D93630] text-[26px]">support_agent</span>
               </div>
               <div>
-                <h4 className="font-bold text-sm text-white leading-tight">Dedicated Support</h4>
-                <p className="text-xs text-white/80 mt-0.5">We're here to help</p>
+                <h4 className="font-bold text-sm text-[#1A2A4E] leading-tight">Dedicated Support</h4>
+                <p className="text-xs text-[#1A2A4E]/70 mt-0.5">We're here to help</p>
               </div>
             </div>
 
-            {/* Feature 4 */}
+            {/* Feature 4: Secure Payments (Lock) Icon in Primary Navy Blue (#1A2A4E) */}
             <div className="flex items-center gap-3.5">
-              <div className="w-11 h-11 rounded-full bg-white/10 border border-white/20 flex items-center justify-center flex-shrink-0">
-                <span className="material-symbols-outlined text-white text-[24px]">lock</span>
+              <div className="w-12 h-12 rounded-2xl bg-[#1A2A4E]/10 border border-[#1A2A4E]/20 flex items-center justify-center flex-shrink-0">
+                <span className="material-symbols-outlined text-[#1A2A4E] text-[26px]">lock</span>
               </div>
               <div>
-                <h4 className="font-bold text-sm text-white leading-tight">Secure Payments</h4>
-                <p className="text-xs text-white/80 mt-0.5">Safe & trusted checkout</p>
+                <h4 className="font-bold text-sm text-[#1A2A4E] leading-tight">Secure Payments</h4>
+                <p className="text-xs text-[#1A2A4E]/70 mt-0.5">Safe & trusted checkout</p>
               </div>
             </div>
 

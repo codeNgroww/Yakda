@@ -35,12 +35,10 @@ export default function CheckoutModal({
 
     setIsSubmitting(true);
 
-    // Construct Notification Links
     const itemsSummary = cart
       .map((i) => `• ${i.title} (x${i.quantity}) - AED ${(i.price * i.quantity).toFixed(2)}`)
       .join('\n');
 
-    // 1. WhatsApp Text Payload for 97145534286
     const waText = encodeURIComponent(
       `*New Order Placed - Yakda*\n` +
       `---------------------------\n` +
@@ -52,7 +50,6 @@ export default function CheckoutModal({
       `Thank you for ordering with Yakda!`
     );
 
-    // 2. Email Subject & Body Payload for inquiry@alyakda.com
     const emailSubject = encodeURIComponent(`New Order Placed - Yakda (AED ${totalAmount.toFixed(2)})`);
     const emailBody = encodeURIComponent(
       `Customer Email: ${currentUser?.email || 'Guest'}\n` +
@@ -62,7 +59,6 @@ export default function CheckoutModal({
       `Total Order Amount: AED ${totalAmount.toFixed(2)}`
     );
 
-    // Trigger Notifications in background
     window.open(`https://wa.me/97145534286?text=${waText}`, '_blank');
     window.open(`mailto:inquiry@alyakda.com?subject=${emailSubject}&body=${emailBody}`, '_blank');
 
@@ -76,59 +72,61 @@ export default function CheckoutModal({
       {/* Backdrop */}
       <div onClick={onClose} className="absolute inset-0 glass-modal"></div>
 
-      <div className="relative w-full max-w-lg bg-surface-container-lowest border border-outline-variant rounded-2xl shadow-2xl p-6 z-10">
-        <div className="flex items-center justify-between border-b border-outline-variant pb-4 mb-4">
+      <div className="relative w-full max-w-lg bg-white border border-gray-200 rounded-2xl shadow-2xl overflow-hidden z-10">
+        {/* Header in Primary Navy Blue */}
+        <div className="bg-[#1A2A4E] text-white p-5 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="material-symbols-outlined text-primary text-[24px]">local_shipping</span>
-            <h3 className="text-lg font-bold text-on-surface">Order Checkout</h3>
+            <span className="material-symbols-outlined text-[#16A2D4] text-[24px]">local_shipping</span>
+            <h3 className="text-lg font-bold">Order Checkout</h3>
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 text-on-surface-variant hover:text-on-surface rounded-full hover:bg-surface-container transition-colors"
+            className="p-1.5 text-white/80 hover:text-white rounded-full hover:bg-white/10 transition-colors"
           >
             <span className="material-symbols-outlined text-[18px]">close</span>
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          <div className="p-3 bg-surface-container-low border border-outline-variant/60 rounded-xl flex items-center justify-between text-xs">
-            <span className="text-on-surface-variant">Customer:</span>
-            <span className="font-bold text-on-surface">{currentUser?.email || 'Guest'}</span>
+        <form onSubmit={handleSubmit} className="p-6 flex flex-col gap-4">
+          <div className="p-3 bg-gray-50 border border-gray-200 rounded-xl flex items-center justify-between text-xs">
+            <span className="text-[#1A2A4E]/70">Customer:</span>
+            <span className="font-bold text-[#1A2A4E]">{currentUser?.email || 'Guest'}</span>
           </div>
 
           <div className="flex flex-col gap-1">
-            <label className="text-xs font-semibold text-on-surface">WhatsApp / Mobile Number *</label>
+            <label className="text-xs font-semibold text-[#1A2A4E]">WhatsApp / Mobile Number *</label>
             <input
               type="tel"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
               placeholder="e.g. +971 50 123 4567"
-              className="w-full px-3.5 py-2 text-xs rounded-xl bg-surface-container-high border border-outline-variant focus:outline-none focus:border-primary text-on-surface"
+              className="w-full px-3.5 py-2 text-xs rounded-xl bg-gray-50 border border-gray-200 focus:outline-none focus:border-[#16A2D4] text-[#1A2A4E]"
               required
             />
           </div>
 
           <div className="flex flex-col gap-1">
-            <label className="text-xs font-semibold text-on-surface">Delivery Address in UAE *</label>
+            <label className="text-xs font-semibold text-[#1A2A4E]">Delivery Address in UAE *</label>
             <textarea
               value={address}
               onChange={(e) => setAddress(e.target.value)}
               placeholder="Building name, street, office number, Dubai, UAE"
               rows={3}
-              className="w-full px-3.5 py-2 text-xs rounded-xl bg-surface-container-high border border-outline-variant focus:outline-none focus:border-primary text-on-surface resize-none"
+              className="w-full px-3.5 py-2 text-xs rounded-xl bg-gray-50 border border-gray-200 focus:outline-none focus:border-[#16A2D4] text-[#1A2A4E] resize-none"
               required
             ></textarea>
           </div>
 
-          <div className="p-4 bg-surface-container rounded-xl flex items-center justify-between mt-2">
-            <span className="text-xs font-bold text-on-surface-variant">Total Payable:</span>
-            <span className="text-xl font-black text-[#003833]">AED {totalAmount.toFixed(2)}</span>
+          <div className="p-4 bg-gray-50 rounded-xl flex items-center justify-between mt-2 border border-gray-200">
+            <span className="text-xs font-bold text-[#1A2A4E]/80">Total Payable:</span>
+            <span className="text-xl font-black text-[#D93630]">AED {totalAmount.toFixed(2)}</span>
           </div>
 
+          {/* Action Button in Deep Red (#D93630) */}
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full py-3.5 bg-[#004d40] hover:bg-[#003833] text-white font-bold text-xs rounded-xl shadow-md transition-all btn-press flex items-center justify-center gap-2"
+            className="w-full py-3.5 bg-[#D93630] hover:bg-[#b82a25] text-white font-bold text-xs rounded-xl shadow-md transition-all btn-press flex items-center justify-center gap-2"
           >
             <span className="material-symbols-outlined text-[18px]">check_circle</span>
             {isSubmitting ? 'Processing Order...' : 'Confirm Order & Send Notification'}

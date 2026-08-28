@@ -10,51 +10,38 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        "primary": "#006a63",
-        "primary-container": "#00a69c",
-        "primary-fixed": "#7af6eb",
-        "primary-fixed-dim": "#5bdacf",
+        "brand-navy": "#1A2A4E",
+        "brand-cyan": "#16A2D4",
+        "brand-yellow": "#F4B21B",
+        "brand-red": "#D93630",
+        
+        "primary": "#1A2A4E",
+        "primary-container": "#16A2D4",
         "on-primary": "#ffffff",
-        "on-primary-container": "#003330",
-        "secondary": "#5f5e5e",
-        "secondary-container": "#e2dfde",
-        "on-secondary": "#ffffff",
-        "on-secondary-container": "#636262",
-        "tertiary": "#984624",
-        "tertiary-container": "#db7a53",
-        "on-tertiary": "#ffffff",
-        "surface": "#f9f9f9",
+        
+        "secondary": "#16A2D4",
+        "secondary-container": "#F4B21B",
+        
+        "tertiary": "#D93630",
+        
+        "surface": "#F9FAFB",
         "surface-white": "#FFFFFF",
-        "surface-dim": "#dadada",
-        "surface-bright": "#f9f9f9",
-        "surface-container": "#eeeeee",
-        "surface-container-low": "#f4f3f3",
-        "surface-container-high": "#e8e8e8",
-        "surface-container-highest": "#e2e2e2",
-        "surface-container-lowest": "#ffffff",
-        "on-surface": "#1a1c1c",
-        "on-surface-variant": "#3c4947",
-        "outline": "#6c7a78",
-        "outline-variant": "#bbc9c7",
-        "background": "#f9f9f9",
-        "on-background": "#1a1c1c",
-        "inverse-surface": "#2f3131",
-        "inverse-on-surface": "#f1f1f1",
-        "error": "#ba1a1a",
-        "error-container": "#ffdad6"
+        "surface-container": "#F3F4F6",
+        "surface-container-high": "#E5E7EB",
+        "surface-container-lowest": "#FFFFFF",
+        
+        "on-surface": "#1A2A4E",
+        "on-surface-variant": "#4B5563",
+        "outline": "#9CA3AF",
+        "outline-variant": "#E5E7EB",
+        "background": "#F9FAFB",
+        "on-background": "#1A2A4E",
       },
       borderRadius: {
         DEFAULT: "0.125rem",
         lg: "0.25rem",
         xl: "0.5rem",
         full: "0.75rem"
-      },
-      spacing: {
-        "margin-mobile": "16px",
-        "container-max": "1280px",
-        "unit": "4px",
-        "gutter": "24px",
-        "margin-desktop": "64px"
       },
       fontFamily: {
         body: ["var(--font-fira-sans)", "sans-serif"],

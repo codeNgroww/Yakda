@@ -131,7 +131,7 @@ export default function StorefrontView({
   };
 
   return (
-    <div className="min-h-screen flex flex-col justify-between">
+    <div className="min-h-screen flex flex-col justify-between pb-16 md:pb-0">
       {/* Header */}
       <Header
         cartCount={cart.reduce((sum, item) => sum + item.quantity, 0)}
