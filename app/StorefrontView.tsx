@@ -13,6 +13,8 @@ import AuthModal from '@/components/AuthModal';
 import ProfileModal from '@/components/ProfileModal';
 import CheckoutModal from '@/components/CheckoutModal';
 import Footer from '@/components/Footer';
+import { fetchCartFromDb, syncCartItemToDb } from '@/lib/actions/cart';
+import { fetchFavoritesFromDb, toggleFavoriteInDb } from '@/lib/actions/favorites';
 
 interface StorefrontViewProps {
   initialProducts: Product[];
@@ -39,76 +41,119 @@ export default function StorefrontView({
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
 
   useEffect(() => {
-    // Check local session
+    // 1. Restore local session
     const savedUser = sessionStorage.getItem('yakda_logged_in_user');
     if (savedUser) {
       try {
-        setCurrentUser(JSON.parse(savedUser));
+        const u = JSON.parse(savedUser);
+        setCurrentUser(u);
+        if (u.is_admin) setIsAdmin(true);
       } catch (e) {
         console.error(e);
       }
     }
     const adminSession = sessionStorage.getItem('yakda_admin_logged_in') === 'true';
-    setIsAdmin(adminSession);
+    if (adminSession) setIsAdmin(true);
   }, []);
 
-  // Filter Products
-  const filteredProducts =
-    activeCategory === 'all'
-      ? products
-      : products.filter((p) => p.category === activeCategory);
+  // Sync DB cart and favorites whenever user logs in
+  useEffect(() => {
+    if (currentUser?.id) {
+      fetchCartFromDb(currentUser.id).then((dbCart) => {
+        if (dbCart.length > 0) setCart(dbCart);
+      });
+      fetchFavoritesFromDb(currentUser.id).then((favIds) => {
+        if (favIds.length > 0) setWishlist(new Set(favIds));
+      });
+    }
+  }, [currentUser]);
 
-  // Cart Operations
+  // Filter products by category
+  const filteredProducts = activeCategory === 'all'
+    ? products
+    : products.filter((p) => (p.category || '').toLowerCase() === activeCategory.toLowerCase());
+
+  // Add to Cart
   const handleAddToCart = (product: Product) => {
     setCart((prev) => {
       const existing = prev.find((item) => item.id === product.id);
+      let newQty = 1;
+      let updatedCart: CartItem[];
+
       if (existing) {
-        return prev.map((item) =>
-          item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item
+        newQty = existing.quantity + 1;
+        updatedCart = prev.map((item) =>
+          item.id === product.id ? { ...item, quantity: newQty } : item
         );
+      } else {
+        updatedCart = [
+          ...prev,
+          {
+            id: product.id,
+            sku: product.sku,
+            title: product.title,
+            price: Number(product.price),
+            quantity: 1,
+            image: product.image,
+          },
+        ];
       }
-      return [
-        ...prev,
-        {
-          id: product.id,
-          sku: product.sku,
-          title: product.title,
-          price: product.price,
-          image: product.image,
-          quantity: 1,
-        },
-      ];
+
+      if (currentUser?.id) {
+        syncCartItemToDb(currentUser.id, product.id, newQty);
+      }
+
+      return updatedCart;
     });
+
     setIsCartOpen(true);
   };
 
+  // Update Cart Quantity
   const handleUpdateQuantity = (id: string, newQty: number) => {
-    if (newQty <= 0) {
-      handleRemoveFromCart(id);
-      return;
-    }
-    setCart((prev) =>
-      prev.map((item) => (item.id === id ? { ...item, quantity: newQty } : item))
-    );
-  };
-
-  const handleRemoveFromCart = (id: string) => {
-    setCart((prev) => prev.filter((item) => item.id !== id));
-  };
-
-  // Favorite / Wishlist Operations
-  const handleToggleFavorite = (product: Product) => {
-    setWishlist((prev) => {
-      const updated = new Set(prev);
-      if (updated.has(product.id)) {
-        updated.delete(product.id);
+    setCart((prev) => {
+      let updated: CartItem[];
+      if (newQty <= 0) {
+        updated = prev.filter((item) => item.id !== id);
       } else {
-        updated.add(product.id);
+        updated = prev.map((item) => (item.id === id ? { ...item, quantity: newQty } : item));
       }
+
+      if (currentUser?.id) {
+        syncCartItemToDb(currentUser.id, id, newQty);
+      }
+
       return updated;
     });
   };
 
+  // Remove From Cart
+  const handleRemoveFromCart = (id: string) => {
+    setCart((prev) => prev.filter((item) => item.id !== id));
+    if (currentUser?.id) {
+      syncCartItemToDb(currentUser.id, id, 0);
+    }
+  };
+
+  // Toggle Favorite
+  const handleToggleFavorite = async (product: Product) => {
+    const isFav = wishlist.has(product.id);
+    setWishlist((prev) => {
+      const next = new Set(prev);
+      if (isFav) {
+        next.delete(product.id);
+      } else {
+        next.add(product.id);
+      }
+      return next;
+    });
+
+    if (currentUser?.id) {
+      await toggleFavoriteInDb(currentUser.id, product.id);
+    }
+  };
+
+  // Initiate Checkout
   const handleInitiateCheckout = () => {
     if (!currentUser) {
       setIsCartOpen(false);
@@ -121,12 +166,15 @@ export default function StorefrontView({
 
   const handleLoginSuccess = (user: UserProfile) => {
     setCurrentUser(user);
+    if (user.is_admin) setIsAdmin(true);
     sessionStorage.setItem('yakda_logged_in_user', JSON.stringify(user));
   };
 
   const handleLogout = () => {
     setCurrentUser(null);
+    setIsAdmin(false);
     sessionStorage.removeItem('yakda_logged_in_user');
+    sessionStorage.removeItem('yakda_admin_logged_in');
     setIsProfileOpen(false);
   };
 
@@ -144,58 +192,51 @@ export default function StorefrontView({
         onOpenProfile={() => setIsProfileOpen(true)}
       />
 
-      {/* Main Body */}
-      <main className="flex-1 w-full pt-16 pb-20 md:pb-12 bg-surface">
+      {/* Main Storefront Body */}
+      <main className="flex-1 pt-16">
         {/* Hero Section */}
         <HeroSection />
 
-        {/* Categories Section */}
+        {/* Category Pills & Filter Bar */}
         <CategoryPills
           categories={categories}
           activeCategory={activeCategory}
-          onSelectCategory={setActiveCategory}
+          onSelectCategory={(slug) => setActiveCategory(slug)}
         />
 
-        {/* Favorites Catalog Section */}
-        <section id="favorites-section" className="py-10 px-margin-mobile">
-          <div className="max-w-[1280px] mx-auto">
-            <div className="mb-8 text-center">
-              <h3 className="text-2xl md:text-3xl font-bold text-on-surface uppercase tracking-wide">
-                This Week's Favorites
+        {/* Featured Products Grid */}
+        <section id="favorites-section" className="py-10 px-margin-mobile max-w-[1280px] mx-auto">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-6 gap-2">
+            <div>
+              <h3 className="text-2xl font-bold text-[#1A2A4E] uppercase tracking-wide">
+                This Week&apos;s Favorites
               </h3>
-              <p className="text-sm md:text-base text-on-surface-variant">
+              <p className="text-xs md:text-sm text-[#1A2A4E]/70 mt-1">
                 Top picks engineered for your modern workspace
               </p>
             </div>
-
-            {filteredProducts.length === 0 ? (
-              <div className="py-16 text-center text-outline flex flex-col items-center gap-2">
-                <span className="material-symbols-outlined text-[48px]">inventory_2</span>
-                <p className="text-sm font-semibold">No products found in this category.</p>
-              </div>
-            ) : (
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
-                {filteredProducts.map((product) => (
-                  <ProductCard
-                    key={product.id}
-                    product={product}
-                    isFavorite={wishlist.has(product.id)}
-                    onToggleFavorite={handleToggleFavorite}
-                    onAddToCart={handleAddToCart}
-                  />
-                ))}
-              </div>
-            )}
-
-            <div className="mt-8 text-center max-w-xs mx-auto">
-              <button
-                onClick={() => setActiveCategory('all')}
-                className="px-6 py-3 border border-primary text-primary font-semibold text-sm rounded hover:bg-primary/5 transition-colors w-full btn-press"
-              >
-                View All Favorites
-              </button>
-            </div>
+            <span className="text-xs font-semibold text-gray-500">
+              Showing {filteredProducts.length} items
+            </span>
           </div>
+
+          {filteredProducts.length === 0 ? (
+            <div className="py-16 text-center text-gray-400 text-sm bg-white rounded-2xl border border-gray-200">
+              No products found in category &quot;{activeCategory}&quot;.
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+              {filteredProducts.map((product) => (
+                <ProductCard
+                  key={product.id}
+                  product={product}
+                  isFavorite={wishlist.has(product.id)}
+                  onToggleFavorite={handleToggleFavorite}
+                  onAddToCart={handleAddToCart}
+                />
+              ))}
+            </div>
+          )}
         </section>
 
         {/* Client Testimonials Section */}

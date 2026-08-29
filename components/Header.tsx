@@ -68,7 +68,7 @@ export default function Header({
           <Link href="/" className="flex items-center gap-3">
             <img
               alt="Yakda Stationery"
-              className="h-10 md:h-12 w-auto object-contain transition-transform hover:scale-105"
+              className="h-12 md:h-14 w-auto min-w-[140px] max-w-[220px] object-contain transition-transform hover:scale-105"
               src="/images/logo.png"
             />
           </Link>

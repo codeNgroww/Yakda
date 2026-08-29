@@ -2,6 +2,8 @@
 
 import React, { useState } from 'react';
 import { CartItem, UserProfile } from '@/types/database';
+import { createOrderInDb } from '@/lib/actions/orders';
+import { clearCartInDb } from '@/lib/actions/cart';
 
 interface CheckoutModalProps {
   isOpen: boolean;
@@ -35,36 +37,58 @@ export default function CheckoutModal({
 
     setIsSubmitting(true);
 
-    const itemsSummary = cart
-      .map((i) => `• ${i.title} (x${i.quantity}) - AED ${(i.price * i.quantity).toFixed(2)}`)
-      .join('\n');
+    try {
+      // 1. Save Order in Supabase Database tables ('orders' & 'order_items')
+      const orderRes = await createOrderInDb({
+        userId: currentUser?.id,
+        customerEmail: currentUser?.email || 'guest@yakda.ae',
+        cartItems: cart,
+        totalAmount,
+        contactPhone: phone.trim(),
+        deliveryAddress: address.trim(),
+      });
 
-    const waText = encodeURIComponent(
-      `*New Order Placed - Yakda*\n` +
-      `---------------------------\n` +
-      `Customer: ${currentUser?.email || 'Guest'}\n` +
-      `Phone: ${phone.trim()}\n` +
-      `Address: ${address.trim()}\n\n` +
-      `*Items Summary:*\n${itemsSummary}\n\n` +
-      `*Total Amount:* AED ${totalAmount.toFixed(2)}\n` +
-      `Thank you for ordering with Yakda!`
-    );
+      if (currentUser?.id) {
+        await clearCartInDb(currentUser.id);
+      }
 
-    const emailSubject = encodeURIComponent(`New Order Placed - Yakda (AED ${totalAmount.toFixed(2)})`);
-    const emailBody = encodeURIComponent(
-      `Customer Email: ${currentUser?.email || 'Guest'}\n` +
-      `Phone Number: ${phone.trim()}\n` +
-      `Delivery Address: ${address.trim()}\n\n` +
-      `Order Items:\n${itemsSummary}\n\n` +
-      `Total Order Amount: AED ${totalAmount.toFixed(2)}`
-    );
+      // 2. Format notifications (WhatsApp & Email)
+      const itemsSummary = cart
+        .map((i) => `• ${i.title} (x${i.quantity}) - AED ${(i.price * i.quantity).toFixed(2)}`)
+        .join('\n');
 
-    window.open(`https://wa.me/97145534286?text=${waText}`, '_blank');
-    window.open(`mailto:inquiry@alyakda.com?subject=${emailSubject}&body=${emailBody}`, '_blank');
+      const waText = encodeURIComponent(
+        `*New Order Placed - Yakda*\n` +
+        `Order ID: ${orderRes.orderId || 'ORD-NEW'}\n` +
+        `---------------------------\n` +
+        `Customer: ${currentUser?.email || 'Guest'}\n` +
+        `Phone: ${phone.trim()}\n` +
+        `Address: ${address.trim()}\n\n` +
+        `*Items Summary:*\n${itemsSummary}\n\n` +
+        `*Total Amount:* AED ${totalAmount.toFixed(2)}\n` +
+        `Thank you for ordering with Yakda!`
+      );
 
-    setIsSubmitting(false);
-    onOrderSuccess();
-    onClose();
+      const emailSubject = encodeURIComponent(`New Order Placed - Yakda (${orderRes.orderId || 'ORD-NEW'})`);
+      const emailBody = encodeURIComponent(
+        `Order ID: ${orderRes.orderId || 'ORD-NEW'}\n` +
+        `Customer Email: ${currentUser?.email || 'Guest'}\n` +
+        `Phone Number: ${phone.trim()}\n` +
+        `Delivery Address: ${address.trim()}\n\n` +
+        `Order Items:\n${itemsSummary}\n\n` +
+        `Total Order Amount: AED ${totalAmount.toFixed(2)}`
+      );
+
+      window.open(`https://wa.me/97145534286?text=${waText}`, '_blank');
+      window.open(`mailto:inquiry@alyakda.com?subject=${emailSubject}&body=${emailBody}`, '_blank');
+
+      onOrderSuccess();
+      onClose();
+    } catch (err: any) {
+      alert(`Order error: ${err.message}`);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -90,7 +114,7 @@ export default function CheckoutModal({
         <form onSubmit={handleSubmit} className="p-6 flex flex-col gap-4">
           <div className="p-3 bg-gray-50 border border-gray-200 rounded-xl flex items-center justify-between text-xs">
             <span className="text-[#1A2A4E]/70">Customer:</span>
-            <span className="font-bold text-[#1A2A4E]">{currentUser?.email || 'Guest'}</span>
+            <span className="font-bold text-[#1A2A4E]">{currentUser?.email || 'Guest Customer'}</span>
           </div>
 
           <div className="flex flex-col gap-1">
@@ -129,7 +153,7 @@ export default function CheckoutModal({
             className="w-full py-3.5 bg-[#D93630] hover:bg-[#b82a25] text-white font-bold text-xs rounded-xl shadow-md transition-all btn-press flex items-center justify-center gap-2"
           >
             <span className="material-symbols-outlined text-[18px]">check_circle</span>
-            {isSubmitting ? 'Processing Order...' : 'Confirm Order & Send Notification'}
+            {isSubmitting ? 'Saving Order to Database...' : 'Confirm Order & Send Notification'}
           </button>
         </form>
       </div>
