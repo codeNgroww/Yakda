@@ -34,6 +34,9 @@ export default function QuickViewModal({
           <img
             src={product.image || '/images/hero-desk.png'}
             alt={product.title}
+            onError={(e) => {
+              e.currentTarget.src = '/images/hero-desk.png';
+            }}
             className="max-h-[260px] object-contain"
           />
         </div>

@@ -67,6 +67,9 @@ export default function ProductCard({
           <img
             src={product.image || '/images/hero-desk.png'}
             alt={product.title}
+            onError={(e) => {
+              e.currentTarget.src = '/images/hero-desk.png';
+            }}
             className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300"
             loading="lazy"
           />
