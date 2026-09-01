@@ -316,10 +316,12 @@ async function scrapeOfficeOneStationery() {
           // Clean Description
           const cleanDesc = stripHtml(p.body_html) || p.title;
 
-          // Map to stationery sub-categories
+          // Map to stationery sub-categories & Supabase Storage image URL
           const category = mapToStationeryCategory(p.product_type || '', p.title, tagsStr);
           const badge = extractBadge(variant, tagsStr);
           const inStock = variant.available === true;
+          const cleanFileName = `${sku.replace(/[^a-zA-Z0-9_-]/g, '_') || p.id}.jpg`;
+          const supabaseImageUrl = `${supabaseUrl}/storage/v1/object/public/yakda/products/${cleanFileName}`;
 
           validProductsToUpsert.push({
             sku,
@@ -328,7 +330,7 @@ async function scrapeOfficeOneStationery() {
             price: numericPrice,
             category,
             badge,
-            image: imageUrl,
+            image: supabaseImageUrl,
             in_stock: inStock,
           });
 
