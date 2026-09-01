@@ -37,6 +37,33 @@ export async function fetchCategories(): Promise<Category[]> {
   return data || [];
 }
 
+export async function fetchSubCategories(): Promise<any[]> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from('sub_categories')
+    .select('*')
+    .eq('is_active', true)
+    .order('created_at', { ascending: true });
+
+  if (error) {
+    console.warn('Subcategories table notice:', error.message);
+    return [
+      { id: 'sc-1', category_id: '2', name: 'Pens & Ballpoints', slug: 'writing' },
+      { id: 'sc-2', category_id: '2', name: 'Pencils & Lead', slug: 'writing' },
+      { id: 'sc-3', category_id: '2', name: 'Markers & Highlighters', slug: 'writing' },
+      { id: 'sc-4', category_id: '3', name: 'Copy & Printing Paper', slug: 'paper' },
+      { id: 'sc-5', category_id: '3', name: 'Notebooks & Pads', slug: 'paper' },
+      { id: 'sc-6', category_id: '3', name: 'Labels & Tapes', slug: 'labels' },
+      { id: 'sc-7', category_id: '3', name: 'Binders & Accessories', slug: 'binders' },
+      { id: 'sc-8', category_id: '4', name: 'Printers & Technology', slug: 'machines' },
+      { id: 'sc-9', category_id: '4', name: 'Shredders & Cutters', slug: 'machines' },
+      { id: 'sc-10', category_id: '5', name: 'Boards & Easels', slug: 'boards' },
+      { id: 'sc-11', category_id: '5', name: 'Storage & Cabinets', slug: 'storage' },
+    ];
+  }
+  return data || [];
+}
+
 export async function createProduct(productData: Partial<Product>) {
   const supabase = await createClient();
   const { data, error } = await supabase

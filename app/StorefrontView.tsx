@@ -13,6 +13,10 @@ import AuthModal from '@/components/AuthModal';
 import ProfileModal from '@/components/ProfileModal';
 import CheckoutModal from '@/components/CheckoutModal';
 import Footer from '@/components/Footer';
+import FilterSortBar, { SortOption } from '@/components/FilterSortBar';
+import PromoBanners from '@/components/PromoBanners';
+import SkeletonLoader from '@/components/SkeletonLoader';
+import QuickViewModal from '@/components/QuickViewModal';
 import { fetchCartFromDb, syncCartItemToDb } from '@/lib/actions/cart';
 import { fetchFavoritesFromDb, toggleFavoriteInDb } from '@/lib/actions/favorites';
 
@@ -28,20 +32,28 @@ export default function StorefrontView({
   const [products] = useState<Product[]>(initialProducts);
   const [categories] = useState<Category[]>(initialCategories);
   const [activeCategory, setActiveCategory] = useState('all');
+  const [activeSubCategory, setActiveSubCategory] = useState('all');
+  const [selectedBadge, setSelectedBadge] = useState('all');
+  const [inStockOnly, setInStockOnly] = useState(false);
+  const [sortBy, setSortBy] = useState<SortOption>('featured');
+  const [searchQuery, setSearchQuery] = useState('');
+  
   const [cart, setCart] = useState<CartItem[]>([]);
   const [wishlist, setWishlist] = useState<Set<string>>(new Set(['8494']));
   const [currentUser, setCurrentUser] = useState<UserProfile | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isLoadingProducts, setIsLoadingProducts] = useState(false);
 
-  // Modals visibility state
+  // Modals state
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isAuthOpen, setIsAuthOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
+  const [quickViewProduct, setQuickViewProduct] = useState<Product | null>(null);
 
   useEffect(() => {
-    // 1. Restore local session
+    // Restore local session
     const savedUser = sessionStorage.getItem('yakda_logged_in_user');
     if (savedUser) {
       try {
@@ -56,7 +68,7 @@ export default function StorefrontView({
     if (adminSession) setIsAdmin(true);
   }, []);
 
-  // Sync DB cart and favorites whenever user logs in
+  // Sync DB cart and favorites when user is logged in
   useEffect(() => {
     if (currentUser?.id) {
       fetchCartFromDb(currentUser.id).then((dbCart) => {
@@ -68,10 +80,61 @@ export default function StorefrontView({
     }
   }, [currentUser]);
 
-  // Filter products by category
-  const filteredProducts = activeCategory === 'all'
-    ? products
-    : products.filter((p) => (p.category || '').toLowerCase() === activeCategory.toLowerCase());
+  // Handle Category Selection with Skeleton Loading Simulation
+  const handleSelectCategory = (slug: string) => {
+    setIsLoadingProducts(true);
+    setActiveCategory(slug);
+    setActiveSubCategory('all');
+    setTimeout(() => {
+      setIsLoadingProducts(false);
+    }, 250);
+  };
+
+  // Filter Products
+  let filteredProducts = products.filter((p) => {
+    // 1. Category Filter
+    if (activeCategory !== 'all') {
+      const pCat = (p.category || '').toLowerCase();
+      if (pCat !== activeCategory.toLowerCase()) {
+        return false;
+      }
+    }
+    // 2. SubCategory Filter
+    if (activeSubCategory !== 'all') {
+      const pCat = (p.category || '').toLowerCase();
+      if (!pCat.includes(activeSubCategory.toLowerCase())) {
+        return false;
+      }
+    }
+    // 3. Badge Filter
+    if (selectedBadge !== 'all') {
+      if ((p.badge || '').toLowerCase() !== selectedBadge.toLowerCase()) {
+        return false;
+      }
+    }
+    // 4. In Stock Filter
+    if (inStockOnly && p.in_stock === false) {
+      return false;
+    }
+    // 5. Search Filter
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase();
+      const matchTitle = p.title.toLowerCase().includes(q);
+      const matchSku = p.sku.toLowerCase().includes(q);
+      const matchCat = (p.category || '').toLowerCase().includes(q);
+      if (!matchTitle && !matchSku && !matchCat) return false;
+    }
+    return true;
+  });
+
+  // Sort Products
+  filteredProducts = [...filteredProducts].sort((a, b) => {
+    if (sortBy === 'price-asc') return a.price - b.price;
+    if (sortBy === 'price-desc') return b.price - a.price;
+    if (sortBy === 'newest') return new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime();
+    if (sortBy === 'popular') return (b.badge ? 1 : 0) - (a.badge ? 1 : 0);
+    return 0; // Default featured
+  });
 
   // Add to Cart
   const handleAddToCart = (product: Product) => {
@@ -180,49 +243,85 @@ export default function StorefrontView({
 
   return (
     <div className="min-h-screen flex flex-col justify-between pb-16 md:pb-0">
-      {/* Header */}
+      {/* Off-White Header (#FAF9F6) */}
       <Header
         cartCount={cart.reduce((sum, item) => sum + item.quantity, 0)}
         wishlistCount={wishlist.size}
         currentUser={currentUser}
         isAdmin={isAdmin}
+        activeCategory={activeCategory}
+        onSelectCategory={handleSelectCategory}
         onOpenSearch={() => setIsSearchOpen(true)}
         onOpenCart={() => setIsCartOpen(true)}
         onOpenAuth={() => setIsAuthOpen(true)}
         onOpenProfile={() => setIsProfileOpen(true)}
+        searchQuery={searchQuery}
+        onSearchChange={setSearchQuery}
       />
 
       {/* Main Storefront Body */}
-      <main className="flex-1 pt-16">
+      <main className="flex-1 pt-16 md:pt-18">
         {/* Hero Section */}
         <HeroSection />
 
-        {/* Category Pills & Filter Bar */}
+        {/* Category & Sub-Category Pills Bar */}
         <CategoryPills
           categories={categories}
           activeCategory={activeCategory}
-          onSelectCategory={(slug) => setActiveCategory(slug)}
+          onSelectCategory={handleSelectCategory}
         />
 
-        {/* Featured Products Grid */}
-        <section id="favorites-section" className="py-10 px-margin-mobile max-w-[1280px] mx-auto">
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-6 gap-2">
+        {/* Promotional Campaign Banners (Noon Style) */}
+        <PromoBanners onSelectCategory={handleSelectCategory} />
+
+        {/* Featured Products & Catalog Grid */}
+        <section id="favorites-section" className="py-8 px-margin-mobile max-w-[1280px] mx-auto">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-4 gap-2">
             <div>
-              <h3 className="text-2xl font-bold text-[#1A2A4E] uppercase tracking-wide">
-                This Week&apos;s Favorites
+              <h3 className="text-2xl font-black text-[#1A2A4E] uppercase tracking-wide">
+                {activeCategory === 'all' ? "This Week's Favorites" : `Category: ${activeCategory}`}
               </h3>
               <p className="text-xs md:text-sm text-[#1A2A4E]/70 mt-1">
-                Top picks engineered for your modern workspace
+                Top engineered stationery essentials for your modern workspace
               </p>
             </div>
-            <span className="text-xs font-semibold text-gray-500">
-              Showing {filteredProducts.length} items
-            </span>
           </div>
 
-          {filteredProducts.length === 0 ? (
-            <div className="py-16 text-center text-gray-400 text-sm bg-white rounded-2xl border border-gray-200">
-              No products found in category &quot;{activeCategory}&quot;.
+          {/* Interactive Filter & Sort Bar */}
+          <FilterSortBar
+            activeSubCategory={activeSubCategory}
+            onSelectSubCategory={setActiveSubCategory}
+            selectedBadge={selectedBadge}
+            onSelectBadge={setSelectedBadge}
+            inStockOnly={inStockOnly}
+            onToggleInStock={() => setInStockOnly(!inStockOnly)}
+            sortBy={sortBy}
+            onSortChange={setSortBy}
+            totalProductsCount={filteredProducts.length}
+          />
+
+          {/* Product Grid / Skeleton Loaders / Empty State */}
+          {isLoadingProducts ? (
+            <SkeletonLoader />
+          ) : filteredProducts.length === 0 ? (
+            <div className="py-16 px-6 text-center bg-white rounded-2xl border border-gray-200 shadow-xs flex flex-col items-center gap-3">
+              <span className="material-symbols-outlined text-[48px] text-[#16A2D4]">search_off</span>
+              <h4 className="text-lg font-bold text-[#1A2A4E]">No matching products found</h4>
+              <p className="text-xs text-gray-500 max-w-md">
+                We couldn&apos;t find any products matching your active category or search criteria. Try clearing filters or explore our full stationery catalog.
+              </p>
+              <button
+                onClick={() => {
+                  setActiveCategory('all');
+                  setActiveSubCategory('all');
+                  setSelectedBadge('all');
+                  setInStockOnly(false);
+                  setSearchQuery('');
+                }}
+                className="mt-2 px-6 py-2.5 bg-[#16A2D4] hover:bg-[#1288b3] text-white font-bold text-xs rounded-xl shadow-xs transition-all btn-press"
+              >
+                Reset All Filters & Browse Categories
+              </button>
             </div>
           ) : (
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
@@ -233,6 +332,7 @@ export default function StorefrontView({
                   isFavorite={wishlist.has(product.id)}
                   onToggleFavorite={handleToggleFavorite}
                   onAddToCart={handleAddToCart}
+                  onQuickView={(p) => setQuickViewProduct(p)}
                 />
               ))}
             </div>
@@ -246,7 +346,13 @@ export default function StorefrontView({
       {/* Footer */}
       <Footer />
 
-      {/* Slide & Fade Modals */}
+      {/* Modals & Quick View */}
+      <QuickViewModal
+        product={quickViewProduct}
+        onClose={() => setQuickViewProduct(null)}
+        onAddToCart={handleAddToCart}
+      />
+
       <CartDrawer
         isOpen={isCartOpen}
         cart={cart}

@@ -133,6 +133,14 @@ export default function CartDrawer({
                 <span className="font-semibold text-[#1A2A4E]/80">Subtotal</span>
                 <span className="font-black text-lg text-[#D93630]">AED {subtotal.toFixed(2)}</span>
               </div>
+              
+              <div className="flex items-center justify-between text-[11px] font-semibold text-gray-600 bg-gray-50 p-2 rounded-xl border border-gray-200">
+                <span>Pay in 4 interest-free payments of <strong>AED {(subtotal / 4).toFixed(2)}</strong></span>
+                <div className="flex items-center gap-1">
+                  <span className="px-1.5 py-0.5 bg-[#00F5D4] text-[#1A2A4E] font-black text-[9px] rounded uppercase">tabby</span>
+                  <span className="px-1.5 py-0.5 bg-[#FFD6A5] text-[#1A2A4E] font-black text-[9px] rounded uppercase">tamara</span>
+                </div>
+              </div>
               <p className="text-[11px] text-gray-400">Taxes and shipping calculated at checkout.</p>
               <button
                 onClick={onInitiateCheckout}

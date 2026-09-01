@@ -6,6 +6,18 @@ export type Category = {
   created_at?: string;
 };
 
+export type SubCategory = {
+  id: string;
+  category_id: string;
+  name: string;
+  slug: string;
+  image?: string | null;
+  description?: string | null;
+  is_active?: boolean;
+  created_at?: string;
+  updated_at?: string;
+};
+
 export type Product = {
   id: string;
   sku: string;

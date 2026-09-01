@@ -141,6 +141,26 @@ export default function CheckoutModal({
             ></textarea>
           </div>
 
+          <div className="flex flex-col gap-1.5">
+            <label className="text-xs font-semibold text-[#1A2A4E]">Select Payment Method *</label>
+            <div className="grid grid-cols-3 gap-2">
+              <label className="p-2.5 rounded-xl border border-gray-200 bg-gray-50 flex flex-col items-center justify-center gap-1 cursor-pointer hover:border-[#16A2D4] text-center">
+                <input type="radio" name="payment" defaultChecked className="accent-[#16A2D4]" />
+                <span className="text-[10px] font-bold text-[#1A2A4E]">Cash/Card on Delivery</span>
+              </label>
+              <label className="p-2.5 rounded-xl border border-[#00F5D4]/40 bg-[#00F5D4]/10 flex flex-col items-center justify-center gap-1 cursor-pointer hover:border-[#00F5D4] text-center">
+                <input type="radio" name="payment" className="accent-[#1A2A4E]" />
+                <span className="text-[10px] font-black text-[#1A2A4E] uppercase">tabby</span>
+                <span className="text-[9px] font-medium text-gray-600">4 Payments</span>
+              </label>
+              <label className="p-2.5 rounded-xl border border-[#FFD6A5]/50 bg-[#FFD6A5]/20 flex flex-col items-center justify-center gap-1 cursor-pointer hover:border-[#FFD6A5] text-center">
+                <input type="radio" name="payment" className="accent-[#1A2A4E]" />
+                <span className="text-[10px] font-black text-[#1A2A4E] uppercase">tamara</span>
+                <span className="text-[9px] font-medium text-gray-600">4 Installments</span>
+              </label>
+            </div>
+          </div>
+
           <div className="p-4 bg-gray-50 rounded-xl flex items-center justify-between mt-2 border border-gray-200">
             <span className="text-xs font-bold text-[#1A2A4E]/80">Total Payable:</span>
             <span className="text-xl font-black text-[#D93630]">AED {totalAmount.toFixed(2)}</span>

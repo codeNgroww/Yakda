@@ -90,10 +90,14 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
         wishlistCount={0}
         currentUser={null}
         isAdmin={false}
+        activeCategory="all"
+        onSelectCategory={() => {}}
         onOpenSearch={() => {}}
         onOpenCart={() => {}}
         onOpenAuth={() => {}}
         onOpenProfile={() => {}}
+        searchQuery=""
+        onSearchChange={() => {}}
       />
 
       <main className="flex-1 w-full max-w-[1280px] mx-auto px-margin-mobile md:px-gutter pt-24 pb-16">

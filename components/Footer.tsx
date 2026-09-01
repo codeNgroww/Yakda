@@ -7,7 +7,7 @@ export default function Footer() {
     <footer className="bg-[#1A2A4E] text-white pt-12 pb-24 md:pb-12 border-t border-white/10">
       <div className="max-w-[1280px] mx-auto px-margin-mobile grid grid-cols-1 md:grid-cols-4 gap-8">
         <div className="flex flex-col gap-3">
-          <img src="/images/logo.png" alt="Yakda Stationery" className="h-10 w-auto object-contain self-start" />
+          <img src="/images/logo.png" alt="Yakda Stationery" className="h-14 w-auto object-contain self-start min-w-[160px]" />
           <p className="text-xs text-white/70 leading-relaxed">
             Leading supplier of office stationery, paper, pens, executive furniture, and high-performance printers in the
             UAE.
@@ -44,9 +44,14 @@ export default function Footer() {
         className="max-w-[1280px] mx-auto px-margin-mobile mt-8 pt-6 border-t border-white/10 flex flex-col sm:flex-row justify-between items-center text-xs text-white/60 gap-4"
       >
         <p>© 2026 Yakda UAE. All rights reserved.</p>
-        <p className="flex items-center gap-1">
-          <span className="material-symbols-outlined text-[#16A2D4] text-[16px]">local_shipping</span> 24/7 Next-Day Express Logistics
-        </p>
+
+        {/* Tabby & Tamara Trust Badges */}
+        <div className="flex items-center gap-2">
+          <span className="text-[11px] text-white/70">Payment Partners:</span>
+          <span className="px-2 py-0.5 bg-[#00F5D4] text-[#1A2A4E] font-black rounded text-[10px] uppercase">tabby</span>
+          <span className="px-2 py-0.5 bg-[#FFD6A5] text-[#1A2A4E] font-black rounded text-[10px] uppercase">tamara</span>
+          <span className="px-2 py-0.5 bg-white/10 text-white font-bold rounded text-[10px]">CASH ON DELIVERY</span>
+        </div>
       </div>
     </footer>
   );
