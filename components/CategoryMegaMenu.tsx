@@ -152,10 +152,10 @@ export default function CategoryMegaMenu({
                     onSelectCategory(sub.slug);
                     onClose();
                   }}
-                  className="flex items-center gap-2 p-2.5 rounded-xl border border-gray-100 hover:border-[#F4B21B] hover:bg-gray-50 transition-all text-left"
+                  className="flex items-center gap-2 p-2.5 rounded-xl border border-gray-100 bg-gray-50 hover:border-[#F4B21B] hover:bg-white transition-all text-left"
                 >
                   <span className="w-2 h-2 rounded-full bg-[#16A2D4]"></span>
-                  <span className="text-xs font-semibold text-[#1A2A4E] hover:text-[#16A2D4]">
+                  <span className="text-xs font-semibold text-[#1A2A4E]">
                     {sub.name}
                   </span>
                 </button>

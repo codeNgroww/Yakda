@@ -13,7 +13,7 @@ export async function signInUser(email: string, pass: string): Promise<{ success
       id: 'admin-1',
       email: 'admin@yakda.ae',
       fullname: 'Administrator',
-      account_type: 'corporate',
+      account_type: 'admin',
       is_admin: true
     };
     return { success: true, user: adminUser, isAdmin: true };
@@ -33,13 +33,15 @@ export async function signInUser(email: string, pass: string): Promise<{ success
       .eq('email', cleanEmail)
       .single();
 
+    const isAdminUser = profile?.account_type === 'admin' || profile?.is_admin === true || cleanEmail === 'admin@yakda.ae';
+
     const userObj: UserProfile = {
       id: authData.user.id,
       email: cleanEmail,
       fullname: profile?.fullname || authData.user.user_metadata?.fullname || null,
       companyname: profile?.companyname || authData.user.user_metadata?.companyname || null,
-      account_type: profile?.account_type || 'individual',
-      is_admin: profile?.is_admin || false,
+      account_type: isAdminUser ? 'admin' : (profile?.account_type || 'individual'),
+      is_admin: isAdminUser,
     };
 
     return { success: true, user: userObj, isAdmin: userObj.is_admin };
@@ -57,13 +59,15 @@ export async function signInUser(email: string, pass: string): Promise<{ success
       return { success: false, error: 'Incorrect password. Please try again.' };
     }
 
+    const isAdminUser = dbUser.account_type === 'admin' || dbUser.is_admin === true || cleanEmail === 'admin@yakda.ae';
+
     const userObj: UserProfile = {
       id: dbUser.id,
       email: dbUser.email,
       fullname: dbUser.fullname,
       companyname: dbUser.companyname,
-      account_type: dbUser.account_type || 'individual',
-      is_admin: dbUser.is_admin || false,
+      account_type: isAdminUser ? 'admin' : (dbUser.account_type || 'individual'),
+      is_admin: isAdminUser,
     };
 
     return { success: true, user: userObj, isAdmin: userObj.is_admin };

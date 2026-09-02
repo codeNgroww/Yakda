@@ -130,14 +130,36 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
               {product.description || 'Premium office stationery item supplied by Yakda Dubai with next day express delivery across the UAE.'}
             </p>
 
+            {/* Tabby & Tamara Installment Teaser */}
+            <div className="flex items-center gap-1.5 text-xs font-semibold text-gray-700 bg-gray-50 p-3 rounded-xl border border-gray-200 my-1">
+              <span>Pay 4 interest-free payments of <strong>AED {(Number(product.price) / 4).toFixed(2)}</strong> with</span>
+              <span className="px-1.5 py-0.5 bg-[#00F5D4] text-[#1A2A4E] font-black text-[9px] rounded uppercase">tabby</span>
+              <span>or</span>
+              <span className="px-1.5 py-0.5 bg-[#FFD6A5] text-[#1A2A4E] font-black text-[9px] rounded uppercase">tamara</span>
+            </div>
+
             <div className="flex items-center gap-4 mt-2">
-              <Link href="/" className="px-6 py-3 bg-[#004d40] hover:bg-[#003833] text-white font-bold text-xs rounded-xl shadow-md transition-all btn-press flex items-center gap-2">
+              <Link href="/" className="px-6 py-3.5 bg-[#D93630] hover:bg-[#b82a25] text-white font-bold text-xs rounded-xl shadow-md transition-all btn-press flex items-center gap-2">
                 <span className="material-symbols-outlined text-[18px]">shopping_cart</span> Order on Storefront
               </Link>
             </div>
           </div>
         </div>
       </main>
+
+      {/* Mobile Sticky Bottom Purchase Bar */}
+      <div className="fixed bottom-0 inset-x-0 z-40 md:hidden bg-white border-t border-gray-200 p-3 shadow-[0_-4px_16px_rgba(0,0,0,0.1)] flex items-center justify-between gap-3 pb-safe">
+        <div>
+          <span className="text-[10px] text-gray-400 font-bold block">Total Price</span>
+          <span className="text-lg font-black text-[#D93630]">AED {Number(product.price).toFixed(2)}</span>
+        </div>
+        <Link
+          href="/"
+          className="flex-1 py-3 bg-[#D93630] hover:bg-[#b82a25] text-white font-black text-xs rounded-xl shadow-md transition-all btn-press flex items-center justify-center gap-1.5"
+        >
+          <span className="material-symbols-outlined text-[18px]">shopping_cart</span> Add to Cart
+        </Link>
+      </div>
 
       <Footer />
     </div>

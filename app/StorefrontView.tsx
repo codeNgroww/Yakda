@@ -17,6 +17,9 @@ import FilterSortBar, { SortOption } from '@/components/FilterSortBar';
 import PromoBanners from '@/components/PromoBanners';
 import SkeletonLoader from '@/components/SkeletonLoader';
 import QuickViewModal from '@/components/QuickViewModal';
+import MobileCategoryDrawer from '@/components/MobileCategoryDrawer';
+import MobileFilterDrawer from '@/components/MobileFilterDrawer';
+import OrdersModal from '@/components/OrdersModal';
 import { fetchCartFromDb, syncCartItemToDb } from '@/lib/actions/cart';
 import { fetchFavoritesFromDb, toggleFavoriteInDb } from '@/lib/actions/favorites';
 
@@ -44,12 +47,15 @@ export default function StorefrontView({
   const [isAdmin, setIsAdmin] = useState(false);
   const [isLoadingProducts, setIsLoadingProducts] = useState(false);
 
-  // Modals state
+  // Modals & Mobile Drawers state
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isAuthOpen, setIsAuthOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
+  const [isOrdersOpen, setIsOrdersOpen] = useState(false);
+  const [isMobileCategoryOpen, setIsMobileCategoryOpen] = useState(false);
+  const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
   const [quickViewProduct, setQuickViewProduct] = useState<Product | null>(null);
 
   useEffect(() => {
@@ -257,12 +263,13 @@ export default function StorefrontView({
         onOpenProfile={() => setIsProfileOpen(true)}
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
+        onOpenOrders={() => setIsOrdersOpen(true)}
       />
 
       {/* Main Storefront Body */}
       <main className="flex-1 pt-16 md:pt-18">
         {/* Hero Section */}
-        <HeroSection />
+        <HeroSection onOpenSearch={() => setIsSearchOpen(true)} />
 
         {/* Category & Sub-Category Pills Bar */}
         <CategoryPills
@@ -287,18 +294,42 @@ export default function StorefrontView({
             </div>
           </div>
 
-          {/* Interactive Filter & Sort Bar */}
-          <FilterSortBar
-            activeSubCategory={activeSubCategory}
-            onSelectSubCategory={setActiveSubCategory}
-            selectedBadge={selectedBadge}
-            onSelectBadge={setSelectedBadge}
-            inStockOnly={inStockOnly}
-            onToggleInStock={() => setInStockOnly(!inStockOnly)}
-            sortBy={sortBy}
-            onSortChange={setSortBy}
-            totalProductsCount={filteredProducts.length}
-          />
+          {/* Mobile Filter & Category Control Strip (< md) */}
+          <div className="md:hidden flex items-center gap-2 mb-4">
+            <button
+              onClick={() => setIsMobileFilterOpen(true)}
+              className="flex-1 py-2.5 px-3 bg-white border border-gray-200 rounded-xl shadow-2xs font-bold text-xs text-[#1A2A4E] flex items-center justify-center gap-2 btn-press"
+            >
+              <span className="material-symbols-outlined text-[18px] text-[#16A2D4]">tune</span>
+              <span>Filter &amp; Sort</span>
+              {(selectedBadge !== 'all' || inStockOnly || sortBy !== 'featured') && (
+                <span className="w-2 h-2 rounded-full bg-[#D93630]"></span>
+              )}
+            </button>
+
+            <button
+              onClick={() => setIsMobileCategoryOpen(true)}
+              className="flex-1 py-2.5 px-3 bg-white border border-gray-200 rounded-xl shadow-2xs font-bold text-xs text-[#1A2A4E] flex items-center justify-center gap-2 btn-press"
+            >
+              <span className="material-symbols-outlined text-[18px] text-[#16A2D4]">grid_view</span>
+              <span>Categories</span>
+            </button>
+          </div>
+
+          {/* Interactive Filter & Sort Bar (Desktop & Tablet >= md) */}
+          <div className="hidden md:block">
+            <FilterSortBar
+              activeSubCategory={activeSubCategory}
+              onSelectSubCategory={setActiveSubCategory}
+              selectedBadge={selectedBadge}
+              onSelectBadge={setSelectedBadge}
+              inStockOnly={inStockOnly}
+              onToggleInStock={() => setInStockOnly(!inStockOnly)}
+              sortBy={sortBy}
+              onSortChange={setSortBy}
+              totalProductsCount={filteredProducts.length}
+            />
+          </div>
 
           {/* Product Grid / Skeleton Loaders / Empty State */}
           {isLoadingProducts ? (
@@ -391,6 +422,34 @@ export default function StorefrontView({
           setCart([]);
           alert('Order placed successfully! Notifications sent to WhatsApp and Email.');
         }}
+      />
+
+      <MobileCategoryDrawer
+        isOpen={isMobileCategoryOpen}
+        onClose={() => setIsMobileCategoryOpen(false)}
+        activeCategory={activeCategory}
+        onSelectCategory={handleSelectCategory}
+      />
+
+      <MobileFilterDrawer
+        isOpen={isMobileFilterOpen}
+        onClose={() => setIsMobileFilterOpen(false)}
+        activeCategory={activeCategory}
+        onSelectCategory={handleSelectCategory}
+        selectedBadge={selectedBadge}
+        onSelectBadge={setSelectedBadge}
+        inStockOnly={inStockOnly}
+        onToggleInStock={() => setInStockOnly(!inStockOnly)}
+        sortBy={sortBy}
+        onSortChange={setSortBy}
+        totalProductsCount={filteredProducts.length}
+      />
+
+      <OrdersModal
+        isOpen={isOrdersOpen}
+        currentUser={currentUser}
+        onClose={() => setIsOrdersOpen(false)}
+        onOpenAuth={() => setIsAuthOpen(true)}
       />
     </div>
   );

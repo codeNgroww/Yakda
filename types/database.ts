@@ -38,7 +38,7 @@ export type UserProfile = {
   password?: string;
   fullname?: string | null;
   companyname?: string | null;
-  account_type?: 'individual' | 'corporate';
+  account_type?: 'individual' | 'corporate' | 'admin';
   is_admin?: boolean;
   created_at?: string;
 };
@@ -58,7 +58,7 @@ export type Order = {
   customer_email: string;
   items: CartItem[];
   total_amount: number;
-  status: 'pending' | 'completed' | 'cancelled';
+  status: string;
   contact_phone?: string;
   delivery_address?: string;
   created_at?: string;

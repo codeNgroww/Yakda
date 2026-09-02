@@ -18,6 +18,50 @@ export async function fetchProducts(): Promise<Product[]> {
   return data || [];
 }
 
+export async function fetchTotalProductCount(): Promise<number> {
+  const supabase = await createClient();
+  const { count, error } = await supabase
+    .from('products')
+    .select('*', { count: 'exact', head: true });
+
+  if (error) {
+    console.error('Error fetching total product count:', error);
+    return 0;
+  }
+  return count || 0;
+}
+
+export async function fetchPaginatedProducts(
+  page: number = 1,
+  pageSize: number = 20,
+  searchQuery: string = ''
+): Promise<{ products: Product[]; totalCount: number }> {
+  const supabase = await createClient();
+  const from = (page - 1) * pageSize;
+  const to = page * pageSize - 1;
+
+  let query = supabase.from('products').select('*', { count: 'exact' });
+
+  if (searchQuery.trim()) {
+    const q = `%${searchQuery.trim().toLowerCase()}%`;
+    query = query.or(`title.ilike.${q},sku.ilike.${q},category.ilike.${q}`);
+  }
+
+  const { data, count, error } = await query
+    .order('created_at', { ascending: false })
+    .range(from, to);
+
+  if (error) {
+    console.error('Error fetching paginated products:', error);
+    return { products: [], totalCount: 0 };
+  }
+
+  return {
+    products: data || [],
+    totalCount: count || 0,
+  };
+}
+
 export async function fetchCategories(): Promise<Category[]> {
   const supabase = await createClient();
   const { data, error } = await supabase

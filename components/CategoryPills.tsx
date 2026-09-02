@@ -13,7 +13,7 @@ export default function CategoryPills({
   activeCategory,
   onSelectCategory,
 }: CategoryPillsProps) {
-  // Comprehensive Stationery Categories & Sub-Categories (Furniture removed)
+  // Comprehensive Stationery Categories (Furniture removed, Eco-Friendly excluded from main categories)
   const defaultCategoryList = [
     { slug: 'all', name: 'All Items', icon: 'grid_view' },
     { slug: 'writing', name: 'Writing Supplies', icon: 'edit_note' },
@@ -31,11 +31,11 @@ export default function CategoryPills({
   ];
 
   return (
-    <section id="categories-section" className="py-8 bg-white border-b border-gray-200">
+    <section id="categories-section" className="py-4 sm:py-6 bg-white border-b border-gray-200">
       <div className="max-w-[1280px] mx-auto">
-        <div className="px-margin-mobile mb-5 flex justify-between items-center">
+        <div className="px-margin-mobile mb-3 flex justify-between items-center">
           <div>
-            <h3 className="text-xl md:text-2xl font-bold text-[#1A2A4E]">Browse Categories & Sub-Categories</h3>
+            <h3 className="text-xl md:text-2xl font-bold text-[#1A2A4E]">Browse Categories &amp; Sub-Categories</h3>
             <p className="text-xs md:text-sm text-[#1A2A4E]/70">Explore complete stationery and office supplies</p>
           </div>
           <button

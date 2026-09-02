@@ -16,6 +16,7 @@ interface HeaderProps {
   onOpenCart: () => void;
   onOpenAuth: () => void;
   onOpenProfile: () => void;
+  onOpenOrders?: () => void;
   searchQuery: string;
   onSearchChange: (query: string) => void;
 }
@@ -31,22 +32,20 @@ export default function Header({
   onOpenCart,
   onOpenAuth,
   onOpenProfile,
+  onOpenOrders,
   searchQuery,
   onSearchChange,
 }: HeaderProps) {
-  const [activeMobileTab, setActiveMobileTab] = useState<'home' | 'categories' | 'favorites' | 'account' | 'cart'>('home');
+  const [activeMobileTab, setActiveMobileTab] = useState<'home' | 'orders' | 'favorites' | 'account' | 'cart'>('home');
   const [isMegaMenuOpen, setIsMegaMenuOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
-      const catSection = document.getElementById('categories-section');
       const favSection = document.getElementById('favorites-section');
       const scrollY = window.scrollY;
 
       if (favSection && scrollY >= favSection.offsetTop - 200) {
         setActiveMobileTab('favorites');
-      } else if (catSection && scrollY >= catSection.offsetTop - 200) {
-        setActiveMobileTab('categories');
       } else {
         setActiveMobileTab('home');
       }
@@ -56,7 +55,7 @@ export default function Header({
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const scrollToSection = (id: string, tabName: 'home' | 'categories' | 'favorites') => {
+  const scrollToSection = (id: string, tabName: 'home' | 'favorites') => {
     setActiveMobileTab(tabName);
     if (id === 'top') {
       window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -109,7 +108,7 @@ export default function Header({
             </button>
           </div>
 
-          {/* Prominent Noon-Style Desktop Search Bar */}
+          {/* Desktop Search Bar */}
           <div className="hidden md:flex flex-1 max-w-xl relative">
             <div className="w-full bg-white border border-gray-300 rounded-xl px-3.5 py-2 flex items-center gap-2 focus-within:border-[#16A2D4] focus-within:ring-2 focus-within:ring-[#16A2D4]/20 shadow-2xs transition-all">
               <span className="material-symbols-outlined text-gray-400 text-[20px]">search</span>
@@ -131,15 +130,6 @@ export default function Header({
 
           {/* Desktop & Mobile Actions */}
           <div className="flex items-center gap-2 md:gap-4">
-            
-            {/* Mobile Search Button */}
-            <button
-              onClick={onOpenSearch}
-              className="md:hidden w-10 h-10 flex items-center justify-center text-[#1A2A4E] hover:text-[#16A2D4] transition-colors rounded-full hover:bg-gray-200/50 btn-press"
-              title="Search"
-            >
-              <span className="material-symbols-outlined text-[22px]">search</span>
-            </button>
 
             {/* Desktop Navigation Links */}
             <nav className="hidden lg:flex items-center gap-6 text-xs font-bold text-[#1A2A4E]">
@@ -227,20 +217,23 @@ export default function Header({
             <span className="text-[10px] font-semibold tracking-tight">Home</span>
           </button>
 
-          {/* Tab 2: Categories */}
+          {/* Tab 2: Orders */}
           <button
-            onClick={() => scrollToSection('categories-section', 'categories')}
+            onClick={() => {
+              setActiveMobileTab('orders');
+              if (onOpenOrders) onOpenOrders();
+            }}
             className={`flex flex-col items-center justify-center py-1 transition-all active:scale-90 ${
-              activeMobileTab === 'categories' ? 'text-[#16A2D4]' : 'text-white/70 hover:text-white'
+              activeMobileTab === 'orders' ? 'text-[#16A2D4]' : 'text-white/70 hover:text-white'
             }`}
           >
             <span
               className="material-symbols-outlined text-[24px] mb-0.5"
-              style={{ fontVariationSettings: activeMobileTab === 'categories' ? "'FILL' 1" : "'FILL' 0" }}
+              style={{ fontVariationSettings: activeMobileTab === 'orders' ? "'FILL' 1" : "'FILL' 0" }}
             >
-              grid_view
+              receipt_long
             </span>
-            <span className="text-[10px] font-semibold tracking-tight">Categories</span>
+            <span className="text-[10px] font-semibold tracking-tight">Orders</span>
           </button>
 
           {/* Tab 3: Favorites */}

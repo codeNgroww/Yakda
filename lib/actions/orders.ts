@@ -53,16 +53,53 @@ export async function createOrderInDb(params: {
   }
 }
 
-export async function fetchUserOrders(userId: string): Promise<Order[]> {
+export async function fetchUserOrders(userId: string, userEmail?: string): Promise<Order[]> {
   const supabase = await createClient();
-  if (!userId) return [];
+  if (!userId && !userEmail) return [];
 
-  const { data, error } = await supabase
-    .from('orders')
-    .select('*')
-    .eq('user_id', userId)
-    .order('created_at', { ascending: false });
+  let query = supabase.from('orders').select('*');
+
+  if (userId && userEmail) {
+    query = query.or(`user_id.eq.${userId},customer_email.eq.${userEmail}`);
+  } else if (userId) {
+    query = query.eq('user_id', userId);
+  } else if (userEmail) {
+    query = query.eq('customer_email', userEmail);
+  }
+
+  const { data, error } = await query.order('created_at', { ascending: false });
 
   if (error || !data) return [];
   return data;
+}
+
+export async function fetchAllOrdersForAdmin(): Promise<Order[]> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from('orders')
+    .select('*')
+    .order('created_at', { ascending: false });
+
+  if (error || !data) {
+    console.error('Error fetching all orders for admin:', error);
+    return [];
+  }
+  return data;
+}
+
+export async function updateOrderStatusInDb(
+  orderId: string,
+  newStatus: string
+): Promise<{ success: boolean; error?: string }> {
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from('orders')
+    .update({ status: newStatus })
+    .eq('id', orderId);
+
+  if (error) {
+    console.error('Error updating order status:', error.message);
+    return { success: false, error: error.message };
+  }
+  return { success: true };
 }
