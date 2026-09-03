@@ -4,9 +4,10 @@ import React from 'react';
 
 interface HeroSectionProps {
   onOpenSearch?: () => void;
+  onSelectEcoCategory?: () => void;
 }
 
-export default function HeroSection({ onOpenSearch }: HeroSectionProps) {
+export default function HeroSection({ onOpenSearch, onSelectEcoCategory }: HeroSectionProps) {
   const scrollToCatalog = () => {
     const section = document.getElementById('favorites-section');
     if (section) {
@@ -18,7 +19,7 @@ export default function HeroSection({ onOpenSearch }: HeroSectionProps) {
     <section className="relative w-full overflow-hidden bg-surface border-b border-outline-variant">
       <div className="max-w-[1280px] mx-auto">
         
-        {/* Compact Hero Main Banner Card (Mobile: h-[280px] / h-[320px], Desktop: h-[480px]) */}
+        {/* Compact Hero Main Banner Card (Mobile: h-[280px] / h-[320px], Desktop: h-[460px]) */}
         <div
           className="relative w-full h-[280px] sm:h-[340px] md:h-[460px] flex items-center bg-cover bg-center"
           style={{ backgroundImage: "url('/images/hero-desk.png')" }}
@@ -48,13 +49,28 @@ export default function HeroSection({ onOpenSearch }: HeroSectionProps) {
             <p className="text-[#1A2A4E]/80 text-xs sm:text-sm md:text-base font-medium leading-normal sm:leading-relaxed line-clamp-2 sm:line-clamp-none">
               Stock up on premium office essentials, paper reams, and ergonomic supplies with complimentary delivery &amp; 4 interest-free installments.
             </p>
-            {/* CTA Button in Deep Red */}
-            <button
-              onClick={scrollToCatalog}
-              className="mt-1 sm:mt-2 px-4 sm:px-6 py-2.5 sm:py-3.5 bg-[#D93630] hover:bg-[#b82a25] text-white font-bold text-xs sm:text-sm rounded-xl shadow-md transition-all btn-press flex items-center gap-2"
-            >
-              View Catalog <span className="material-symbols-outlined text-[16px] sm:text-[18px]">arrow_forward</span>
-            </button>
+            {/* CTA Buttons */}
+            <div className="flex flex-wrap items-center gap-2.5 mt-1 sm:mt-2">
+              <button
+                onClick={scrollToCatalog}
+                className="px-4 sm:px-6 py-2.5 sm:py-3 bg-[#D93630] hover:bg-[#b82a25] text-white font-bold text-xs sm:text-sm rounded-xl shadow-md transition-all btn-press flex items-center gap-2"
+              >
+                View Catalog <span className="material-symbols-outlined text-[16px] sm:text-[18px]">arrow_forward</span>
+              </button>
+
+              <button
+                onClick={() => {
+                  if (onSelectEcoCategory) {
+                    onSelectEcoCategory();
+                  } else {
+                    scrollToCatalog();
+                  }
+                }}
+                className="px-4 sm:px-5 py-2.5 sm:py-3 bg-[#527A5A] hover:bg-[#3D5C43] text-white font-bold text-xs sm:text-sm rounded-xl shadow-md transition-all btn-press flex items-center gap-2"
+              >
+                <span>🌿 Shop Eco-Friendly Products</span>
+              </button>
+            </div>
           </div>
         </div>
 

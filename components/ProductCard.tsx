@@ -10,6 +10,7 @@ interface ProductCardProps {
   onToggleFavorite: (product: Product) => void;
   onAddToCart: (product: Product) => void;
   onQuickView?: (product: Product) => void;
+  isEcoTheme?: boolean;
 }
 
 export default function ProductCard({
@@ -18,16 +19,25 @@ export default function ProductCard({
   onToggleFavorite,
   onAddToCart,
   onQuickView,
+  isEcoTheme,
 }: ProductCardProps) {
+  const isEcoItem = isEcoTheme || product.category === 'eco' || (product.badge && product.badge.toLowerCase().includes('eco'));
+
   return (
-    <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden card-hover-effect flex flex-col justify-between group shadow-xs hover:border-[#16A2D4]/40 transition-all">
+    <div className={`bg-white border rounded-2xl overflow-hidden card-hover-effect flex flex-col justify-between group shadow-xs transition-all ${
+      isEcoItem ? 'border-[#DCE5D8] hover:border-[#527A5A]' : 'border-gray-200 hover:border-[#16A2D4]/40'
+    }`}>
       <div className="relative w-full aspect-square bg-white flex items-center justify-center p-4 overflow-hidden">
-        {/* Promotional Badge */}
-        {product.badge && (
+        {/* Eco Badge or Promotional Badge */}
+        {isEcoItem ? (
+          <span className="absolute top-3 left-3 z-10 px-2.5 py-0.5 bg-[#527A5A] text-white text-[9px] font-black uppercase tracking-wider rounded-full shadow-xs flex items-center gap-1">
+            🌿 ECO-FRIENDLY
+          </span>
+        ) : product.badge ? (
           <span className="absolute top-3 left-3 z-10 px-2.5 py-1 bg-[#D93630] text-white text-[10px] font-black uppercase tracking-wider rounded shadow-xs">
             {product.badge}
           </span>
-        )}
+        ) : null}
 
         {/* Action Triggers: Favorite Heart & Quick View */}
         <div className="absolute top-3 right-3 z-10 flex flex-col gap-1.5">

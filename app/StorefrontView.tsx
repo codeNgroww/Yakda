@@ -17,6 +17,9 @@ import FilterSortBar, { SortOption } from '@/components/FilterSortBar';
 import PromoBanners from '@/components/PromoBanners';
 import SkeletonLoader from '@/components/SkeletonLoader';
 import QuickViewModal from '@/components/QuickViewModal';
+import EcoHeroSection from '@/components/EcoHeroSection';
+import EcoAttributesBar from '@/components/EcoAttributesBar';
+import EcoWhySection from '@/components/EcoWhySection';
 import MobileCategoryDrawer from '@/components/MobileCategoryDrawer';
 import MobileFilterDrawer from '@/components/MobileFilterDrawer';
 import OrdersModal from '@/components/OrdersModal';
@@ -36,6 +39,7 @@ export default function StorefrontView({
   const [categories] = useState<Category[]>(initialCategories);
   const [activeCategory, setActiveCategory] = useState('all');
   const [activeSubCategory, setActiveSubCategory] = useState('all');
+  const [selectedEcoAttribute, setSelectedEcoAttribute] = useState('all');
   const [selectedBadge, setSelectedBadge] = useState('all');
   const [inStockOnly, setInStockOnly] = useState(false);
   const [sortBy, setSortBy] = useState<SortOption>('featured');
@@ -101,7 +105,31 @@ export default function StorefrontView({
     // 1. Category Filter
     if (activeCategory !== 'all') {
       const pCat = (p.category || '').toLowerCase();
-      if (pCat !== activeCategory.toLowerCase()) {
+      const combinedText = `${p.title} ${p.description || ''} ${p.badge || ''} ${pCat}`.toLowerCase();
+
+      if (activeCategory === 'eco') {
+        const isEcoMatch =
+          pCat === 'eco' ||
+          combinedText.includes('recycled') ||
+          combinedText.includes('eco') ||
+          combinedText.includes('bamboo') ||
+          combinedText.includes('biodegradable') ||
+          combinedText.includes('sustainable') ||
+          combinedText.includes('fsc') ||
+          combinedText.includes('plastic-free') ||
+          combinedText.includes('kraft');
+
+        if (!isEcoMatch) return false;
+
+        // Eco Attribute Filter
+        if (selectedEcoAttribute !== 'all') {
+          if (selectedEcoAttribute === 'recycled' && !combinedText.includes('recycled') && !combinedText.includes('recycle')) return false;
+          if (selectedEcoAttribute === 'sustainable' && !combinedText.includes('sustainable') && !combinedText.includes('bamboo')) return false;
+          if (selectedEcoAttribute === 'fsc' && !combinedText.includes('fsc') && !combinedText.includes('forest')) return false;
+          if (selectedEcoAttribute === 'plastic-free' && !combinedText.includes('plastic') && !combinedText.includes('kraft')) return false;
+          if (selectedEcoAttribute === 'biodegradable' && !combinedText.includes('biodegradable') && !combinedText.includes('natural')) return false;
+        }
+      } else if (pCat !== activeCategory.toLowerCase()) {
         return false;
       }
     }
@@ -267,9 +295,28 @@ export default function StorefrontView({
       />
 
       {/* Main Storefront Body */}
-      <main className="flex-1 pt-16 md:pt-18">
+      <main className={`flex-1 pt-16 md:pt-18 transition-colors ${activeCategory === 'eco' ? 'bg-[#F7F6EF]' : ''}`}>
         {/* Hero Section */}
-        <HeroSection onOpenSearch={() => setIsSearchOpen(true)} />
+        {activeCategory === 'eco' ? (
+          <>
+            <EcoHeroSection
+              onScrollToCatalog={() => {
+                const el = document.getElementById('favorites-section');
+                if (el) el.scrollIntoView({ behavior: 'smooth' });
+              }}
+              onShopAllProducts={() => handleSelectCategory('all')}
+            />
+            <EcoAttributesBar
+              selectedAttribute={selectedEcoAttribute}
+              onSelectAttribute={setSelectedEcoAttribute}
+            />
+          </>
+        ) : (
+          <HeroSection
+            onOpenSearch={() => setIsSearchOpen(true)}
+            onSelectEcoCategory={() => handleSelectCategory('eco')}
+          />
+        )}
 
         {/* Category & Sub-Category Pills Bar */}
         <CategoryPills
@@ -278,18 +325,26 @@ export default function StorefrontView({
           onSelectCategory={handleSelectCategory}
         />
 
-        {/* Promotional Campaign Banners (Noon Style) */}
-        <PromoBanners onSelectCategory={handleSelectCategory} />
+        {/* Promotional Campaign Banners (Noon Style) - Hidden in Eco Mode to keep eco theme calm */}
+        {activeCategory !== 'eco' && (
+          <PromoBanners onSelectCategory={handleSelectCategory} />
+        )}
 
         {/* Featured Products & Catalog Grid */}
         <section id="favorites-section" className="py-8 px-margin-mobile max-w-[1280px] mx-auto">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-4 gap-2">
             <div>
-              <h3 className="text-2xl font-black text-[#1A2A4E] uppercase tracking-wide">
-                {activeCategory === 'all' ? "This Week's Favorites" : `Category: ${activeCategory}`}
+              <h3 className={`text-2xl font-black uppercase tracking-wide ${activeCategory === 'eco' ? 'text-[#2C3E30]' : 'text-[#1A2A4E]'}`}>
+                {activeCategory === 'all'
+                  ? "This Week's Favorites"
+                  : activeCategory === 'eco'
+                  ? '🌿 Eco-Friendly Curated Catalog'
+                  : `Category: ${activeCategory}`}
               </h3>
-              <p className="text-xs md:text-sm text-[#1A2A4E]/70 mt-1">
-                Top engineered stationery essentials for your modern workspace
+              <p className={`text-xs md:text-sm mt-1 ${activeCategory === 'eco' ? 'text-[#2C3E30]/75' : 'text-[#1A2A4E]/70'}`}>
+                {activeCategory === 'eco'
+                  ? 'Sustainable, FSC certified, and 100% recycled office supplies'
+                  : 'Top engineered stationery essentials for your modern workspace'}
               </p>
             </div>
           </div>
@@ -336,22 +391,23 @@ export default function StorefrontView({
             <SkeletonLoader />
           ) : filteredProducts.length === 0 ? (
             <div className="py-16 px-6 text-center bg-white rounded-2xl border border-gray-200 shadow-xs flex flex-col items-center gap-3">
-              <span className="material-symbols-outlined text-[48px] text-[#16A2D4]">search_off</span>
-              <h4 className="text-lg font-bold text-[#1A2A4E]">No matching products found</h4>
+              <span className="material-symbols-outlined text-[48px] text-[#527A5A]">search_off</span>
+              <h4 className="text-lg font-bold text-[#1A2A4E]">No matching eco products found</h4>
               <p className="text-xs text-gray-500 max-w-md">
-                We couldn&apos;t find any products matching your active category or search criteria. Try clearing filters or explore our full stationery catalog.
+                We couldn&apos;t find any eco products matching your active filter criteria. Try resetting attribute filters.
               </p>
               <button
                 onClick={() => {
                   setActiveCategory('all');
                   setActiveSubCategory('all');
+                  setSelectedEcoAttribute('all');
                   setSelectedBadge('all');
                   setInStockOnly(false);
                   setSearchQuery('');
                 }}
-                className="mt-2 px-6 py-2.5 bg-[#16A2D4] hover:bg-[#1288b3] text-white font-bold text-xs rounded-xl shadow-xs transition-all btn-press"
+                className="mt-2 px-6 py-2.5 bg-[#527A5A] hover:bg-[#3D5C43] text-white font-bold text-xs rounded-xl shadow-xs transition-all btn-press"
               >
-                Reset All Filters & Browse Categories
+                Reset All Filters &amp; Browse Full Catalog
               </button>
             </div>
           ) : (
@@ -364,11 +420,15 @@ export default function StorefrontView({
                   onToggleFavorite={handleToggleFavorite}
                   onAddToCart={handleAddToCart}
                   onQuickView={(p) => setQuickViewProduct(p)}
+                  isEcoTheme={activeCategory === 'eco'}
                 />
               ))}
             </div>
           )}
         </section>
+
+        {/* Eco Why Section in Eco Mode */}
+        {activeCategory === 'eco' && <EcoWhySection />}
 
         {/* Client Testimonials Section */}
         <Testimonials />

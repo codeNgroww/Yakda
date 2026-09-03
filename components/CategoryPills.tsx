@@ -13,7 +13,7 @@ export default function CategoryPills({
   activeCategory,
   onSelectCategory,
 }: CategoryPillsProps) {
-  // Comprehensive Stationery Categories (Furniture removed, Eco-Friendly excluded from main categories)
+  // Comprehensive Stationery Categories (Eco-Friendly accessed via Dedicated Hero Button)
   const defaultCategoryList = [
     { slug: 'all', name: 'All Items', icon: 'grid_view' },
     { slug: 'writing', name: 'Writing Supplies', icon: 'edit_note' },
