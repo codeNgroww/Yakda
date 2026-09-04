@@ -29,7 +29,7 @@ export default function Testimonials() {
             <p className="text-sm text-[#1A2A4E]/80 italic mb-4 leading-relaxed">
               &quot;We had to be ready with our new office by Sunday. Thursday we ordered Yakda Supplies for 40 workplaces - we received everything by Saturday lunchtime! Great Team.&quot;
             </p>
-            <span className="text-xs font-bold text-[#1A2A4E]">- Mohammed L., Dubai</span>
+            <span className="text-xs font-bold text-[#1A2A4E]">- Avolta</span>
           </div>
 
           {/* Testimonial 2 */}
@@ -45,7 +45,7 @@ export default function Testimonials() {
             <p className="text-sm text-[#1A2A4E]/80 italic mb-4 leading-relaxed">
               &quot;Very clean and well organized, with everything you need from ink pens, chairs, or desks. A great staff will take good care of you.&quot;
             </p>
-            <span className="text-xs font-bold text-[#1A2A4E]">- Greg C., Dubai</span>
+            <span className="text-xs font-bold text-[#1A2A4E]">- Zabeel Palace</span>
           </div>
 
           {/* Testimonial 3 */}
@@ -61,7 +61,7 @@ export default function Testimonials() {
             <p className="text-sm text-[#1A2A4E]/80 italic mb-4 leading-relaxed">
               &quot;I just wanted to give feedback on the delivery person. He was very polite, respectful and professional over the phone and until delivery.&quot;
             </p>
-            <span className="text-xs font-bold text-[#1A2A4E]">- Fatima K., Abu Dhabi</span>
+            <span className="text-xs font-bold text-[#1A2A4E]">- Berkeley</span>
           </div>
 
         </div>

@@ -26,15 +26,17 @@ import { useCart } from '@/context/CartContext';
 interface StorefrontViewProps {
   initialProducts: Product[];
   initialCategories: Category[];
+  initialActiveCategory?: string;
 }
 
 export default function StorefrontView({
   initialProducts,
   initialCategories,
+  initialActiveCategory = 'all',
 }: StorefrontViewProps) {
   const [products] = useState<Product[]>(initialProducts);
   const [categories] = useState<Category[]>(initialCategories);
-  const [activeCategory, setActiveCategory] = useState('all');
+  const [activeCategory, setActiveCategory] = useState(initialActiveCategory);
   const [activeSubCategory, setActiveSubCategory] = useState('all');
   const [selectedBadge, setSelectedBadge] = useState('all');
   const [inStockOnly, setInStockOnly] = useState(false);
@@ -236,6 +238,7 @@ export default function StorefrontView({
               description="Cute, colorful and fun stationery you'll love."
               icon="favorite"
               categorySlug="all"
+              theme="pink"
               products={kawaiiProducts}
               wishlist={wishlist}
               onToggleFavorite={toggleFavorite}
@@ -252,6 +255,7 @@ export default function StorefrontView({
               description="Discover your next favorite read."
               icon="menu_book"
               categorySlug="all"
+              theme="yellow"
               products={booksProducts}
               wishlist={wishlist}
               onToggleFavorite={toggleFavorite}
@@ -268,6 +272,7 @@ export default function StorefrontView({
               description="Fun picks for little moments and big adventures."
               icon="toys"
               categorySlug="all"
+              theme="blue"
               products={toysProducts}
               wishlist={wishlist}
               onToggleFavorite={toggleFavorite}
@@ -281,6 +286,7 @@ export default function StorefrontView({
               description="Creative supplies for every project."
               icon="palette"
               categorySlug="crafts"
+              theme="purple"
               products={craftsProducts}
               wishlist={wishlist}
               onToggleFavorite={toggleFavorite}
@@ -293,6 +299,7 @@ export default function StorefrontView({
               description="Keep your documents perfectly organized."
               icon="folder_open"
               categorySlug="binders"
+              theme="gray"
               products={bindersProducts}
               wishlist={wishlist}
               onToggleFavorite={toggleFavorite}
@@ -305,6 +312,7 @@ export default function StorefrontView({
               description="Essential supplies for everyday office needs."
               icon="inventory_2"
               categorySlug="basics"
+              theme="default"
               products={basicsProducts}
               wishlist={wishlist}
               onToggleFavorite={toggleFavorite}
@@ -317,6 +325,7 @@ export default function StorefrontView({
               description="Professional presentation essentials."
               icon="dashboard"
               categorySlug="boards"
+              theme="blue"
               products={boardsProducts}
               wishlist={wishlist}
               onToggleFavorite={toggleFavorite}
@@ -329,6 +338,7 @@ export default function StorefrontView({
               description="Smart tech for a modern workspace."
               icon="computer"
               categorySlug="computers"
+              theme="green"
               products={computersProducts}
               wishlist={wishlist}
               onToggleFavorite={toggleFavorite}
@@ -337,36 +347,38 @@ export default function StorefrontView({
             />
 
             {/* ⭐ This Week's Favorites (AT THE BOTTOM) */}
-            <section className="my-6 md:my-10 max-w-[1280px] mx-auto px-margin-mobile">
-              <div className="flex flex-row items-center justify-between gap-3 mb-5">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl flex items-center justify-center shrink-0 bg-[#F4B21B]/10">
-                    <span className="material-symbols-outlined text-[20px] md:text-[24px] text-[#F4B21B]">star</span>
-                  </div>
-                  <div className="flex flex-col">
-                    <h3 className="text-base md:text-2xl font-black uppercase tracking-wider text-[#1A2A4E]">
-                      This Week&apos;s Favorites
-                    </h3>
-                    <p className="hidden sm:block text-xs md:text-sm mt-0.5 text-[#1A2A4E]/70">
-                      Top engineered stationery essentials for your modern workspace
-                    </p>
+            <section className="w-full bg-[#FAFAFA] py-8 md:py-12">
+              <div className="max-w-[1280px] mx-auto px-margin-mobile">
+                <div className="flex flex-row items-center justify-between gap-3 mb-5">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl flex items-center justify-center shrink-0 bg-[#F4B21B]/10">
+                      <span className="material-symbols-outlined text-[20px] md:text-[24px] text-[#F4B21B]">star</span>
+                    </div>
+                    <div className="flex flex-col">
+                      <h3 className="text-base md:text-2xl font-black uppercase tracking-wider text-[#1A2A4E]">
+                        This Week&apos;s Favorites
+                      </h3>
+                      <p className="hidden sm:block text-xs md:text-sm mt-0.5 text-[#1A2A4E]/70">
+                        Top engineered stationery essentials for your modern workspace
+                      </p>
+                    </div>
                   </div>
                 </div>
-              </div>
-              <p className="sm:hidden text-[11px] mb-4 text-[#1A2A4E]/70">
-                Top engineered stationery essentials for your modern workspace
-              </p>
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
-                {featuredProducts.map((product) => (
-                  <ProductCard
-                    key={product.id}
-                    product={product}
-                    isFavorite={wishlist.has(product.id)}
-                    onToggleFavorite={toggleFavorite}
-                    onAddToCart={(p: Product) => addToCart(p, 1)}
-                    onQuickView={(p) => setQuickViewProduct(p)}
-                  />
-                ))}
+                <p className="sm:hidden text-[11px] mb-4 text-[#1A2A4E]/70">
+                  Top engineered stationery essentials for your modern workspace
+                </p>
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+                  {featuredProducts.map((product) => (
+                    <ProductCard
+                      key={product.id}
+                      product={product}
+                      isFavorite={wishlist.has(product.id)}
+                      onToggleFavorite={toggleFavorite}
+                      onAddToCart={(p: Product) => addToCart(p, 1)}
+                      onQuickView={(p) => setQuickViewProduct(p)}
+                    />
+                  ))}
+                </div>
               </div>
             </section>
           </div>

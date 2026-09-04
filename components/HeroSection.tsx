@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Image from 'next/image';
 
 interface HeroSectionProps {
   onOpenSearch?: () => void;
@@ -26,6 +27,7 @@ export default function HeroSection({ onOpenSearch, onSelectEcoCategory }: HeroS
 
   return (
     <section className="relative w-full overflow-hidden bg-surface border-b border-outline-variant">
+      <h1 className="sr-only">Yakda - Office Stationery & Supplies Dubai</h1>
       <div className="max-w-[1280px] mx-auto relative">
         
         {/* Slider Container */}
@@ -36,13 +38,16 @@ export default function HeroSection({ onOpenSearch, onSelectEcoCategory }: HeroS
               className={`absolute inset-0 w-full h-full transition-opacity duration-700 ease-in-out ${
                 index === currentSlide ? 'opacity-100 z-10' : 'opacity-0 z-0'
               }`}
-              style={{ 
-                backgroundImage: `url('${slide}')`,
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
-                backgroundRepeat: 'no-repeat'
-              }}
-            />
+            >
+              <Image
+                src={slide}
+                alt={`Hero Slide ${index + 1}`}
+                fill
+                priority={index === 0}
+                sizes="100vw"
+                className="object-cover"
+              />
+            </div>
           ))}
 
           {/* Navigation Dots */}

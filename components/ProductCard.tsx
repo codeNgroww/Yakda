@@ -3,6 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { Product } from '@/types/database';
+import Image from 'next/image';
 
 interface ProductCardProps {
   product: Product;
@@ -74,14 +75,12 @@ export default function ProductCard({
 
         {/* Image Display */}
         <Link href={`/products/${product.id}`} className="w-full h-full relative block">
-          <img
+          <Image
             src={product.image || '/images/hero-desk.png'}
             alt={product.title}
-            onError={(e) => {
-              e.currentTarget.src = '/images/hero-desk.png';
-            }}
-            className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300"
-            loading="lazy"
+            fill
+            sizes="(max-width: 640px) 160px, (max-width: 768px) 200px, 240px"
+            className="object-contain group-hover:scale-105 transition-transform duration-300"
           />
         </Link>
       </div>
@@ -96,9 +95,9 @@ export default function ProductCard({
           </div>
 
           <Link href={`/products/${product.id}`}>
-            <h4 className="text-xs sm:text-sm font-bold text-[#1A2A4E] line-clamp-2 mt-1 hover:text-[#16A2D4] transition-colors leading-snug">
+            <h3 className="text-xs sm:text-sm font-bold text-[#1A2A4E] line-clamp-2 mt-1 hover:text-[#16A2D4] transition-colors leading-snug">
               {product.title}
-            </h4>
+            </h3>
           </Link>
         </div>
 

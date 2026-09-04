@@ -32,6 +32,9 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
       description: product.description || `Buy ${product.title} at best price in UAE.`,
       images: [{ url: product.image }],
     },
+    alternates: {
+      canonical: `/products/${product.id}`,
+    },
   };
 }
 
@@ -60,22 +63,47 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
   }
 
   // Schema.org JSON-LD Structured Data
-  const jsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'Product',
-    name: product.title,
-    image: [product.image],
-    description: product.description,
-    sku: product.sku,
-    offers: {
-      '@type': 'Offer',
-      url: `https://yakda.ae/products/${product.id}`,
-      priceCurrency: 'AED',
-      price: product.price,
-      itemCondition: 'https://schema.org/NewCondition',
-      availability: 'https://schema.org/InStock',
+  const jsonLd = [
+    {
+      '@context': 'https://schema.org',
+      '@type': 'Product',
+      name: product.title,
+      image: [product.image],
+      description: product.description,
+      sku: product.sku,
+      offers: {
+        '@type': 'Offer',
+        url: `https://yakda.ae/products/${product.id}`,
+        priceCurrency: 'AED',
+        price: product.price,
+        itemCondition: 'https://schema.org/NewCondition',
+        availability: 'https://schema.org/InStock',
+      },
     },
-  };
+    {
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        {
+          '@type': 'ListItem',
+          position: 1,
+          name: 'Home',
+          item: 'https://yakda.ae',
+        },
+        {
+          '@type': 'ListItem',
+          position: 2,
+          name: product.category ? (product.category.charAt(0).toUpperCase() + product.category.slice(1)) : 'Products',
+          item: `https://yakda.ae/category/${product.category || 'all'}`,
+        },
+        {
+          '@type': 'ListItem',
+          position: 3,
+          name: product.title,
+        },
+      ],
+    }
+  ];
 
   const { data: relatedProducts } = await supabase
     .from('products')
