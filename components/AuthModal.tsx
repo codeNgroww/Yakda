@@ -21,6 +21,7 @@ export default function AuthModal({
   const [fullname, setFullname] = useState('');
   const [companyname, setCompanyname] = useState('');
   const [accountType, setAccountType] = useState<'individual' | 'corporate'>('individual');
+  const [showPassword, setShowPassword] = useState(false);
   
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
@@ -199,6 +200,7 @@ export default function AuthModal({
                       setMode('forgot');
                       setErrorMessage('');
                       setSuccessMessage('');
+                      setPassword('');
                     }}
                     className="text-[11px] text-[#16A2D4] font-semibold hover:underline"
                   >
@@ -206,14 +208,25 @@ export default function AuthModal({
                   </button>
                 )}
               </div>
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••"
-                className="w-full px-3.5 py-2 text-xs rounded-xl bg-gray-50 border border-gray-200 focus:outline-none focus:border-[#16A2D4] text-[#1A2A4E]"
-                required
-              />
+              <div className="relative">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="••••••••"
+                  className="w-full px-3.5 py-2 text-xs rounded-xl bg-gray-50 border border-gray-200 focus:outline-none focus:border-[#16A2D4] text-[#1A2A4E] pr-10"
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[#16A2D4] flex items-center justify-center"
+                >
+                  <span className="material-symbols-outlined text-[18px]">
+                    {showPassword ? 'visibility_off' : 'visibility'}
+                  </span>
+                </button>
+              </div>
             </div>
           )}
 
@@ -243,6 +256,7 @@ export default function AuthModal({
                 setMode('signup');
                 setErrorMessage('');
                 setSuccessMessage('');
+                setPassword('');
               }}
               className="text-xs text-[#16A2D4] font-semibold hover:underline"
             >
@@ -256,6 +270,7 @@ export default function AuthModal({
                 setMode('signin');
                 setErrorMessage('');
                 setSuccessMessage('');
+                setPassword('');
               }}
               className="text-xs text-[#16A2D4] font-semibold hover:underline"
             >

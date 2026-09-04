@@ -23,8 +23,7 @@ import EcoWhySection from '@/components/EcoWhySection';
 import MobileCategoryDrawer from '@/components/MobileCategoryDrawer';
 import MobileFilterDrawer from '@/components/MobileFilterDrawer';
 import OrdersModal from '@/components/OrdersModal';
-import { fetchCartFromDb, syncCartItemToDb } from '@/lib/actions/cart';
-import { fetchFavoritesFromDb, toggleFavoriteInDb } from '@/lib/actions/favorites';
+import { useCart } from '@/context/CartContext';
 
 interface StorefrontViewProps {
   initialProducts: Product[];
@@ -45,50 +44,38 @@ export default function StorefrontView({
   const [sortBy, setSortBy] = useState<SortOption>('featured');
   const [searchQuery, setSearchQuery] = useState('');
   
-  const [cart, setCart] = useState<CartItem[]>([]);
-  const [wishlist, setWishlist] = useState<Set<string>>(new Set(['8494']));
-  const [currentUser, setCurrentUser] = useState<UserProfile | null>(null);
-  const [isAdmin, setIsAdmin] = useState(false);
+  const {
+    cart,
+    addToCart,
+    updateQuantity,
+    removeFromCart,
+    cartCount,
+    currentUser,
+    isAdmin,
+    login,
+    logout,
+    wishlist,
+    wishlistCount,
+    toggleFavorite,
+    isCartOpen,
+    setIsCartOpen,
+    isAuthOpen,
+    setIsAuthOpen,
+    isProfileOpen,
+    setIsProfileOpen,
+    isOrdersOpen,
+    setIsOrdersOpen,
+    showToast
+  } = useCart();
+
   const [isLoadingProducts, setIsLoadingProducts] = useState(false);
 
   // Modals & Mobile Drawers state
   const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const [isCartOpen, setIsCartOpen] = useState(false);
-  const [isAuthOpen, setIsAuthOpen] = useState(false);
-  const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
-  const [isOrdersOpen, setIsOrdersOpen] = useState(false);
   const [isMobileCategoryOpen, setIsMobileCategoryOpen] = useState(false);
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
   const [quickViewProduct, setQuickViewProduct] = useState<Product | null>(null);
-
-  useEffect(() => {
-    // Restore local session
-    const savedUser = sessionStorage.getItem('yakda_logged_in_user');
-    if (savedUser) {
-      try {
-        const u = JSON.parse(savedUser);
-        setCurrentUser(u);
-        if (u.is_admin) setIsAdmin(true);
-      } catch (e) {
-        console.error(e);
-      }
-    }
-    const adminSession = sessionStorage.getItem('yakda_admin_logged_in') === 'true';
-    if (adminSession) setIsAdmin(true);
-  }, []);
-
-  // Sync DB cart and favorites when user is logged in
-  useEffect(() => {
-    if (currentUser?.id) {
-      fetchCartFromDb(currentUser.id).then((dbCart) => {
-        if (dbCart.length > 0) setCart(dbCart);
-      });
-      fetchFavoritesFromDb(currentUser.id).then((favIds) => {
-        if (favIds.length > 0) setWishlist(new Set(favIds));
-      });
-    }
-  }, [currentUser]);
 
   // Handle Category Selection with Skeleton Loading Simulation
   const handleSelectCategory = (slug: string) => {
@@ -170,86 +157,6 @@ export default function StorefrontView({
     return 0; // Default featured
   });
 
-  // Add to Cart
-  const handleAddToCart = (product: Product) => {
-    setCart((prev) => {
-      const existing = prev.find((item) => item.id === product.id);
-      let newQty = 1;
-      let updatedCart: CartItem[];
-
-      if (existing) {
-        newQty = existing.quantity + 1;
-        updatedCart = prev.map((item) =>
-          item.id === product.id ? { ...item, quantity: newQty } : item
-        );
-      } else {
-        updatedCart = [
-          ...prev,
-          {
-            id: product.id,
-            sku: product.sku,
-            title: product.title,
-            price: Number(product.price),
-            quantity: 1,
-            image: product.image,
-          },
-        ];
-      }
-
-      if (currentUser?.id) {
-        syncCartItemToDb(currentUser.id, product.id, newQty);
-      }
-
-      return updatedCart;
-    });
-
-    setIsCartOpen(true);
-  };
-
-  // Update Cart Quantity
-  const handleUpdateQuantity = (id: string, newQty: number) => {
-    setCart((prev) => {
-      let updated: CartItem[];
-      if (newQty <= 0) {
-        updated = prev.filter((item) => item.id !== id);
-      } else {
-        updated = prev.map((item) => (item.id === id ? { ...item, quantity: newQty } : item));
-      }
-
-      if (currentUser?.id) {
-        syncCartItemToDb(currentUser.id, id, newQty);
-      }
-
-      return updated;
-    });
-  };
-
-  // Remove From Cart
-  const handleRemoveFromCart = (id: string) => {
-    setCart((prev) => prev.filter((item) => item.id !== id));
-    if (currentUser?.id) {
-      syncCartItemToDb(currentUser.id, id, 0);
-    }
-  };
-
-  // Toggle Favorite
-  const handleToggleFavorite = async (product: Product) => {
-    const isFav = wishlist.has(product.id);
-    setWishlist((prev) => {
-      const next = new Set(prev);
-      if (isFav) {
-        next.delete(product.id);
-      } else {
-        next.add(product.id);
-      }
-      return next;
-    });
-
-    if (currentUser?.id) {
-      await toggleFavoriteInDb(currentUser.id, product.id);
-    }
-  };
-
   // Initiate Checkout
   const handleInitiateCheckout = () => {
     if (!currentUser) {
@@ -261,26 +168,12 @@ export default function StorefrontView({
     setIsCheckoutOpen(true);
   };
 
-  const handleLoginSuccess = (user: UserProfile) => {
-    setCurrentUser(user);
-    if (user.is_admin) setIsAdmin(true);
-    sessionStorage.setItem('yakda_logged_in_user', JSON.stringify(user));
-  };
-
-  const handleLogout = () => {
-    setCurrentUser(null);
-    setIsAdmin(false);
-    sessionStorage.removeItem('yakda_logged_in_user');
-    sessionStorage.removeItem('yakda_admin_logged_in');
-    setIsProfileOpen(false);
-  };
-
   return (
     <div className="min-h-screen flex flex-col justify-between pb-16 md:pb-0">
       {/* Off-White Header (#FAF9F6) */}
       <Header
-        cartCount={cart.reduce((sum, item) => sum + item.quantity, 0)}
-        wishlistCount={wishlist.size}
+        cartCount={cartCount}
+        wishlistCount={wishlistCount}
         currentUser={currentUser}
         isAdmin={isAdmin}
         activeCategory={activeCategory}
@@ -291,6 +184,7 @@ export default function StorefrontView({
         onOpenProfile={() => setIsProfileOpen(true)}
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
+        categories={categories}
         onOpenOrders={() => setIsOrdersOpen(true)}
       />
 
@@ -417,8 +311,8 @@ export default function StorefrontView({
                   key={product.id}
                   product={product}
                   isFavorite={wishlist.has(product.id)}
-                  onToggleFavorite={handleToggleFavorite}
-                  onAddToCart={handleAddToCart}
+                  onToggleFavorite={toggleFavorite}
+                  onAddToCart={addToCart}
                   onQuickView={(p) => setQuickViewProduct(p)}
                   isEcoTheme={activeCategory === 'eco'}
                 />
@@ -441,15 +335,15 @@ export default function StorefrontView({
       <QuickViewModal
         product={quickViewProduct}
         onClose={() => setQuickViewProduct(null)}
-        onAddToCart={handleAddToCart}
+        onAddToCart={addToCart}
       />
 
       <CartDrawer
         isOpen={isCartOpen}
         cart={cart}
         onClose={() => setIsCartOpen(false)}
-        onUpdateQuantity={handleUpdateQuantity}
-        onRemoveItem={handleRemoveFromCart}
+        onUpdateQuantity={updateQuantity}
+        onRemoveItem={removeFromCart}
         onInitiateCheckout={handleInitiateCheckout}
       />
 
@@ -457,20 +351,20 @@ export default function StorefrontView({
         isOpen={isSearchOpen}
         products={products}
         onClose={() => setIsSearchOpen(false)}
-        onAddToCart={handleAddToCart}
+        onAddToCart={addToCart}
       />
 
       <AuthModal
         isOpen={isAuthOpen}
         onClose={() => setIsAuthOpen(false)}
-        onLoginSuccess={handleLoginSuccess}
+        onLoginSuccess={login}
       />
 
       <ProfileModal
         isOpen={isProfileOpen}
         user={currentUser}
         onClose={() => setIsProfileOpen(false)}
-        onLogout={handleLogout}
+        onLogout={logout}
       />
 
       <CheckoutModal
@@ -479,8 +373,7 @@ export default function StorefrontView({
         currentUser={currentUser}
         onClose={() => setIsCheckoutOpen(false)}
         onOrderSuccess={() => {
-          setCart([]);
-          alert('Order placed successfully! Notifications sent to WhatsApp and Email.');
+          showToast('Order placed successfully! Notifications sent to WhatsApp and Email.', 'success');
         }}
       />
 

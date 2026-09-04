@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Fira_Sans } from "next/font/google";
 import "./globals.css";
+import { CartProvider } from "@/context/CartContext";
+import Toast from "@/components/Toast";
 
 const firaSans = Fira_Sans({
   weight: ["300", "400", "500", "600", "700"],
@@ -55,7 +57,10 @@ export default function RootLayout({
         />
       </head>
       <body className="bg-surface text-on-surface antialiased selection:bg-primary/20 selection:text-primary min-h-screen flex flex-col">
-        {children}
+        <CartProvider>
+          {children}
+          <Toast />
+        </CartProvider>
       </body>
     </html>
   );

@@ -93,12 +93,6 @@ export default function ProductCard({
             <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">
               SKU: {product.sku}
             </span>
-            <div className="flex items-center text-[#F4B21B] text-[11px] font-bold">
-              <span className="material-symbols-outlined text-[14px]" style={{ fontVariationSettings: "'FILL' 1" }}>
-                star
-              </span>
-              <span className="ml-0.5 text-gray-600">4.9</span>
-            </div>
           </div>
 
           <Link href={`/products/${product.id}`}>

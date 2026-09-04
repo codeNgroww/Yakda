@@ -104,9 +104,9 @@ export default function OrdersModal({
                 {/* Order Top Bar */}
                 <div className="flex items-center justify-between border-b border-gray-200/80 pb-2.5 text-xs">
                   <div>
-                    <span className="font-extrabold text-[#1A2A4E] block">{ord.id}</span>
+                    <span className="font-extrabold text-[#1A2A4E] block">YKD-{ord.id.substring(0, 8).toUpperCase()}</span>
                     <span className="text-[10px] text-gray-400">
-                      {ord.created_at ? new Date(ord.created_at).toLocaleDateString() : 'Recent Order'}
+                      {ord.created_at ? new Intl.DateTimeFormat('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }).format(new Date(ord.created_at)) : 'Recent Order'}
                     </span>
                   </div>
                   <span className="px-3 py-1 bg-[#16A2D4]/10 text-[#16A2D4] font-black text-[10px] uppercase rounded-full border border-[#16A2D4]/20">

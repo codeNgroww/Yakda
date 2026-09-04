@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { UserProfile } from '@/types/database';
+import { UserProfile, Category } from '@/types/database';
 import CategoryMegaMenu from './CategoryMegaMenu';
 
 interface HeaderProps {
@@ -19,6 +19,7 @@ interface HeaderProps {
   onOpenOrders?: () => void;
   searchQuery: string;
   onSearchChange: (query: string) => void;
+  categories?: Category[];
 }
 
 export default function Header({
@@ -35,6 +36,7 @@ export default function Header({
   onOpenOrders,
   searchQuery,
   onSearchChange,
+  categories = [],
 }: HeaderProps) {
   const [activeMobileTab, setActiveMobileTab] = useState<'home' | 'orders' | 'favorites' | 'account' | 'cart'>('home');
   const [isMegaMenuOpen, setIsMegaMenuOpen] = useState(false);
@@ -169,6 +171,15 @@ export default function Header({
               )}
             </button>
 
+            {/* Mobile Search Button */}
+            <button
+              onClick={onOpenSearch}
+              className="md:hidden w-9 h-9 rounded-xl bg-white border border-gray-300 text-[#1A2A4E] hover:border-[#16A2D4] hover:text-[#16A2D4] transition-all flex items-center justify-center shadow-2xs btn-press"
+              title="Search"
+            >
+              <span className="material-symbols-outlined text-[20px]">search</span>
+            </button>
+
             {/* User Profile / Auth Button */}
             <button
               onClick={currentUser ? onOpenProfile : onOpenAuth}
@@ -189,7 +200,7 @@ export default function Header({
 
         {/* Interactive Desktop Mega Menu */}
         <CategoryMegaMenu
-          categories={[]}
+          categories={categories}
           activeCategory={activeCategory}
           onSelectCategory={onSelectCategory}
           isOpen={isMegaMenuOpen}

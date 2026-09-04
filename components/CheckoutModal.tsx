@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { CartItem, UserProfile } from '@/types/database';
 import { createOrderInDb } from '@/lib/actions/orders';
 import { clearCartInDb } from '@/lib/actions/cart';
+import { sendOrderNotifications } from '@/lib/actions/notifications';
 
 interface CheckoutModalProps {
   isOpen: boolean;
@@ -23,6 +24,8 @@ export default function CheckoutModal({
   const [phone, setPhone] = useState('');
   const [address, setAddress] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [isSummaryOpen, setIsSummaryOpen] = useState(false);
 
   if (!isOpen) return null;
 
@@ -30,8 +33,9 @@ export default function CheckoutModal({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setErrorMsg(null);
     if (!phone.trim() || !address.trim()) {
-      alert('Please fill in phone number and delivery address.');
+      setErrorMsg('Please fill in phone number and delivery address.');
       return;
     }
 
@@ -52,40 +56,25 @@ export default function CheckoutModal({
         await clearCartInDb(currentUser.id);
       }
 
-      // 2. Format notifications (WhatsApp & Email)
-      const itemsSummary = cart
-        .map((i) => `• ${i.title} (x${i.quantity}) - AED ${(i.price * i.quantity).toFixed(2)}`)
-        .join('\n');
+      // 2. Send Notifications via Server Action
+      const notificationRes = await sendOrderNotifications({
+        orderId: orderRes.orderId || 'ORD-NEW',
+        customerEmail: currentUser?.email || 'guest@yakda.ae',
+        contactPhone: phone.trim(),
+        deliveryAddress: address.trim(),
+        cartItems: cart,
+        totalAmount,
+      });
 
-      const waText = encodeURIComponent(
-        `*New Order Placed - Yakda*\n` +
-        `Order ID: ${orderRes.orderId || 'ORD-NEW'}\n` +
-        `---------------------------\n` +
-        `Customer: ${currentUser?.email || 'Guest'}\n` +
-        `Phone: ${phone.trim()}\n` +
-        `Address: ${address.trim()}\n\n` +
-        `*Items Summary:*\n${itemsSummary}\n\n` +
-        `*Total Amount:* AED ${totalAmount.toFixed(2)}\n` +
-        `Thank you for ordering with Yakda!`
-      );
-
-      const emailSubject = encodeURIComponent(`New Order Placed - Yakda (${orderRes.orderId || 'ORD-NEW'})`);
-      const emailBody = encodeURIComponent(
-        `Order ID: ${orderRes.orderId || 'ORD-NEW'}\n` +
-        `Customer Email: ${currentUser?.email || 'Guest'}\n` +
-        `Phone Number: ${phone.trim()}\n` +
-        `Delivery Address: ${address.trim()}\n\n` +
-        `Order Items:\n${itemsSummary}\n\n` +
-        `Total Order Amount: AED ${totalAmount.toFixed(2)}`
-      );
-
-      window.open(`https://wa.me/97145534286?text=${waText}`, '_blank');
-      window.open(`mailto:inquiry@alyakda.com?subject=${emailSubject}&body=${emailBody}`, '_blank');
+      if (!notificationRes.success) {
+        console.error('Notification warning:', notificationRes.error);
+        // We still consider the order placed successfully even if notifications fail
+      }
 
       onOrderSuccess();
       onClose();
     } catch (err: any) {
-      alert(`Order error: ${err.message}`);
+      setErrorMsg(`Order error: ${err.message}`);
     } finally {
       setIsSubmitting(false);
     }
@@ -112,9 +101,46 @@ export default function CheckoutModal({
         </div>
 
         <form onSubmit={handleSubmit} className="p-6 flex flex-col gap-4">
+          {errorMsg && (
+            <div className="p-3 bg-red-50 text-[#D93630] border border-red-200 rounded-xl text-xs font-bold flex items-center gap-2">
+              <span className="material-symbols-outlined text-[18px]">error</span>
+              {errorMsg}
+            </div>
+          )}
+
           <div className="p-3 bg-gray-50 border border-gray-200 rounded-xl flex items-center justify-between text-xs">
             <span className="text-[#1A2A4E]/70">Customer:</span>
             <span className="font-bold text-[#1A2A4E]">{currentUser?.email || 'Guest Customer'}</span>
+          </div>
+
+          {/* Collapsible Order Summary */}
+          <div className="border border-gray-200 rounded-xl overflow-hidden bg-white">
+            <button
+              type="button"
+              onClick={() => setIsSummaryOpen(!isSummaryOpen)}
+              className="w-full p-3 bg-gray-50 flex items-center justify-between text-xs font-bold text-[#1A2A4E] hover:bg-gray-100 transition-colors"
+            >
+              <div className="flex items-center gap-2">
+                <span className="material-symbols-outlined text-[18px]">shopping_bag</span>
+                Order Summary ({cart.length} items)
+              </div>
+              <span className="material-symbols-outlined text-[18px]">
+                {isSummaryOpen ? 'expand_less' : 'expand_more'}
+              </span>
+            </button>
+            {isSummaryOpen && (
+              <div className="p-3 flex flex-col gap-2 max-h-[160px] overflow-y-auto border-t border-gray-200 bg-white">
+                {cart.map(item => (
+                  <div key={item.id} className="flex justify-between items-start text-xs border-b border-gray-100 pb-2 last:border-0 last:pb-0">
+                    <div className="flex-1 pr-2">
+                      <p className="font-semibold text-[#1A2A4E] line-clamp-1">{item.title}</p>
+                      <p className="text-gray-500">Qty: {item.quantity}</p>
+                    </div>
+                    <span className="font-bold text-[#D93630]">AED {(item.price * item.quantity).toFixed(2)}</span>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
           <div className="flex flex-col gap-1">
