@@ -14,12 +14,10 @@ import ProfileModal from '@/components/ProfileModal';
 import CheckoutModal from '@/components/CheckoutModal';
 import Footer from '@/components/Footer';
 import FilterSortBar, { SortOption } from '@/components/FilterSortBar';
-import PromoBanners from '@/components/PromoBanners';
+import { PromoBannerSale, PromoBannerSchool, PromoBannerOffice } from '@/components/PromoBanners';
 import SkeletonLoader from '@/components/SkeletonLoader';
 import QuickViewModal from '@/components/QuickViewModal';
-import EcoHeroSection from '@/components/EcoHeroSection';
-import EcoAttributesBar from '@/components/EcoAttributesBar';
-import EcoWhySection from '@/components/EcoWhySection';
+import ProductCarousel from '@/components/ProductCarousel';
 import MobileCategoryDrawer from '@/components/MobileCategoryDrawer';
 import MobileFilterDrawer from '@/components/MobileFilterDrawer';
 import OrdersModal from '@/components/OrdersModal';
@@ -38,7 +36,6 @@ export default function StorefrontView({
   const [categories] = useState<Category[]>(initialCategories);
   const [activeCategory, setActiveCategory] = useState('all');
   const [activeSubCategory, setActiveSubCategory] = useState('all');
-  const [selectedEcoAttribute, setSelectedEcoAttribute] = useState('all');
   const [selectedBadge, setSelectedBadge] = useState('all');
   const [inStockOnly, setInStockOnly] = useState(false);
   const [sortBy, setSortBy] = useState<SortOption>('featured');
@@ -108,14 +105,6 @@ export default function StorefrontView({
 
         if (!isEcoMatch) return false;
 
-        // Eco Attribute Filter
-        if (selectedEcoAttribute !== 'all') {
-          if (selectedEcoAttribute === 'recycled' && !combinedText.includes('recycled') && !combinedText.includes('recycle')) return false;
-          if (selectedEcoAttribute === 'sustainable' && !combinedText.includes('sustainable') && !combinedText.includes('bamboo')) return false;
-          if (selectedEcoAttribute === 'fsc' && !combinedText.includes('fsc') && !combinedText.includes('forest')) return false;
-          if (selectedEcoAttribute === 'plastic-free' && !combinedText.includes('plastic') && !combinedText.includes('kraft')) return false;
-          if (selectedEcoAttribute === 'biodegradable' && !combinedText.includes('biodegradable') && !combinedText.includes('natural')) return false;
-        }
       } else if (pCat !== activeCategory.toLowerCase()) {
         return false;
       }
@@ -157,6 +146,24 @@ export default function StorefrontView({
     return 0; // Default featured
   });
 
+  // Extract Collections (dynamically from actual categories)
+  const craftsProducts = products.filter((p) => p.category === 'crafts').slice(0, 8);
+  const bindersProducts = products.filter((p) => p.category === 'binders').slice(0, 8);
+  const basicsProducts = products.filter((p) => p.category === 'basics').slice(0, 8);
+  const boardsProducts = products.filter((p) => p.category === 'boards').slice(0, 8);
+  const computersProducts = products.filter((p) => p.category === 'computers').slice(0, 8);
+  const featuredProducts = products.slice(0, 12);
+
+  // Curated Virtual Collections (keyword-matched across all categories)
+  const matchKeywords = (p: Product, keywords: string[]) => {
+    const text = `${p.title} ${p.description || ''} ${p.category || ''}`.toLowerCase();
+    return keywords.some((k) => text.includes(k));
+  };
+  const ecoProducts = products.filter((p) => matchKeywords(p, ['recycl', 'eco', 'bamboo', 'biodegradable', 'sustainable', 'fsc', 'kraft', 'natural', 'green', 'organic'])).slice(0, 8);
+  const kawaiiProducts = products.filter((p) => matchKeywords(p, ['color', 'colour', 'fun', 'sticker', 'pastel', 'pink', 'glitter'])).slice(0, 8);
+  const booksProducts = products.filter((p) => matchKeywords(p, ['book', 'notebook', 'journal', 'diary', 'planner', 'ruled', 'spiral', 'hardcover', 'writing pad', 'exercise'])).slice(0, 8);
+  const toysProducts = products.filter((p) => matchKeywords(p, ['toy', 'game', 'puzzle', 'play', 'craft kit', 'activity', 'clay', 'paint', 'crayon', 'pencil color', 'colour pencil', 'drawing'])).slice(0, 8);
+
   // Initiate Checkout
   const handleInitiateCheckout = () => {
     if (!currentUser) {
@@ -189,28 +196,12 @@ export default function StorefrontView({
       />
 
       {/* Main Storefront Body */}
-      <main className={`flex-1 pt-16 md:pt-18 transition-colors ${activeCategory === 'eco' ? 'bg-[#F7F6EF]' : ''}`}>
+      <main className="flex-1 pt-16 md:pt-18 transition-colors">
         {/* Hero Section */}
-        {activeCategory === 'eco' ? (
-          <>
-            <EcoHeroSection
-              onScrollToCatalog={() => {
-                const el = document.getElementById('favorites-section');
-                if (el) el.scrollIntoView({ behavior: 'smooth' });
-              }}
-              onShopAllProducts={() => handleSelectCategory('all')}
-            />
-            <EcoAttributesBar
-              selectedAttribute={selectedEcoAttribute}
-              onSelectAttribute={setSelectedEcoAttribute}
-            />
-          </>
-        ) : (
-          <HeroSection
-            onOpenSearch={() => setIsSearchOpen(true)}
-            onSelectEcoCategory={() => handleSelectCategory('eco')}
-          />
-        )}
+        <HeroSection
+          onOpenSearch={() => setIsSearchOpen(true)}
+          onSelectEcoCategory={() => handleSelectCategory('eco-friendly')}
+        />
 
         {/* Category & Sub-Category Pills Bar */}
         <CategoryPills
@@ -219,26 +210,180 @@ export default function StorefrontView({
           onSelectCategory={handleSelectCategory}
         />
 
-        {/* Promotional Campaign Banners (Noon Style) - Hidden in Eco Mode to keep eco theme calm */}
-        {activeCategory !== 'eco' && (
-          <PromoBanners onSelectCategory={handleSelectCategory} />
+        {/* Homepage Scattered Collections & Promo Banners (Only visible on home) */}
+        {activeCategory === 'all' && !searchQuery && (
+          <div className="flex flex-col pb-8">
+            {/* 🌿 Curated Section 1: Eco-Friendly Picks */}
+            <ProductCarousel
+              title="Eco-Friendly Picks"
+              description="Better choices for your everyday stationery."
+              icon="eco"
+              categorySlug="all"
+              theme="green"
+              products={ecoProducts}
+              wishlist={wishlist}
+              onToggleFavorite={toggleFavorite}
+              onAddToCart={(p) => addToCart(p, 1)}
+              onSelectCategory={handleSelectCategory}
+            />
+
+            {/* 🎁 Promo Banner 1: Mega Stationery Sale */}
+            <PromoBannerSale onSelectCategory={handleSelectCategory} />
+
+            {/* 🎀 Curated Section 2: Kawaii Stationery */}
+            <ProductCarousel
+              title="Kawaii Stationery"
+              description="Cute, colorful and fun stationery you'll love."
+              icon="favorite"
+              categorySlug="all"
+              products={kawaiiProducts}
+              wishlist={wishlist}
+              onToggleFavorite={toggleFavorite}
+              onAddToCart={(p) => addToCart(p, 1)}
+              onSelectCategory={handleSelectCategory}
+            />
+
+            {/* 🎒 Promo Banner 2: Back to School Essentials */}
+            <PromoBannerSchool onSelectCategory={handleSelectCategory} />
+
+            {/* 📚 Curated Section 3: Books & Novels */}
+            <ProductCarousel
+              title="Books & Novels"
+              description="Discover your next favorite read."
+              icon="menu_book"
+              categorySlug="all"
+              products={booksProducts}
+              wishlist={wishlist}
+              onToggleFavorite={toggleFavorite}
+              onAddToCart={(p) => addToCart(p, 1)}
+              onSelectCategory={handleSelectCategory}
+            />
+
+            {/* 💼 Promo Banner 3: Workspace Upgrade */}
+            <PromoBannerOffice onSelectCategory={handleSelectCategory} />
+
+            {/* 🧸 Curated Section 4: Toys & Games */}
+            <ProductCarousel
+              title="Toys & Games"
+              description="Fun picks for little moments and big adventures."
+              icon="toys"
+              categorySlug="all"
+              products={toysProducts}
+              wishlist={wishlist}
+              onToggleFavorite={toggleFavorite}
+              onAddToCart={(p) => addToCart(p, 1)}
+              onSelectCategory={handleSelectCategory}
+            />
+
+            {/* Category Carousels */}
+            <ProductCarousel
+              title="Arts & Crafts"
+              description="Creative supplies for every project."
+              icon="palette"
+              categorySlug="crafts"
+              products={craftsProducts}
+              wishlist={wishlist}
+              onToggleFavorite={toggleFavorite}
+              onAddToCart={(p) => addToCart(p, 1)}
+              onSelectCategory={handleSelectCategory}
+            />
+
+            <ProductCarousel
+              title="Binders & Filing"
+              description="Keep your documents perfectly organized."
+              icon="folder_open"
+              categorySlug="binders"
+              products={bindersProducts}
+              wishlist={wishlist}
+              onToggleFavorite={toggleFavorite}
+              onAddToCart={(p) => addToCart(p, 1)}
+              onSelectCategory={handleSelectCategory}
+            />
+
+            <ProductCarousel
+              title="Office Basics"
+              description="Essential supplies for everyday office needs."
+              icon="inventory_2"
+              categorySlug="basics"
+              products={basicsProducts}
+              wishlist={wishlist}
+              onToggleFavorite={toggleFavorite}
+              onAddToCart={(p) => addToCart(p, 1)}
+              onSelectCategory={handleSelectCategory}
+            />
+
+            <ProductCarousel
+              title="Boards & Displays"
+              description="Professional presentation essentials."
+              icon="dashboard"
+              categorySlug="boards"
+              products={boardsProducts}
+              wishlist={wishlist}
+              onToggleFavorite={toggleFavorite}
+              onAddToCart={(p) => addToCart(p, 1)}
+              onSelectCategory={handleSelectCategory}
+            />
+
+            <ProductCarousel
+              title="Computers & Tech"
+              description="Smart tech for a modern workspace."
+              icon="computer"
+              categorySlug="computers"
+              products={computersProducts}
+              wishlist={wishlist}
+              onToggleFavorite={toggleFavorite}
+              onAddToCart={(p) => addToCart(p, 1)}
+              onSelectCategory={handleSelectCategory}
+            />
+
+            {/* ⭐ This Week's Favorites (AT THE BOTTOM) */}
+            <section className="my-6 md:my-10 max-w-[1280px] mx-auto px-margin-mobile">
+              <div className="flex flex-row items-center justify-between gap-3 mb-5">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl flex items-center justify-center shrink-0 bg-[#F4B21B]/10">
+                    <span className="material-symbols-outlined text-[20px] md:text-[24px] text-[#F4B21B]">star</span>
+                  </div>
+                  <div className="flex flex-col">
+                    <h3 className="text-base md:text-2xl font-black uppercase tracking-wider text-[#1A2A4E]">
+                      This Week&apos;s Favorites
+                    </h3>
+                    <p className="hidden sm:block text-xs md:text-sm mt-0.5 text-[#1A2A4E]/70">
+                      Top engineered stationery essentials for your modern workspace
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <p className="sm:hidden text-[11px] mb-4 text-[#1A2A4E]/70">
+                Top engineered stationery essentials for your modern workspace
+              </p>
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+                {featuredProducts.map((product) => (
+                  <ProductCard
+                    key={product.id}
+                    product={product}
+                    isFavorite={wishlist.has(product.id)}
+                    onToggleFavorite={toggleFavorite}
+                    onAddToCart={(p: Product) => addToCart(p, 1)}
+                    onQuickView={(p) => setQuickViewProduct(p)}
+                  />
+                ))}
+              </div>
+            </section>
+          </div>
         )}
 
-        {/* Featured Products & Catalog Grid */}
+        {/* Featured Products & Catalog Grid (Only visible when category is selected or searching) */}
+        {(activeCategory !== 'all' || searchQuery) && (
         <section id="favorites-section" className="py-8 px-margin-mobile max-w-[1280px] mx-auto">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-4 gap-2">
             <div>
-              <h3 className={`text-2xl font-black uppercase tracking-wide ${activeCategory === 'eco' ? 'text-[#2C3E30]' : 'text-[#1A2A4E]'}`}>
+              <h3 className="text-2xl font-black uppercase tracking-wide text-[#1A2A4E]">
                 {activeCategory === 'all'
-                  ? "This Week's Favorites"
-                  : activeCategory === 'eco'
-                  ? '🌿 Eco-Friendly Curated Catalog'
+                  ? "Shop Catalog"
                   : `Category: ${activeCategory}`}
               </h3>
-              <p className={`text-xs md:text-sm mt-1 ${activeCategory === 'eco' ? 'text-[#2C3E30]/75' : 'text-[#1A2A4E]/70'}`}>
-                {activeCategory === 'eco'
-                  ? 'Sustainable, FSC certified, and 100% recycled office supplies'
-                  : 'Top engineered stationery essentials for your modern workspace'}
+              <p className="text-xs md:text-sm mt-1 text-[#1A2A4E]/70">
+                Top engineered stationery essentials for your modern workspace
               </p>
             </div>
           </div>
@@ -294,7 +439,6 @@ export default function StorefrontView({
                 onClick={() => {
                   setActiveCategory('all');
                   setActiveSubCategory('all');
-                  setSelectedEcoAttribute('all');
                   setSelectedBadge('all');
                   setInStockOnly(false);
                   setSearchQuery('');
@@ -319,10 +463,9 @@ export default function StorefrontView({
               ))}
             </div>
           )}
+          {/* End Grid */}
         </section>
-
-        {/* Eco Why Section in Eco Mode */}
-        {activeCategory === 'eco' && <EcoWhySection />}
+        )}
 
         {/* Client Testimonials Section */}
         <Testimonials />

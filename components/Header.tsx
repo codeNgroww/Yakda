@@ -71,8 +71,8 @@ export default function Header({
 
   return (
     <>
-      {/* Top Header in Warm Off-White (#FAF9F6) */}
-      <header className="fixed top-0 inset-x-0 z-50 bg-[#FAF9F6] text-[#1A2A4E] border-b border-gray-200/90 shadow-xs pt-safe transition-all">
+      {/* Top Header in Pure White for higher contrast */}
+      <header className="fixed top-0 inset-x-0 z-50 bg-white text-[#1A2A4E] border-b border-gray-200/90 shadow-sm pt-safe transition-all">
         {/* Top Notification Strip with Tabby & Tamara */}
         <div className="bg-[#1A2A4E] text-white text-[11px] font-semibold py-1 px-4 text-center flex items-center justify-center gap-2">
           <span>🚚 Free Express Shipping Over AED 300</span>
@@ -91,7 +91,7 @@ export default function Header({
           <Link href="/" className="flex items-center gap-3 flex-shrink-0">
             <img
               alt="Yakda Stationery"
-              className="h-14 md:h-16 w-auto min-w-[170px] max-w-[260px] object-contain transition-transform hover:scale-105"
+              className="h-16 sm:h-18 md:h-20 w-auto min-w-[190px] md:min-w-[220px] max-w-[280px] object-contain transition-transform hover:scale-105 drop-shadow-md"
               src="/images/logo.png"
             />
           </Link>
