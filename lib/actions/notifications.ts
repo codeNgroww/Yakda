@@ -19,16 +19,6 @@ export async function sendOrderNotifications(params: NotificationParams) {
     .map((i) => `• ${i.title} (x${i.quantity}) - AED ${(i.price * i.quantity).toFixed(2)}`)
     .join('\n');
 
-  // Format Whatsapp Message
-  const waMessage = `*New Order Placed - Yakda*\n` +
-    `Order ID: ${orderId}\n` +
-    `---------------------------\n` +
-    `Customer: ${customerEmail}\n` +
-    `Phone: ${contactPhone}\n` +
-    `Address: ${deliveryAddress}\n\n` +
-    `*Items Summary:*\n${itemsSummary}\n\n` +
-    `*Total Amount:* AED ${totalAmount.toFixed(2)}\n` +
-    `Thank you for ordering with Yakda!`;
 
   const emailSubject = `New Order Placed - Yakda (${orderId})`;
   const emailHtml = `
@@ -72,40 +62,7 @@ export async function sendOrderNotifications(params: NotificationParams) {
       console.warn('RESEND_API_KEY is not set. Skipping automated email.');
     }
 
-    // ---------------------------------------------------------
-    // 2. Send WhatsApp (using Twilio API as standard approach)
-    // ---------------------------------------------------------
-    const twilioAccountSid = process.env.TWILIO_ACCOUNT_SID;
-    const twilioAuthToken = process.env.TWILIO_AUTH_TOKEN;
-    const twilioPhoneNumber = process.env.TWILIO_WHATSAPP_NUMBER; // e.g. whatsapp:+14155238886
-
-    if (twilioAccountSid && twilioAuthToken && twilioPhoneNumber) {
-      // Basic Twilio Basic Auth
-      const twilioAuth = Buffer.from(`${twilioAccountSid}:${twilioAuthToken}`).toString('base64');
-      const twilioUrl = `https://api.twilio.com/2010-04-01/Accounts/${twilioAccountSid}/Messages.json`;
-      
-      // Ensure phone number starts with 'whatsapp:' and country code (e.g., whatsapp:+971501234567)
-      const formattedPhone = contactPhone.startsWith('+') ? `whatsapp:${contactPhone}` : `whatsapp:+${contactPhone}`;
-
-      const twilioData = new URLSearchParams({
-        From: twilioPhoneNumber,
-        To: formattedPhone,
-        Body: waMessage,
-      });
-
-      await fetch(twilioUrl, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Basic ${twilioAuth}`,
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: twilioData.toString(),
-      });
-    } else {
-      console.warn('Twilio keys are not set. Skipping automated WhatsApp message.');
-    }
-
-    return { success: true, message: 'Notifications processed on the backend.' };
+    return { success: true, message: 'Email notification processed on the backend.' };
 
   } catch (error: any) {
     console.error('Error sending order notifications:', error);

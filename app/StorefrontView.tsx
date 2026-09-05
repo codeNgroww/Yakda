@@ -528,7 +528,7 @@ export default function StorefrontView({
         currentUser={currentUser}
         onClose={() => setIsCheckoutOpen(false)}
         onOrderSuccess={() => {
-          showToast('Order placed successfully! Notifications sent to WhatsApp and Email.', 'success');
+          showToast('Order saved! Redirecting to WhatsApp to send confirmation...', 'success');
         }}
       />
 

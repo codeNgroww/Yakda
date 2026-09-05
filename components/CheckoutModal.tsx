@@ -56,7 +56,7 @@ export default function CheckoutModal({
         await clearCartInDb(currentUser.id);
       }
 
-      // 2. Send Notifications via Server Action
+      // 2. Send Notifications via Server Action (Email only)
       const notificationRes = await sendOrderNotifications({
         orderId: orderRes.orderId || 'ORD-NEW',
         customerEmail: currentUser?.email || 'guest@yakda.ae',
@@ -68,11 +68,24 @@ export default function CheckoutModal({
 
       if (!notificationRes.success) {
         console.error('Notification warning:', notificationRes.error);
-        // We still consider the order placed successfully even if notifications fail
+        // We still consider the order placed successfully even if email fails
       }
 
       onOrderSuccess();
       onClose();
+
+      // 3. Redirect to WhatsApp to send manual message
+      const itemsSummary = cart.map((i) => `• ${i.title} (x${i.quantity}) - AED ${(i.price * i.quantity).toFixed(2)}`).join('\n');
+      const waText = `*New Order Placed - Yakda*\nOrder ID: ${orderRes.orderId || 'ORD-NEW'}\n---------------------------\nCustomer: ${currentUser?.email || 'Guest'}\nPhone: ${phone.trim()}\nAddress: ${address.trim()}\n\n*Items Summary:*\n${itemsSummary}\n\n*Total Amount:* AED ${totalAmount.toFixed(2)}`;
+      
+      const waNumber = '97145534286'; // Change to the actual business WhatsApp number
+      const waUrl = `https://wa.me/${waNumber}?text=${encodeURIComponent(waText)}`;
+      
+      const newWindow = window.open(waUrl, '_blank');
+      if (!newWindow || newWindow.closed || typeof newWindow.closed === 'undefined') {
+        window.location.href = waUrl;
+      }
+
     } catch (err: any) {
       setErrorMsg(`Order error: ${err.message}`);
     } finally {
@@ -169,7 +182,7 @@ export default function CheckoutModal({
 
           <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-xl flex items-center gap-2.5 text-xs text-emerald-800 font-medium">
             <span className="material-symbols-outlined text-[20px] text-emerald-600">chat</span>
-            <span>Order confirmation will be sent directly to your <strong>WhatsApp &amp; Email</strong>.</span>
+            <span>You will be redirected to <strong>WhatsApp</strong> to manually confirm your order with our team.</span>
           </div>
 
           <div className="p-4 bg-gray-50 rounded-xl flex items-center justify-between mt-2 border border-gray-200">
@@ -184,7 +197,7 @@ export default function CheckoutModal({
             className="w-full py-3.5 bg-[#D93630] hover:bg-[#b82a25] text-white font-bold text-xs rounded-xl shadow-md transition-all btn-press flex items-center justify-center gap-2"
           >
             <span className="material-symbols-outlined text-[18px]">check_circle</span>
-            {isSubmitting ? 'Saving Order to Database...' : 'Confirm Order & Send Notification'}
+            {isSubmitting ? 'Saving Order to Database...' : 'Confirm Order via WhatsApp'}
           </button>
         </form>
       </div>
