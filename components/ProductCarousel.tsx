@@ -20,12 +20,12 @@ interface ProductCarouselProps {
 
 const THEME_STYLES = {
   default: { bg: 'bg-white', icon: 'text-[#16A2D4]', iconBg: 'bg-[#16A2D4]/10', text: 'text-[#1A2A4E]' },
-  green: { bg: 'bg-[#F2F7F2]', icon: 'text-[#527A5A]', iconBg: 'bg-[#527A5A]/10', text: 'text-[#2C3E30]' },
-  pink: { bg: 'bg-[#FEF5F7]', icon: 'text-[#D81B60]', iconBg: 'bg-[#D81B60]/10', text: 'text-[#5C0A28]' },
-  blue: { bg: 'bg-[#F4F9FF]', icon: 'text-[#1976D2]', iconBg: 'bg-[#1976D2]/10', text: 'text-[#0B345E]' },
-  yellow: { bg: 'bg-[#FFFCF0]', icon: 'text-[#F9A825]', iconBg: 'bg-[#F9A825]/10', text: 'text-[#5C3D00]' },
-  purple: { bg: 'bg-[#F8F5FA]', icon: 'text-[#8E24AA]', iconBg: 'bg-[#8E24AA]/10', text: 'text-[#3E0A4C]' },
-  gray: { bg: 'bg-[#F8F9FA]', icon: 'text-[#455A64]', iconBg: 'bg-[#455A64]/10', text: 'text-[#1A2A4E]' },
+  green: { bg: 'bg-[#E0EBE0]', icon: 'text-[#527A5A]', iconBg: 'bg-[#527A5A]/15', text: 'text-[#2C3E30]' },
+  pink: { bg: 'bg-[#F9E3E8]', icon: 'text-[#D81B60]', iconBg: 'bg-[#D81B60]/15', text: 'text-[#5C0A28]' },
+  blue: { bg: 'bg-[#E0EEFC]', icon: 'text-[#1976D2]', iconBg: 'bg-[#1976D2]/15', text: 'text-[#0B345E]' },
+  yellow: { bg: 'bg-[#FDF1D5]', icon: 'text-[#F9A825]', iconBg: 'bg-[#F9A825]/15', text: 'text-[#5C3D00]' },
+  purple: { bg: 'bg-[#EDE4F5]', icon: 'text-[#8E24AA]', iconBg: 'bg-[#8E24AA]/15', text: 'text-[#3E0A4C]' },
+  gray: { bg: 'bg-[#EBEDF0]', icon: 'text-[#455A64]', iconBg: 'bg-[#455A64]/15', text: 'text-[#1A2A4E]' },
 };
 
 export default function ProductCarousel({
