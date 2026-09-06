@@ -11,6 +11,10 @@ interface CategoryPillsProps {
 // Noon-style category config with curated colors and icons
 const CATEGORY_CONFIG: Record<string, { icon: string; bg: string; label: string }> = {
   all:         { icon: 'grid_view',       bg: 'bg-gradient-to-br from-[#16A2D4]/15 to-[#16A2D4]/5',  label: 'All Items' },
+  eco:         { icon: 'eco',             bg: 'bg-gradient-to-br from-[#10B981]/15 to-[#10B981]/5',  label: 'Eco Friendly' },
+  kawaii:      { icon: 'favorite',        bg: 'bg-gradient-to-br from-[#EC4899]/15 to-[#EC4899]/5',  label: 'Kawaii Stationery' },
+  books:       { icon: 'menu_book',       bg: 'bg-gradient-to-br from-[#F59E0B]/15 to-[#F59E0B]/5',  label: 'Books & Novels' },
+  toys:        { icon: 'toys',            bg: 'bg-gradient-to-br from-[#3B82F6]/15 to-[#3B82F6]/5',  label: 'Toys & Games' },
   writing:     { icon: 'edit_note',       bg: 'bg-gradient-to-br from-[#6366F1]/15 to-[#6366F1]/5',  label: 'Writing & Pens' },
   paper:       { icon: 'description',     bg: 'bg-gradient-to-br from-[#F59E0B]/15 to-[#F59E0B]/5',  label: 'Paper & Envelopes' },
   machines:    { icon: 'print',           bg: 'bg-gradient-to-br from-[#EF4444]/15 to-[#EF4444]/5',  label: 'Office Machines' },
@@ -27,7 +31,8 @@ const CATEGORY_CONFIG: Record<string, { icon: string; bg: string; label: string 
 };
 
 const ICON_COLORS: Record<string, string> = {
-  all: 'text-[#16A2D4]', writing: 'text-[#6366F1]', paper: 'text-[#F59E0B]',
+  all: 'text-[#16A2D4]', eco: 'text-[#10B981]', kawaii: 'text-[#EC4899]', books: 'text-[#F59E0B]', toys: 'text-[#3B82F6]',
+  writing: 'text-[#6366F1]', paper: 'text-[#F59E0B]',
   machines: 'text-[#EF4444]', labels: 'text-[#8B5CF6]', binders: 'text-[#EC4899]',
   crafts: 'text-[#10B981]', basics: 'text-[#F4B21B]', boards: 'text-[#0EA5E9]',
   storage: 'text-[#14B8A6]', shipping: 'text-[#F97316]', 'print-copy': 'text-[#64748B]',
@@ -40,7 +45,7 @@ export default function CategoryPills({
   onSelectCategory,
 }: CategoryPillsProps) {
   const defaultSlugs = [
-    'all', 'writing', 'paper', 'machines', 'labels', 'binders',
+    'all', 'eco', 'kawaii', 'books', 'toys', 'writing', 'paper', 'machines', 'labels', 'binders',
     'crafts', 'basics', 'boards', 'storage', 'shipping', 'print-copy', 'computers',
   ];
 

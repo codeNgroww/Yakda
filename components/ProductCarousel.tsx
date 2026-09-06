@@ -67,8 +67,10 @@ export default function ProductCarousel({
           <button
             onClick={() => {
               onSelectCategory(categorySlug);
-              const el = document.getElementById('favorites-section');
-              if (el) el.scrollIntoView({ behavior: 'smooth' });
+              setTimeout(() => {
+                const el = document.getElementById('favorites-section');
+                if (el) el.scrollIntoView({ behavior: 'smooth' });
+              }, 150);
             }}
             className={`text-xs md:text-sm font-bold flex items-center gap-1 transition-colors whitespace-nowrap btn-press px-3 py-1.5 md:px-4 md:py-2 rounded-full ${style.iconBg} ${style.icon} hover:opacity-80`}
           >

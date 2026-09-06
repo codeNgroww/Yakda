@@ -32,6 +32,44 @@ export default function CategoryMegaMenu({
 
   const defaultCategoriesWithSubs = [
     {
+      slug: 'eco',
+      name: 'Eco Friendly Picks',
+      icon: 'eco',
+      subs: [
+        { name: 'Sustainable Paper', slug: 'eco' },
+        { name: 'Bamboo Pens', slug: 'eco' },
+      ],
+    },
+    {
+      slug: 'kawaii',
+      name: 'Kawaii Stationery',
+      icon: 'favorite',
+      subs: [
+        { name: 'Cute Pens & Pencils', slug: 'kawaii' },
+        { name: 'Stickers & Washi Tape', slug: 'kawaii' },
+      ],
+    },
+    {
+      slug: 'books',
+      name: 'Books & Novels',
+      icon: 'menu_book',
+      subs: [
+        { name: 'Fiction', slug: 'books' },
+        { name: 'Non-Fiction', slug: 'books' },
+        { name: 'Childrens Books', slug: 'books' },
+      ],
+    },
+    {
+      slug: 'toys',
+      name: 'Toys & Games',
+      icon: 'toys',
+      subs: [
+        { name: 'Educational Toys', slug: 'toys' },
+        { name: 'Board Games', slug: 'toys' },
+        { name: 'Puzzles', slug: 'toys' },
+      ],
+    },
+    {
       slug: 'writing',
       name: 'Writing Supplies',
       icon: 'edit_note',
@@ -137,6 +175,10 @@ export default function CategoryMegaMenu({
                 onClick={() => {
                   onSelectCategory(currentActive.slug);
                   onClose();
+                  setTimeout(() => {
+                    const el = document.getElementById('favorites-section');
+                    if (el) el.scrollIntoView({ behavior: 'smooth' });
+                  }, 150);
                 }}
                 className="text-xs font-bold text-[#16A2D4] hover:underline flex items-center gap-1"
               >

@@ -87,6 +87,11 @@ export default function StorefrontView({
   };
 
   // Filter Products
+  const matchKeywords = (p: Product, keywords: string[]) => {
+    const text = `${p.title} ${p.description || ''} ${p.category || ''}`.toLowerCase();
+    return keywords.some((k) => text.includes(k));
+  };
+
   let filteredProducts = products.filter((p) => {
     // 1. Category Filter
     if (activeCategory !== 'all') {
@@ -115,6 +120,9 @@ export default function StorefrontView({
       } else if (activeCategory === 'toys') {
         const isToysMatch = matchKeywords(p, ['toy', 'game', 'puzzle', 'play', 'craft kit', 'activity', 'clay', 'paint', 'crayon', 'pencil color', 'colour pencil', 'drawing']);
         if (!isToysMatch && p.category_id !== 'toys-games' && p.category !== 'toys-games') return false;
+      } else if (activeCategory === 'crafts') {
+        const isCraftsMatch = matchKeywords(p, ['craft', 'art', 'paint', 'clay', 'diy', 'origami', 'glue', 'scissor', 'sketch']);
+        if (!isCraftsMatch && p.category_id !== 'arts-crafts' && p.category !== 'arts-crafts') return false;
       } else if (pCat !== activeCategory.toLowerCase()) {
         return false;
       }
@@ -165,11 +173,6 @@ export default function StorefrontView({
   const featuredProducts = products.slice(0, 12);
 
   // Curated Virtual Collections (keyword-matched across all categories)
-  const matchKeywords = (p: Product, keywords: string[]) => {
-    const text = `${p.title} ${p.description || ''} ${p.category || ''}`.toLowerCase();
-    return keywords.some((k) => text.includes(k));
-  };
-
   // Foolproof fallback: if strict taxonomy yields nothing (because migration hasn't run or is partial), fallback to keywords
   let ecoProducts = products.filter((p: any) => p.is_eco_friendly === true || p.collection_ids?.includes('eco-friendly'));
   if (ecoProducts.length === 0) ecoProducts = products.filter((p: any) => matchKeywords(p, ['recycl', 'eco', 'bamboo', 'biodegradable', 'sustainable', 'fsc', 'kraft', 'natural', 'green', 'organic']));

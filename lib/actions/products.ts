@@ -75,9 +75,10 @@ export async function fetchCategories(): Promise<Category[]> {
     .from('categories')
     .select('*');
 
-  if (error) {
-    console.error('Error fetching categories:', error);
-    return [
+  let baseCategories = data || [];
+  if (error || baseCategories.length === 0) {
+    console.error('Error fetching categories or empty:', error?.message);
+    baseCategories = [
       { id: '1', name: 'All', slug: 'all', icon: 'border_all' },
       { id: '2', name: 'Writing & Pens', slug: 'writing', icon: 'edit_note' },
       { id: '3', name: 'Paper & Envelopes', slug: 'paper', icon: 'description' },
@@ -85,7 +86,25 @@ export async function fetchCategories(): Promise<Category[]> {
       { id: '5', name: 'Executive Furniture', slug: 'furniture', icon: 'desk' },
     ];
   }
-  return data || [];
+
+  // Inject requested virtual categories at the top so they appear in the pill bar
+  const virtualCategories: Category[] = [
+    { id: 'vc-eco', name: 'Eco Friendly Picks', slug: 'eco', icon: 'eco' },
+    { id: 'vc-kawaii', name: 'Kawaii Stationery', slug: 'kawaii', icon: 'favorite' },
+    { id: 'vc-books', name: 'Books & Novels', slug: 'books', icon: 'menu_book' },
+    { id: 'vc-toys', name: 'Toys & Games', slug: 'toys', icon: 'toys' },
+    { id: 'vc-crafts', name: 'Arts & Crafts', slug: 'crafts', icon: 'palette' }
+  ];
+
+  // Merge avoiding duplicates by slug
+  const allCategories = [...baseCategories];
+  for (const vc of virtualCategories) {
+    if (!allCategories.some(c => c.slug === vc.slug)) {
+      allCategories.push(vc);
+    }
+  }
+
+  return allCategories;
 }
 
 export async function fetchSubCategories(): Promise<any[]> {
