@@ -42,6 +42,7 @@ export type Product = {
   brand_id?: string | null;
   product_type?: string | null;
   is_eco_friendly?: boolean;
+  collection_ids?: string[];
   badge?: string | null;
   image: string;
   in_stock?: boolean;
