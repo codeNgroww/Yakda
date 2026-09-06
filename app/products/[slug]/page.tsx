@@ -6,16 +6,16 @@ import Footer from '@/components/Footer';
 import ProductDetailClient from '@/components/ProductDetailClient';
 
 interface ProductPageProps {
-  params: Promise<{ id: string }>;
+  params: Promise<{ slug: string }>;
 }
 
 export async function generateMetadata({ params }: ProductPageProps): Promise<Metadata> {
-  const { id } = await params;
+  const { slug } = await params;
   const supabase = await createClient();
   const { data: product } = await supabase
     .from('products')
     .select('*')
-    .eq('id', id)
+    .eq('slug', slug)
     .single();
 
   if (!product) {
@@ -33,18 +33,18 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
       images: [{ url: product.image }],
     },
     alternates: {
-      canonical: `/products/${product.id}`,
+      canonical: `/products/${product.slug || product.id}`,
     },
   };
 }
 
 export default async function ProductDetailPage({ params }: ProductPageProps) {
-  const { id } = await params;
+  const { slug } = await params;
   const supabase = await createClient();
   const { data: product } = await supabase
     .from('products')
     .select('*')
-    .eq('id', id)
+    .eq('slug', slug)
     .single();
 
   if (!product) {
@@ -73,11 +73,11 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
       sku: product.sku,
       offers: {
         '@type': 'Offer',
-        url: `https://yakda.ae/products/${product.id}`,
+        url: `https://yakda.ae/products/${product.slug || product.id}`,
         priceCurrency: 'AED',
         price: product.price,
         itemCondition: 'https://schema.org/NewCondition',
-        availability: 'https://schema.org/InStock',
+        availability: product.in_stock !== false ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
       },
     },
     {
@@ -94,7 +94,7 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
           '@type': 'ListItem',
           position: 2,
           name: product.category ? (product.category.charAt(0).toUpperCase() + product.category.slice(1)) : 'Products',
-          item: `https://yakda.ae/category/${product.category || 'all'}`,
+          item: `https://yakda.ae/${product.category || 'all'}`,
         },
         {
           '@type': 'ListItem',

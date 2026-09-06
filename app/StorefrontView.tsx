@@ -92,7 +92,6 @@ export default function StorefrontView({
     if (activeCategory !== 'all') {
       const pCat = (p.category || '').toLowerCase();
       const combinedText = `${p.title} ${p.description || ''} ${p.badge || ''} ${pCat}`.toLowerCase();
-
       if (activeCategory === 'eco') {
         const isEcoMatch =
           pCat === 'eco' ||
@@ -105,8 +104,17 @@ export default function StorefrontView({
           combinedText.includes('plastic-free') ||
           combinedText.includes('kraft');
 
-        if (!isEcoMatch) return false;
+        if (!isEcoMatch && p.is_eco_friendly !== true && !p.collection_ids?.includes('eco-friendly')) return false;
 
+      } else if (activeCategory === 'kawaii') {
+        const isKawaiiMatch = matchKeywords(p, ['color', 'colour', 'fun', 'sticker', 'pastel', 'pink', 'glitter']);
+        if (!isKawaiiMatch && !p.collection_ids?.includes('kawaii-stationery')) return false;
+      } else if (activeCategory === 'books') {
+        const isBooksMatch = matchKeywords(p, ['book', 'notebook', 'journal', 'diary', 'planner', 'ruled', 'spiral', 'hardcover', 'writing pad', 'exercise']);
+        if (!isBooksMatch && p.category_id !== 'books-novels' && p.category !== 'books-novels') return false;
+      } else if (activeCategory === 'toys') {
+        const isToysMatch = matchKeywords(p, ['toy', 'game', 'puzzle', 'play', 'craft kit', 'activity', 'clay', 'paint', 'crayon', 'pencil color', 'colour pencil', 'drawing']);
+        if (!isToysMatch && p.category_id !== 'toys-games' && p.category !== 'toys-games') return false;
       } else if (pCat !== activeCategory.toLowerCase()) {
         return false;
       }
@@ -161,10 +169,23 @@ export default function StorefrontView({
     const text = `${p.title} ${p.description || ''} ${p.category || ''}`.toLowerCase();
     return keywords.some((k) => text.includes(k));
   };
-  const ecoProducts = products.filter((p) => matchKeywords(p, ['recycl', 'eco', 'bamboo', 'biodegradable', 'sustainable', 'fsc', 'kraft', 'natural', 'green', 'organic'])).slice(0, 8);
-  const kawaiiProducts = products.filter((p) => matchKeywords(p, ['color', 'colour', 'fun', 'sticker', 'pastel', 'pink', 'glitter'])).slice(0, 8);
-  const booksProducts = products.filter((p) => matchKeywords(p, ['book', 'notebook', 'journal', 'diary', 'planner', 'ruled', 'spiral', 'hardcover', 'writing pad', 'exercise'])).slice(0, 8);
-  const toysProducts = products.filter((p) => matchKeywords(p, ['toy', 'game', 'puzzle', 'play', 'craft kit', 'activity', 'clay', 'paint', 'crayon', 'pencil color', 'colour pencil', 'drawing'])).slice(0, 8);
+
+  // Foolproof fallback: if strict taxonomy yields nothing (because migration hasn't run or is partial), fallback to keywords
+  let ecoProducts = products.filter((p: any) => p.is_eco_friendly === true || p.collection_ids?.includes('eco-friendly'));
+  if (ecoProducts.length === 0) ecoProducts = products.filter((p: any) => matchKeywords(p, ['recycl', 'eco', 'bamboo', 'biodegradable', 'sustainable', 'fsc', 'kraft', 'natural', 'green', 'organic']));
+  ecoProducts = ecoProducts.slice(0, 8);
+
+  let kawaiiProducts = products.filter((p: any) => p.collection_ids?.includes('kawaii-stationery'));
+  if (kawaiiProducts.length === 0) kawaiiProducts = products.filter((p: any) => matchKeywords(p, ['color', 'colour', 'fun', 'sticker', 'pastel', 'pink', 'glitter']));
+  kawaiiProducts = kawaiiProducts.slice(0, 8);
+
+  let booksProducts = products.filter((p: any) => p.category_id === 'books-novels' || p.category === 'books-novels');
+  if (booksProducts.length === 0) booksProducts = products.filter((p: any) => matchKeywords(p, ['book', 'notebook', 'journal', 'diary', 'planner', 'ruled', 'spiral', 'hardcover', 'writing pad', 'exercise']));
+  booksProducts = booksProducts.slice(0, 8);
+
+  let toysProducts = products.filter((p: any) => p.category_id === 'toys-games' || p.category === 'toys-games');
+  if (toysProducts.length === 0) toysProducts = products.filter((p: any) => matchKeywords(p, ['toy', 'game', 'puzzle', 'play', 'craft kit', 'activity', 'clay', 'paint', 'crayon', 'pencil color', 'colour pencil', 'drawing']));
+  toysProducts = toysProducts.slice(0, 8);
 
   // Initiate Checkout
   const handleInitiateCheckout = () => {
@@ -220,7 +241,7 @@ export default function StorefrontView({
               title="Eco-Friendly Picks"
               description="Better choices for your everyday stationery."
               icon="eco"
-              categorySlug="all"
+              categorySlug="eco"
               theme="green"
               products={ecoProducts}
               wishlist={wishlist}
@@ -237,7 +258,7 @@ export default function StorefrontView({
               title="Kawaii Stationery"
               description="Cute, colorful and fun stationery you'll love."
               icon="favorite"
-              categorySlug="all"
+              categorySlug="kawaii"
               theme="pink"
               products={kawaiiProducts}
               wishlist={wishlist}
@@ -254,7 +275,7 @@ export default function StorefrontView({
               title="Books & Novels"
               description="Discover your next favorite read."
               icon="menu_book"
-              categorySlug="all"
+              categorySlug="books"
               theme="yellow"
               products={booksProducts}
               wishlist={wishlist}
@@ -271,7 +292,7 @@ export default function StorefrontView({
               title="Toys & Games"
               description="Fun picks for little moments and big adventures."
               icon="toys"
-              categorySlug="all"
+              categorySlug="toys"
               theme="blue"
               products={toysProducts}
               wishlist={wishlist}

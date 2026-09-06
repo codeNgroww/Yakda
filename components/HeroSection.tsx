@@ -9,9 +9,9 @@ interface HeroSectionProps {
 }
 
 const SLIDES = [
-  '/images/hero-slide-3.jpg', // Stationery
-  '/images/hero-slide-2.jpg', // Books
-  '/images/hero-slide-1.jpg', // Toys
+  '/images/hero-slide-3.png', // Stationery
+  '/images/hero-slide-2.png', // Books
+  '/images/hero-slide-1.png', // Toys
 ];
 
 export default function HeroSection({ onOpenSearch, onSelectEcoCategory }: HeroSectionProps) {

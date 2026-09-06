@@ -3,6 +3,13 @@ export type Category = {
   name: string;
   slug: string;
   icon?: string | null;
+  parent_id?: string | null;
+  description?: string | null;
+  seo_title?: string | null;
+  seo_description?: string | null;
+  seo_h1?: string | null;
+  is_active?: boolean;
+  sort_order?: number;
   created_at?: string;
 };
 
@@ -13,7 +20,11 @@ export type SubCategory = {
   slug: string;
   image?: string | null;
   description?: string | null;
+  seo_title?: string | null;
+  seo_description?: string | null;
+  seo_h1?: string | null;
   is_active?: boolean;
+  sort_order?: number;
   created_at?: string;
   updated_at?: string;
 };
@@ -22,12 +33,40 @@ export type Product = {
   id: string;
   sku: string;
   title: string;
+  slug: string;
   description?: string | null;
   price: number;
-  category: string;
+  category: string; // Legacy
+  category_id?: string | null;
+  subcategory_id?: string | null;
+  brand_id?: string | null;
+  product_type?: string | null;
+  is_eco_friendly?: boolean;
   badge?: string | null;
   image: string;
   in_stock?: boolean;
+  created_at?: string;
+  updated_at?: string;
+};
+
+export type Brand = {
+  id: string;
+  name: string;
+  slug: string;
+  description?: string | null;
+  seo_title?: string | null;
+  seo_description?: string | null;
+  created_at?: string;
+  updated_at?: string;
+};
+
+export type Collection = {
+  id: string;
+  name: string;
+  slug: string;
+  description?: string | null;
+  seo_title?: string | null;
+  seo_description?: string | null;
   created_at?: string;
   updated_at?: string;
 };
