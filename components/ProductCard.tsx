@@ -74,7 +74,7 @@ export default function ProductCard({
         </div>
 
         {/* Image Display */}
-        <Link href={`/products/${product.id}`} className="w-full h-full relative block">
+        <Link href={`/products/${product.slug}`} className="w-full h-full relative block">
           <Image
             src={product.image || '/images/hero-desk.png'}
             alt={product.title}
@@ -94,7 +94,7 @@ export default function ProductCard({
             </span>
           </div>
 
-          <Link href={`/products/${product.id}`}>
+          <Link href={`/products/${product.slug}`}>
             <h3 className="text-xs sm:text-sm font-bold text-[#1A2A4E] line-clamp-2 mt-1 hover:text-[#16A2D4] transition-colors leading-snug">
               {product.title}
             </h3>
