@@ -2,8 +2,8 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Product, Order } from '@/types/database';
-import { fetchPaginatedProducts, fetchTotalProductCount, createProduct, updateProduct, deleteProduct } from '@/lib/actions/products';
+import { Product, Order, Category } from '@/types/database';
+import { fetchPaginatedProducts, fetchTotalProductCount, createProduct, updateProduct, deleteProduct, fetchCategories, createCategory } from '@/lib/actions/products';
 import { fetchAllOrdersForAdmin, updateOrderStatusInDb } from '@/lib/actions/orders';
 import { createClient } from '@/lib/supabase/client';
 
@@ -17,6 +17,7 @@ export default function AdminPage() {
 
   // Inventory & Pagination State
   const [products, setProducts] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [totalInventoryCount, setTotalInventoryCount] = useState<number>(0);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [pageSize] = useState<number>(20);
@@ -27,6 +28,7 @@ export default function AdminPage() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [isLoadingOrders, setIsLoadingOrders] = useState(false);
   const [orderSearchQuery, setOrderSearchQuery] = useState('');
+  const [orderStatusFilter, setOrderStatusFilter] = useState('all');
   const [updatingOrderId, setUpdatingOrderId] = useState<string | null>(null);
 
   // Form State
@@ -42,11 +44,21 @@ export default function AdminPage() {
   const [imagePreview, setImagePreview] = useState('');
   const [isSaving, setIsSaving] = useState(false);
 
+  const loadCategoriesData = async () => {
+    try {
+      const data = await fetchCategories();
+      setCategories(data);
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
   useEffect(() => {
     const adminSession = sessionStorage.getItem('yakda_admin_logged_in') === 'true';
     if (adminSession) {
       setIsLoggedIn(true);
       loadInventoryData(1, searchQuery);
+      loadCategoriesData();
       loadOrdersData();
     } else {
       setIsLoadingProducts(false);
@@ -94,6 +106,7 @@ export default function AdminPage() {
       sessionStorage.setItem('yakda_admin_logged_in', 'true');
       setIsLoggedIn(true);
       loadInventoryData(1, '');
+      loadCategoriesData();
       loadOrdersData();
     } else {
       alert('Access Denied: Only users with account_type "admin" can access the Admin Panel. (Default admin: admin@yakda.ae / admin123)');
@@ -121,6 +134,7 @@ export default function AdminPage() {
   };
 
   const handleStatusUpdate = async (orderId: string, newStatus: string) => {
+    if (!window.confirm("Are you sure you want to change this order's status?")) return;
     setUpdatingOrderId(orderId);
     try {
       const res = await updateOrderStatusInDb(orderId, newStatus);
@@ -256,12 +270,13 @@ export default function AdminPage() {
     setSelectedFile(null);
   };
 
-  const filteredOrders = orders.filter(
-    (o) =>
-      o.id.toLowerCase().includes(orderSearchQuery.toLowerCase()) ||
+  const filteredOrders = orders.filter((o) => {
+    const matchesSearch = o.id.toLowerCase().includes(orderSearchQuery.toLowerCase()) ||
       o.customer_email.toLowerCase().includes(orderSearchQuery.toLowerCase()) ||
-      (o.contact_phone && o.contact_phone.includes(orderSearchQuery))
-  );
+      (o.contact_phone && o.contact_phone.includes(orderSearchQuery));
+    const matchesStatus = orderStatusFilter === 'all' || o.status === orderStatusFilter;
+    return matchesSearch && matchesStatus;
+  });
 
   const totalPages = Math.ceil(totalInventoryCount / pageSize) || 1;
 
@@ -437,21 +452,32 @@ export default function AdminPage() {
                   <label className="text-xs font-semibold text-[#1A2A4E]">Category *</label>
                   <select
                     value={category}
-                    onChange={(e) => setCategory(e.target.value)}
+                    onChange={async (e) => {
+                      const val = e.target.value;
+                      if (val === 'new_category') {
+                        const newName = window.prompt("Enter new category name:");
+                        if (newName && newName.trim()) {
+                          const slug = newName.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+                          try {
+                            await createCategory({ name: newName.trim(), slug, icon: 'category', is_active: true });
+                            await loadCategoriesData();
+                            setCategory(slug);
+                          } catch(err: any) {
+                            alert("Failed to create category: " + err.message);
+                          }
+                        }
+                      } else {
+                        setCategory(val);
+                      }
+                    }}
                     className="w-full px-3.5 py-2 text-xs rounded-xl bg-gray-50 border border-gray-200 focus:outline-none focus:border-[#16A2D4] text-[#1A2A4E]"
                   >
-                    <option value="writing">Writing Supplies</option>
-                    <option value="paper">Office Paper Products</option>
-                    <option value="machines">Office Machines</option>
-                    <option value="labels">Labels &amp; Label Makers</option>
-                    <option value="binders">Binders &amp; Accessories</option>
-                    <option value="crafts">School &amp; Crafts</option>
-                    <option value="basics">Office Basics</option>
-                    <option value="boards">Boards &amp; Easels</option>
-                    <option value="storage">Storage &amp; Organization</option>
-                    <option value="shipping">Mailing &amp; Shipping</option>
-                    <option value="print-copy">Print &amp; Copy Room</option>
-                    <option value="computers">Computers &amp; Tech</option>
+                    {categories.map((c) => (
+                      <option key={c.id || c.slug} value={c.slug}>
+                        {c.name}
+                      </option>
+                    ))}
+                    <option value="new_category" className="font-bold text-[#16A2D4]">+ Add New Category</option>
                   </select>
                 </div>
 
@@ -700,15 +726,29 @@ export default function AdminPage() {
               </div>
 
               {/* Order Search Bar */}
-              <div className="w-full sm:w-80 relative flex items-center">
-                <input
-                  type="text"
-                  value={orderSearchQuery}
-                  onChange={(e) => setOrderSearchQuery(e.target.value)}
-                  placeholder="Filter by Order ID, Email, Phone..."
-                  className="w-full pl-3.5 pr-10 py-2 text-xs rounded-xl bg-gray-50 border border-gray-200 focus:outline-none focus:border-[#16A2D4] text-[#1A2A4E]"
-                />
-                <span className="material-symbols-outlined text-[20px] text-gray-400 absolute right-3 pointer-events-none">search</span>
+              <div className="flex flex-col sm:flex-row items-center gap-2 w-full sm:w-auto">
+                <select
+                  value={orderStatusFilter}
+                  onChange={(e) => setOrderStatusFilter(e.target.value)}
+                  className="w-full sm:w-40 px-3 py-2 text-xs rounded-xl bg-gray-50 border border-gray-200 focus:outline-none focus:border-[#16A2D4] text-[#1A2A4E]"
+                >
+                  <option value="all">All Statuses</option>
+                  <option value="pending">Pending</option>
+                  <option value="processing">Processing</option>
+                  <option value="shipped">Shipped</option>
+                  <option value="delivered">Delivered</option>
+                  <option value="cancelled">Cancelled</option>
+                </select>
+                <div className="w-full sm:w-64 relative flex items-center">
+                  <input
+                    type="text"
+                    value={orderSearchQuery}
+                    onChange={(e) => setOrderSearchQuery(e.target.value)}
+                    placeholder="Filter by Order ID, Email, Phone..."
+                    className="w-full pl-3.5 pr-10 py-2 text-xs rounded-xl bg-gray-50 border border-gray-200 focus:outline-none focus:border-[#16A2D4] text-[#1A2A4E]"
+                  />
+                  <span className="material-symbols-outlined text-[20px] text-gray-400 absolute right-3 pointer-events-none">search</span>
+                </div>
               </div>
             </div>
 

@@ -187,3 +187,21 @@ export async function deleteProduct(id: string) {
   revalidatePath('/');
   revalidatePath('/admin');
 }
+
+export async function createCategory(categoryData: Partial<Category>) {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from('categories')
+    .insert([categoryData])
+    .select()
+    .single();
+
+  if (error) {
+    console.error('Error creating category:', error);
+    throw new Error(error.message);
+  }
+
+  revalidatePath('/');
+  revalidatePath('/admin');
+  return data;
+}
