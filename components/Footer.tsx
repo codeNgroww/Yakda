@@ -22,21 +22,27 @@ export default function Footer() {
           </ul>
         </div>
 
-        <div>
-          <h5 className="text-sm font-bold text-[#F4B21B] mb-3 uppercase tracking-wider">Customer Support</h5>
-          <ul className="flex flex-col gap-2 text-xs text-white/80">
-            <li>Shipping & Next Day Delivery</li>
-            <li>Returns & Warranty Policy</li>
-            <li>Terms & Conditions</li>
-            <li>Privacy Policy</li>
-          </ul>
-        </div>
+
 
         <div>
           <h5 className="text-sm font-bold text-[#F4B21B] mb-3 uppercase tracking-wider">Contact Us</h5>
-          <p className="text-xs text-white/80 mb-2">Dubai, United Arab Emirates</p>
-          <p className="text-xs text-white/80 mb-2">Email: support@yakda.ae</p>
-          <p className="text-xs text-white/80">Phone: +971 4 000 0000</p>
+
+          <div className="mb-4">
+            <p className="text-xs font-bold text-white mb-1">Dubai Office</p>
+            <p className="text-xs text-white/80">A4201 Aspin Commercial</p>
+            <p className="text-xs text-white/80">Sheikh Zayed Road</p>
+            <p className="text-xs text-white/80">Dubai</p>
+            <p className="text-xs text-white/80 mt-1">Phone: +971 4 553 4286</p>
+            <p className="text-xs text-white/80 mt-1">Email: sales@yakda.ae</p>
+          </div>
+
+          <div>
+            <p className="text-xs font-bold text-white mb-1">Sharjah Warehouse</p>
+            <p className="text-xs text-white/80">Yakda Stationery and creatives</p>
+            <p className="text-xs text-white/80">Warehouse No-09, Ali moosa warehouse</p>
+            <p className="text-xs text-white/80">Sajjah, Sharjah</p>
+            <p className="text-xs text-white/80 mt-1">Phone: +971 6 715 5758</p>
+          </div>
         </div>
       </div>
 
