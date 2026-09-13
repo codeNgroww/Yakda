@@ -116,8 +116,8 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
       <body className="bg-surface text-on-surface antialiased selection:bg-primary/20 selection:text-primary min-h-screen flex flex-col">
         <noscript
           dangerouslySetInnerHTML={{
-            __html: '<iframe src="https://www.googletagmanager.com/ns.html?id=GTM-WH2276B2"
-height="0" width="0" style="display:none;visibility:hidden"><' + '/iframe>',
+            __html: `<iframe src="https://www.googletagmanager.com/ns.html?id=GTM-WH2276B2"
+               height="0" width="0" style="display:none;visibility:hidden"><' + '/iframe>`,
           }}
         />
         <CartProvider>
