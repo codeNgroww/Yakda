@@ -73,7 +73,7 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
       sku: product.sku,
       offers: {
         '@type': 'Offer',
-        url: `https://yakda.ae/products/${product.slug || product.id}`,
+        url: `https://yakdastationery.com/products/${product.slug || product.id}`,
         priceCurrency: 'AED',
         price: product.price,
         itemCondition: 'https://schema.org/NewCondition',
@@ -88,13 +88,13 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
           '@type': 'ListItem',
           position: 1,
           name: 'Home',
-          item: 'https://yakda.ae',
+          item: 'https://yakdastationery.com',
         },
         {
           '@type': 'ListItem',
           position: 2,
           name: product.category ? (product.category.charAt(0).toUpperCase() + product.category.slice(1)) : 'Products',
-          item: `https://yakda.ae/${product.category || 'all'}`,
+          item: `https://yakdastationery.com/${product.category || 'all'}`,
         },
         {
           '@type': 'ListItem',

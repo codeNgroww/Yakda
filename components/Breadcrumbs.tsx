@@ -19,7 +19,7 @@ export default function Breadcrumbs({ items }: BreadcrumbsProps) {
       '@type': 'ListItem',
       position: index + 1,
       name: item.name,
-      item: item.url ? `https://yakda.ae${item.url}` : undefined,
+      item: item.url ? `https://yakdastationery.com${item.url}` : undefined,
     })),
   };
 

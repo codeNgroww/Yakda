@@ -11,7 +11,7 @@ interface CollectionPageProps {
 
 export async function generateMetadata({ params }: CollectionPageProps): Promise<Metadata> {
   const { slug } = await params;
-  
+
   if (!slug) {
     return {
       title: 'Shop Collections - Yakda UAE',
@@ -29,14 +29,14 @@ export async function generateMetadata({ params }: CollectionPageProps): Promise
     openGraph: {
       title: `${collectionName} - Yakda`,
       description: `Shop the best ${collectionName} in Dubai.`,
-      url: `https://yakda.ae/collections/${slug}`,
+      url: `https://yakdastationery.com/collections/${slug}`,
     }
   };
 }
 
 export default async function CollectionPage({ params }: CollectionPageProps) {
   const { slug } = await params;
-  
+
   const products = await fetchProducts();
   const collections = await fetchCollections();
 
@@ -49,7 +49,7 @@ export default async function CollectionPage({ params }: CollectionPageProps) {
   return (
     <StorefrontView
       initialProducts={products}
-      initialCategories={[]} 
+      initialCategories={[]}
       initialActiveCategory={slug}
     />
   );

@@ -2,8 +2,8 @@ import { MetadataRoute } from 'next';
 import { fetchProducts, fetchCategories, fetchSubCategories, fetchCollections } from '@/lib/actions/products';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = 'https://yakda.ae';
-  
+  const baseUrl = 'https://yakdastationery.com';
+
   const [products, categories, subcategories, collections] = await Promise.all([
     fetchProducts(),
     fetchCategories(),

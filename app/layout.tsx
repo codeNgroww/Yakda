@@ -24,7 +24,7 @@ export const metadata: Metadata = {
     "yakda stationery",
   ],
   authors: [{ name: "Yakda UAE" }],
-  metadataBase: new URL("https://yakda.ae"),
+  metadataBase: new URL("https://yakdastationery.com"),
   alternates: {
     canonical: '/',
   },
@@ -32,7 +32,7 @@ export const metadata: Metadata = {
     title: "Yakda - Best-In-Class Stationery & Office Supplies",
     description:
       "Leading supplier of office stationery, furniture, paper, and printers in the UAE.",
-    url: "https://yakda.ae",
+    url: "https://yakdastationery.com",
     siteName: "Yakda",
     images: [
       {
@@ -58,10 +58,10 @@ const jsonLd = {
   '@graph': [
     {
       '@type': 'Organization',
-      '@id': 'https://yakda.ae/#organization',
+      '@id': 'https://yakdastationery.com/#organization',
       name: 'Yakda UAE',
-      url: 'https://yakda.ae',
-      logo: 'https://yakda.ae/images/hero-desk.png',
+      url: 'https://yakdastationery.com',
+      logo: 'https://yakdastationery.com/images/hero-desk.png',
       contactPoint: {
         '@type': 'ContactPoint',
         telephone: '+971-4-0000000',
@@ -72,15 +72,15 @@ const jsonLd = {
     },
     {
       '@type': 'WebSite',
-      '@id': 'https://yakda.ae/#website',
-      url: 'https://yakda.ae',
+      '@id': 'https://yakdastationery.com/#website',
+      url: 'https://yakdastationery.com',
       name: 'Yakda',
       publisher: {
-        '@id': 'https://yakda.ae/#organization'
+        '@id': 'https://yakdastationery.com/#organization'
       },
       potentialAction: {
         '@type': 'SearchAction',
-        target: 'https://yakda.ae/?q={search_term_string}',
+        target: 'https://yakdastationery.com/?q={search_term_string}',
         'query-input': 'required name=search_term_string'
       }
     }

@@ -15,13 +15,13 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Stationery Shop in Dubai | Yakda',
     description: 'Buy premium writing supplies, paper, and school stationery online at Yakda.',
-    url: 'https://yakda.ae/stationery-dubai',
+    url: 'https://yakdastationery.com/stationery-dubai',
   }
 };
 
 export default async function StationeryDubaiPage() {
   const products = await fetchProducts();
-  
+
   const breadcrumbItems = [
     { name: 'Home', url: '/' },
     { name: 'Stationery Dubai' }
@@ -31,17 +31,17 @@ export default async function StationeryDubaiPage() {
     <div className="bg-[#FAFAFA] min-h-screen">
       <div className="max-w-[1280px] mx-auto px-margin-mobile py-6">
         <Breadcrumbs items={breadcrumbItems} />
-        
-        <SeoContent 
+
+        <SeoContent
           h1="Stationery Shop in Dubai"
           description="Yakda is your premier destination for high-quality stationery in Dubai and the wider UAE. Whether you're equipping a corporate office, preparing for the school year, or searching for the perfect writing instrument, our curated selection offers unparalleled quality and value."
           className="mb-8"
         />
       </div>
-      
+
       <StorefrontView
         initialProducts={products}
-        initialCategories={[]} 
+        initialCategories={[]}
         initialActiveCategory="all"
       />
     </div>

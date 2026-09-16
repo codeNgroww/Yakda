@@ -11,7 +11,7 @@ interface SubCategoryPageProps {
 
 export async function generateMetadata({ params }: SubCategoryPageProps): Promise<Metadata> {
   const { category, subcategory } = await params;
-  
+
   if (!subcategory) {
     return {
       title: 'Shop All Categories - Yakda UAE',
@@ -30,14 +30,14 @@ export async function generateMetadata({ params }: SubCategoryPageProps): Promis
     openGraph: {
       title: `${subCategoryName} - Yakda`,
       description: `Shop the best ${subCategoryName} in Dubai.`,
-      url: `https://yakda.ae/${category}/${subcategory}`,
+      url: `https://yakdastationery.com/${category}/${subcategory}`,
     }
   };
 }
 
 export default async function SubCategoryPage({ params }: SubCategoryPageProps) {
   const { subcategory } = await params;
-  
+
   const products = await fetchProducts();
   const subcategories = await fetchSubCategories();
 
@@ -52,7 +52,7 @@ export default async function SubCategoryPage({ params }: SubCategoryPageProps) 
   return (
     <StorefrontView
       initialProducts={products}
-      initialCategories={[]} 
+      initialCategories={[]}
       initialActiveCategory={subcategory}
     />
   );

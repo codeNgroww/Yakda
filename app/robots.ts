@@ -7,6 +7,6 @@ export default function robots(): MetadataRoute.Robots {
       allow: '/',
       disallow: ['/admin/', '/checkout/', '/account/', '/api/'],
     },
-    sitemap: 'https://yakda.ae/sitemap.xml',
+    sitemap: 'https://yakdastationery.com/sitemap.xml',
   };
 }

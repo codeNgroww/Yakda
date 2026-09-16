@@ -15,13 +15,13 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Office Supplies in Dubai | Yakda',
     description: 'Shop office supplies and stationery in Dubai from Yakda.',
-    url: 'https://yakda.ae/office-supplies-dubai',
+    url: 'https://yakdastationery.com/office-supplies-dubai',
   }
 };
 
 export default async function OfficeSuppliesDubaiPage() {
   const products = await fetchProducts();
-  
+
   const breadcrumbItems = [
     { name: 'Home', url: '/' },
     { name: 'Office Supplies Dubai' }
@@ -31,8 +31,8 @@ export default async function OfficeSuppliesDubaiPage() {
     <div className="bg-[#FAFAFA] min-h-screen">
       <div className="max-w-[1280px] mx-auto px-margin-mobile py-6">
         <Breadcrumbs items={breadcrumbItems} />
-        
-        <SeoContent 
+
+        <SeoContent
           h1="Office Supplies in Dubai"
           description="Yakda provides top-tier office supplies across Dubai, catering to corporate needs with fast delivery. Discover our extensive range of filing solutions, office machines, writing instruments, and desk essentials designed for the modern workspace."
           className="mb-8"
@@ -41,10 +41,10 @@ export default async function OfficeSuppliesDubaiPage() {
         {/* Reuse the StorefrontView component or a custom layout to show products. 
             We pass 'all' since this is a general landing page, but could be filtered down. */}
       </div>
-      
+
       <StorefrontView
         initialProducts={products}
-        initialCategories={[]} 
+        initialCategories={[]}
         initialActiveCategory="all"
       />
     </div>
