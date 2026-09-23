@@ -122,7 +122,7 @@ export default function CategoryMegaMenu({
         { name: 'Whiteboards & Easels', slug: 'boards' },
         { name: 'Storage Bins & Trays', slug: 'storage' },
         { name: 'Mailing & Packaging Tapes', slug: 'shipping' },
-        { name: 'Desktop Office Basics', slug: 'basics' },
+        { name: 'Desktop Office Supplies', slug: 'basics' },
       ],
     },
   ];
@@ -131,7 +131,7 @@ export default function CategoryMegaMenu({
 
   return (
     <div className="absolute top-full left-0 right-0 z-50 bg-white border-b border-gray-200 shadow-2xl transition-all">
-      <div className="max-w-[1280px] mx-auto p-6 grid grid-cols-12 gap-6 min-h-[320px]">
+      <div className="max-w-[1600px] mx-auto p-6 grid grid-cols-12 gap-6 min-h-[320px]">
         
         {/* Left Category Column */}
         <div className="col-span-4 border-r border-gray-100 pr-4 flex flex-col gap-1">

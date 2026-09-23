@@ -51,6 +51,10 @@ export const metadata: Metadata = {
     description: "Leading supplier of office stationery, furniture, paper, and printers in UAE.",
     images: ['/images/hero-desk.png'],
   },
+  icons: {
+    icon: '/favicon.ico',
+    apple: '/apple-icon.png',
+  },
 };
 
 const jsonLd = {

@@ -12,6 +12,25 @@ export default function Footer() {
             Leading supplier of office stationery, paper, pens, executive furniture, and high-performance printers in the
             UAE.
           </p>
+          <div className="mt-5 flex items-center gap-4 pt-4 border-t border-white/10">
+            <div 
+              className="w-12 h-10 sm:w-14 sm:h-10 shrink-0 grayscale opacity-80 brightness-200"
+              style={{
+                backgroundImage: 'url(/images/logo.png)',
+                backgroundSize: '100% auto',
+                backgroundPosition: 'top center',
+                backgroundRepeat: 'no-repeat'
+              }}
+            />
+            <div className="flex flex-col">
+              <span className="text-[10px] uppercase tracking-[0.2em] text-white/70 font-bold mb-0.5 ml-0.5">
+                A member of
+              </span>
+              <span className="text-xl sm:text-[22px] uppercase tracking-widest text-white font-serif whitespace-nowrap" style={{ fontFamily: '"Playfair Display", "Didot", "Bodoni MT", "Baskerville", "Georgia", serif' }}>
+                Yakda Group
+              </span>
+            </div>
+          </div>
         </div>
 
         <div>

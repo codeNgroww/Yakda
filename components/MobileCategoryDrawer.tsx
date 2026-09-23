@@ -85,7 +85,7 @@ export default function MobileCategoryDrawer({
         { name: 'Whiteboards & Easels', slug: 'boards' },
         { name: 'Storage Bins & Trays', slug: 'storage' },
         { name: 'Mailing & Packaging Tapes', slug: 'shipping' },
-        { name: 'Desktop Office Basics', slug: 'basics' },
+        { name: 'Desktop Office Supplies', slug: 'basics' },
       ],
     },
   ];

@@ -22,6 +22,9 @@
   --color-outline-variant: #E5E7EB;
   --color-background: #F9FAFB;
   --color-on-background: #1A2A4E;
+
+  --animate-marquee: marquee 40s linear infinite;
+  --animate-marquee-reverse: marquee-reverse 40s linear infinite;
 }
 
 @layer base {
@@ -134,4 +137,15 @@
 .b2b-pattern {
   background-image: radial-gradient(rgba(255, 255, 255, 0.15) 1px, transparent 1px);
   background-size: 16px 16px;
+}
+
+/* Brand Marquee Scroll Animations */
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+@keyframes marquee-reverse {
+  0% { transform: translateX(-50%); }
+  100% { transform: translateX(0); }
 }

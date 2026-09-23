@@ -21,7 +21,7 @@ const CATEGORY_CONFIG: Record<string, { icon: string; bg: string; label: string 
   labels:      { icon: 'label',           bg: 'bg-gradient-to-br from-[#8B5CF6]/15 to-[#8B5CF6]/5',  label: 'Labels & Tapes' },
   binders:     { icon: 'folder_open',     bg: 'bg-gradient-to-br from-[#EC4899]/15 to-[#EC4899]/5',  label: 'Binders & Filing' },
   crafts:      { icon: 'palette',         bg: 'bg-gradient-to-br from-[#10B981]/15 to-[#10B981]/5',  label: 'School & Crafts' },
-  basics:      { icon: 'inventory_2',     bg: 'bg-gradient-to-br from-[#F4B21B]/15 to-[#F4B21B]/5',  label: 'Office Basics' },
+  basics:      { icon: 'inventory_2',     bg: 'bg-gradient-to-br from-[#F4B21B]/15 to-[#F4B21B]/5',  label: 'Office Supplies' },
   boards:      { icon: 'dashboard',       bg: 'bg-gradient-to-br from-[#0EA5E9]/15 to-[#0EA5E9]/5',  label: 'Boards & Easels' },
   storage:     { icon: 'inventory',       bg: 'bg-gradient-to-br from-[#14B8A6]/15 to-[#14B8A6]/5',  label: 'Storage' },
   shipping:    { icon: 'local_shipping',  bg: 'bg-gradient-to-br from-[#F97316]/15 to-[#F97316]/5',  label: 'Mailing & Shipping' },
@@ -45,13 +45,13 @@ export default function CategoryPills({
   onSelectCategory,
 }: CategoryPillsProps) {
   const defaultSlugs = [
-    'all', 'eco', 'kawaii', 'books', 'toys', 'writing', 'paper', 'machines', 'labels', 'binders',
-    'crafts', 'basics', 'boards', 'storage', 'shipping', 'print-copy', 'computers',
+    'all', 'basics', 'eco', 'kawaii', 'books', 'toys', 'writing', 'paper', 'machines', 'labels', 'binders',
+    'crafts', 'boards', 'storage', 'shipping', 'print-copy', 'computers',
   ];
 
   return (
     <section id="categories-section" className="py-5 sm:py-6 bg-white border-b border-gray-100">
-      <div className="max-w-[1280px] mx-auto">
+      <div className="max-w-[1600px] mx-auto">
         {/* Horizontally scrollable Noon-style icon row */}
         <div className="flex overflow-x-auto gap-4 sm:gap-5 px-margin-mobile pb-2 hide-scrollbar snap-x">
           {defaultSlugs.map((slug) => {

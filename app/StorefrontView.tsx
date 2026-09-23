@@ -21,6 +21,7 @@ import ProductCarousel from '@/components/ProductCarousel';
 import MobileCategoryDrawer from '@/components/MobileCategoryDrawer';
 import MobileFilterDrawer from '@/components/MobileFilterDrawer';
 import OrdersModal from '@/components/OrdersModal';
+import BrandMarquee from '@/components/BrandMarquee';
 import { useCart } from '@/context/CartContext';
 
 interface StorefrontViewProps {
@@ -372,7 +373,7 @@ export default function StorefrontView({
 
             {/* ⭐ This Week's Favorites (AT THE BOTTOM) */}
             <section className="w-full bg-[#FAFAFA] py-8 md:py-12">
-              <div className="max-w-[1280px] mx-auto px-margin-mobile">
+              <div className="max-w-[1600px] mx-auto px-margin-mobile">
                 <div className="flex flex-row items-center justify-between gap-3 mb-5">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl flex items-center justify-center shrink-0 bg-[#F4B21B]/10">
@@ -410,7 +411,7 @@ export default function StorefrontView({
 
         {/* Featured Products & Catalog Grid (Only visible when category is selected or searching) */}
         {(activeCategory !== 'all' || searchQuery) && (
-        <section id="favorites-section" className="py-8 px-margin-mobile max-w-[1280px] mx-auto">
+        <section id="favorites-section" className="py-8 px-margin-mobile max-w-[1600px] mx-auto">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-4 gap-2">
             <div>
               <h3 className="text-2xl font-black uppercase tracking-wide text-[#1A2A4E]">
@@ -502,6 +503,9 @@ export default function StorefrontView({
           {/* End Grid */}
         </section>
         )}
+
+        {/* Brand Partners Marquee (homepage only) */}
+        {activeCategory === 'all' && !searchQuery && <BrandMarquee />}
 
         {/* Client Testimonials Section */}
         <Testimonials />
