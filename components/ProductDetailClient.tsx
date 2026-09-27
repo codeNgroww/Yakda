@@ -11,9 +11,11 @@ import ProductCard from '@/components/ProductCard';
 interface ProductDetailClientProps {
   product: Product;
   relatedProducts: Product[];
+  brand: string;
+  categoryName: string;
 }
 
-export default function ProductDetailClient({ product, relatedProducts }: ProductDetailClientProps) {
+export default function ProductDetailClient({ product, relatedProducts, brand, categoryName }: ProductDetailClientProps) {
   const [quantity, setQuantity] = useState(1);
   const {
     cartCount,
@@ -32,6 +34,9 @@ export default function ProductDetailClient({ product, relatedProducts }: Produc
   const handleAddToCart = () => {
     addToCart(product, quantity);
   };
+
+  // Image ALT text: {Product Name} - {Brand}
+  const imageAlt = `${product.title} - ${brand}`;
 
   return (
     <div className="min-h-screen flex flex-col justify-between bg-surface">
@@ -53,19 +58,37 @@ export default function ProductDetailClient({ product, relatedProducts }: Produc
       />
 
       <main className="flex-1 w-full max-w-[1280px] mx-auto px-margin-mobile md:px-gutter pt-24 pb-16">
-        {/* Breadcrumb */}
-        <div className="flex items-center gap-2 text-xs text-outline mb-6">
-          <Link href="/" className="hover:text-primary transition-colors">Home</Link>
-          <span>/</span>
-          <span className="capitalize">{product.category}</span>
-          <span>/</span>
-          <span className="text-on-surface font-semibold truncate max-w-xs">{product.title}</span>
-        </div>
+        {/* Breadcrumb: Home → Category → Product */}
+        <nav aria-label="Breadcrumb" className="mb-6">
+          <ol className="flex items-center flex-wrap gap-1 text-xs text-outline">
+            <li className="flex items-center">
+              <Link href="/" className="hover:text-primary transition-colors">Home</Link>
+              <span className="mx-1.5 text-outline/50">→</span>
+            </li>
+            <li className="flex items-center">
+              <Link href={`/${product.category || 'all'}`} className="hover:text-primary transition-colors capitalize">
+                {categoryName}
+              </Link>
+              <span className="mx-1.5 text-outline/50">→</span>
+            </li>
+            <li>
+              <span className="text-on-surface font-semibold truncate max-w-xs" aria-current="page">
+                {product.title}
+              </span>
+            </li>
+          </ol>
+        </nav>
 
         {/* Product Details Container */}
         <div className="bg-surface-container-lowest border border-outline-variant rounded-2xl p-6 md:p-10 shadow-sm grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
           <div className="md:col-span-6 bg-white rounded-2xl border border-outline-variant/60 p-6 flex items-center justify-center aspect-square">
-            <img src={product.image || '/images/hero-desk.png'} alt={product.title} className="max-h-full object-contain" />
+            {/* Image ALT text: {Product Name} - {Brand} */}
+            <img
+              src={product.image || '/images/hero-desk.png'}
+              alt={imageAlt}
+              className="max-h-full object-contain"
+              loading="eager"
+            />
           </div>
 
           <div className="md:col-span-6 flex flex-col gap-4">
@@ -74,13 +97,37 @@ export default function ProductDetailClient({ product, relatedProducts }: Produc
                 {product.badge}
               </span>
             )}
+
+            {/* Brand label */}
+            {brand && brand !== 'Yakda' && (
+              <span className="text-xs text-[#16A2D4] font-bold uppercase tracking-wider">{brand}</span>
+            )}
+
             <span className="text-xs text-outline font-semibold">SKU Code: {product.sku}</span>
+
+            {/* H1: Product Name */}
             <h1 className="text-2xl md:text-3xl font-black text-[#1A2A4E]">{product.title}</h1>
+
             <div className="text-3xl font-black text-[#D93630]">AED {Number(product.price).toFixed(2)}</div>
             
             <p className="text-xs text-on-surface-variant leading-relaxed border-t border-b border-outline-variant/40 py-4 my-2">
               {product.description || 'Premium office stationery item supplied by Yakda Dubai with next day express delivery across the UAE.'}
             </p>
+
+            {/* Availability */}
+            <div className="flex items-center gap-2 text-xs">
+              {product.in_stock !== false ? (
+                <span className="flex items-center gap-1 text-green-600 font-bold">
+                  <span className="material-symbols-outlined text-[16px]">check_circle</span>
+                  In Stock
+                </span>
+              ) : (
+                <span className="flex items-center gap-1 text-red-500 font-bold">
+                  <span className="material-symbols-outlined text-[16px]">cancel</span>
+                  Out of Stock
+                </span>
+              )}
+            </div>
 
             {/* Tabby & Tamara Installment Teaser */}
             <div className="flex items-center gap-1.5 text-xs font-semibold text-gray-700 bg-gray-50 p-3 rounded-xl border border-gray-200 my-1">

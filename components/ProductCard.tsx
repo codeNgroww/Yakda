@@ -77,7 +77,7 @@ export default function ProductCard({
         <Link href={`/products/${product.slug}`} className="w-full h-full relative block">
           <Image
             src={product.image || '/images/hero-desk.png'}
-            alt={product.title}
+            alt={`${product.title} - ${product.category ? product.category.charAt(0).toUpperCase() + product.category.slice(1) : 'Office Supplies'} | Yakda`}
             fill
             sizes="(max-width: 640px) 160px, (max-width: 768px) 200px, 240px"
             className="object-contain group-hover:scale-105 transition-transform duration-300"
