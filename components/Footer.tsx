@@ -7,7 +7,7 @@ export default function Footer() {
     <footer className="bg-[#1A2A4E] text-white pt-12 pb-24 md:pb-12 border-t border-white/10">
       <div className="max-w-[1280px] mx-auto px-margin-mobile grid grid-cols-1 md:grid-cols-4 gap-8">
         <div className="flex flex-col gap-3">
-          <img src="/images/logo.png" alt="Yakda Stationery" className="h-14 w-auto object-contain self-start min-w-[160px]" />
+          <img src="/images/logo.png" alt="Yakda Stationery" className="h-16 sm:h-20 md:h-24 w-auto object-contain self-start filter drop-shadow-[0_2px_8px_rgba(0,0,0,0.3)] contrast-[1.06] brightness-[1.02]" />
           <p className="text-xs text-white/70 leading-relaxed">
             Leading supplier of office stationery, paper, pens, executive furniture, and high-performance printers in the
             UAE.

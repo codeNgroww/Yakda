@@ -223,7 +223,7 @@ export default function StorefrontView({
       />
 
       {/* Main Storefront Body */}
-      <main className="flex-1 pt-16 md:pt-18 transition-colors">
+      <main className="flex-1 pt-20 md:pt-24 transition-colors">
         {/* Hero Section */}
         <HeroSection
           onOpenSearch={() => setIsSearchOpen(true)}

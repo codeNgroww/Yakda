@@ -85,13 +85,13 @@ export default function Header({
           </span>
         </div>
 
-        <div className="max-w-[1280px] mx-auto h-16 md:h-18 px-margin-mobile flex items-center justify-between gap-4">
+        <div className="max-w-[1280px] mx-auto h-18 md:h-22 px-margin-mobile flex items-center justify-between gap-4 py-1">
           
           {/* Brand Logo */}
-          <Link href="/" className="flex items-center gap-3 flex-shrink-0">
+          <Link href="/" className="flex items-center gap-3 flex-shrink-0 py-0.5">
             <img
               alt="Yakda Stationery"
-              className="h-16 sm:h-18 md:h-20 w-auto min-w-[190px] md:min-w-[220px] max-w-[280px] object-contain transition-transform hover:scale-105 drop-shadow-md"
+              className="h-14 sm:h-16 md:h-20 lg:h-22 w-auto min-w-[180px] sm:min-w-[210px] md:min-w-[250px] max-w-[320px] object-contain transition-all duration-300 hover:scale-[1.04] filter drop-shadow-[0_2px_6px_rgba(0,0,0,0.08)] contrast-[1.06] brightness-[1.02]"
               src="/images/logo.png"
             />
           </Link>
