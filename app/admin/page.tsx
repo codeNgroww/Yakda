@@ -53,6 +53,33 @@ export default function AdminPage() {
   const [seoOgTitle, setSeoOgTitle] = useState('');
   const [seoOgDescription, setSeoOgDescription] = useState('');
   const [seoOgImage, setSeoOgImage] = useState('');
+  // Track which SEO fields the user has manually edited (don't auto-overwrite those)
+  const [seoManualEdits, setSeoManualEdits] = useState<Record<string, boolean>>({});
+
+  // Auto-generate SEO values from product fields
+  useEffect(() => {
+    const slug = name.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+    const catLabel = categories.find(c => c.slug === category)?.name || category || '';
+
+    if (!seoManualEdits.canonical) {
+      setSeoCanonical(slug ? `https://yakdastationery.com/products/${slug}` : '');
+    }
+    if (!seoManualEdits.h1) {
+      setSeoH1(name.trim());
+    }
+    if (!seoManualEdits.imageAlt) {
+      setSeoImageAlt(name.trim() ? `${name.trim()} - ${catLabel}` : '');
+    }
+    if (!seoManualEdits.ogTitle) {
+      setSeoOgTitle(name.trim() ? `${name.trim()} | Yakda UAE` : '');
+    }
+    if (!seoManualEdits.ogDescription) {
+      setSeoOgDescription(description.trim() || '');
+    }
+    if (!seoManualEdits.ogImage) {
+      setSeoOgImage(imagePreview || imageUrl || '');
+    }
+  }, [name, sku, category, description, imageUrl, imagePreview, categories, seoManualEdits]);
 
   // Blogs State
   const [blogs, setBlogs] = useState<Blog[]>([]);
@@ -286,7 +313,17 @@ export default function AdminPage() {
     setSeoOgTitle(product.seo_og_title || '');
     setSeoOgDescription(product.seo_og_description || '');
     setSeoOgImage(product.seo_og_image || '');
-    setShowSeoFields(!!(product.seo_canonical || product.seo_h1 || product.seo_image_alt || product.seo_og_title || product.seo_og_description || product.seo_og_image));
+    const hasSeo = !!(product.seo_canonical || product.seo_h1 || product.seo_image_alt || product.seo_og_title || product.seo_og_description || product.seo_og_image);
+    setShowSeoFields(hasSeo);
+    // Mark fields that have saved values as manually edited so auto-gen doesn't overwrite
+    setSeoManualEdits({
+      canonical: !!product.seo_canonical,
+      h1: !!product.seo_h1,
+      imageAlt: !!product.seo_image_alt,
+      ogTitle: !!product.seo_og_title,
+      ogDescription: !!product.seo_og_description,
+      ogImage: !!product.seo_og_image,
+    });
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -321,6 +358,7 @@ export default function AdminPage() {
     setSeoOgDescription('');
     setSeoOgImage('');
     setShowSeoFields(false);
+    setSeoManualEdits({});
   };
 
   const resetBlogForm = () => {
@@ -684,8 +722,7 @@ export default function AdminPage() {
                         <input
                           type="text"
                           value={seoCanonical}
-                          onChange={(e) => setSeoCanonical(e.target.value)}
-                          placeholder={`Auto: https://yakdastationery.com/products/${sku ? sku.toLowerCase().replace(/[^a-z0-9]+/g, '-') : 'product-slug'}`}
+                          onChange={(e) => { setSeoCanonical(e.target.value); setSeoManualEdits(p => ({...p, canonical: true})); }}
                           className="w-full px-3.5 py-2 text-xs rounded-xl bg-white border border-gray-200 focus:outline-none focus:border-[#16A2D4] text-[#1A2A4E]"
                         />
                       </div>
@@ -695,8 +732,7 @@ export default function AdminPage() {
                         <input
                           type="text"
                           value={seoH1}
-                          onChange={(e) => setSeoH1(e.target.value)}
-                          placeholder={`Auto: ${name || 'Product Name'}`}
+                          onChange={(e) => { setSeoH1(e.target.value); setSeoManualEdits(p => ({...p, h1: true})); }}
                           className="w-full px-3.5 py-2 text-xs rounded-xl bg-white border border-gray-200 focus:outline-none focus:border-[#16A2D4] text-[#1A2A4E]"
                         />
                       </div>
@@ -706,8 +742,7 @@ export default function AdminPage() {
                         <input
                           type="text"
                           value={seoImageAlt}
-                          onChange={(e) => setSeoImageAlt(e.target.value)}
-                          placeholder={`Auto: ${name || 'Product Name'} - ${category || 'Brand'}`}
+                          onChange={(e) => { setSeoImageAlt(e.target.value); setSeoManualEdits(p => ({...p, imageAlt: true})); }}
                           className="w-full px-3.5 py-2 text-xs rounded-xl bg-white border border-gray-200 focus:outline-none focus:border-[#16A2D4] text-[#1A2A4E]"
                         />
                       </div>
@@ -717,8 +752,7 @@ export default function AdminPage() {
                         <input
                           type="text"
                           value={seoOgTitle}
-                          onChange={(e) => setSeoOgTitle(e.target.value)}
-                          placeholder={`Auto: ${name || 'Product Name'} | Yakda UAE`}
+                          onChange={(e) => { setSeoOgTitle(e.target.value); setSeoManualEdits(p => ({...p, ogTitle: true})); }}
                           className="w-full px-3.5 py-2 text-xs rounded-xl bg-white border border-gray-200 focus:outline-none focus:border-[#16A2D4] text-[#1A2A4E]"
                         />
                       </div>
@@ -727,8 +761,7 @@ export default function AdminPage() {
                         <label className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Open Graph Description</label>
                         <textarea
                           value={seoOgDescription}
-                          onChange={(e) => setSeoOgDescription(e.target.value)}
-                          placeholder={`Auto: ${description ? description.substring(0, 80) + '...' : 'Product Description'}`}
+                          onChange={(e) => { setSeoOgDescription(e.target.value); setSeoManualEdits(p => ({...p, ogDescription: true})); }}
                           rows={2}
                           className="w-full px-3.5 py-2 text-xs rounded-xl bg-white border border-gray-200 focus:outline-none focus:border-[#16A2D4] text-[#1A2A4E]"
                         />
@@ -739,8 +772,7 @@ export default function AdminPage() {
                         <input
                           type="text"
                           value={seoOgImage}
-                          onChange={(e) => setSeoOgImage(e.target.value)}
-                          placeholder="Auto: Product Main Image"
+                          onChange={(e) => { setSeoOgImage(e.target.value); setSeoManualEdits(p => ({...p, ogImage: true})); }}
                           className="w-full px-3.5 py-2 text-xs rounded-xl bg-white border border-gray-200 focus:outline-none focus:border-[#16A2D4] text-[#1A2A4E]"
                         />
                       </div>
