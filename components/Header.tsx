@@ -138,9 +138,9 @@ export default function Header({
               <Link href="/" className="hover:text-[#16A2D4] transition-colors py-1">
                 Home
               </Link>
-              <a href="#categories-section" className="hover:text-[#16A2D4] transition-colors py-1">
-                Shop Catalog
-              </a>
+              <Link href="/blog" className="hover:text-[#16A2D4] transition-colors py-1">
+                Blogs
+              </Link>
               <a href="#favorites-section" className="hover:text-[#16A2D4] transition-colors py-1 flex items-center gap-1">
                 Favorites
                 {wishlistCount > 0 && (

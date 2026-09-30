@@ -110,3 +110,15 @@ export type Favorite = {
   product_id: string;
   created_at?: string;
 };
+
+export type Blog = {
+  id: string;
+  title: string;
+  slug: string;
+  content: string;
+  image?: string | null;
+  author?: string | null;
+  published?: boolean;
+  created_at?: string;
+  updated_at?: string;
+};

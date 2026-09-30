@@ -4,6 +4,7 @@ import "./globals.css";
 import { CartProvider } from "@/context/CartContext";
 import Toast from "@/components/Toast";
 import Script from "next/script";
+import WhatsAppCTA from "@/components/WhatsAppCTA";
 
 const firaSans = Fira_Sans({
   weight: ["300", "400", "500", "600", "700"],
@@ -127,6 +128,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
         <CartProvider>
           {children}
           <Toast />
+          <WhatsAppCTA />
         </CartProvider>
       </body>
     </html>

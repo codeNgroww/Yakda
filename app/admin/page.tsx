@@ -2,8 +2,9 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Product, Order, Category } from '@/types/database';
+import { Product, Order, Category, Blog } from '@/types/database';
 import { fetchPaginatedProducts, fetchTotalProductCount, createProduct, updateProduct, deleteProduct, fetchCategories, createCategory } from '@/lib/actions/products';
+import { fetchBlogs, createBlog, updateBlog, deleteBlog } from '@/lib/actions/blogs';
 import { fetchAllOrdersForAdmin, updateOrderStatusInDb } from '@/lib/actions/orders';
 import { createClient } from '@/lib/supabase/client';
 
@@ -12,8 +13,8 @@ export default function AdminPage() {
   const [loginEmail, setLoginEmail] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
 
-  // Active Admin Tab ('inventory' | 'orders')
-  const [activeTab, setActiveTab] = useState<'inventory' | 'orders'>('inventory');
+  // Active Admin Tab ('inventory' | 'orders' | 'blogs')
+  const [activeTab, setActiveTab] = useState<'inventory' | 'orders' | 'blogs'>('inventory');
 
   // Inventory & Pagination State
   const [products, setProducts] = useState<Product[]>([]);
@@ -44,10 +45,28 @@ export default function AdminPage() {
   const [imagePreview, setImagePreview] = useState('');
   const [isSaving, setIsSaving] = useState(false);
 
+  // Blogs State
+  const [blogs, setBlogs] = useState<Blog[]>([]);
+  const [editingBlogId, setEditingBlogId] = useState<string | null>(null);
+  const [blogTitle, setBlogTitle] = useState('');
+  const [blogContent, setBlogContent] = useState('');
+  const [blogImage, setBlogImage] = useState('');
+  const [blogPublished, setBlogPublished] = useState(false);
+  const [isSavingBlog, setIsSavingBlog] = useState(false);
+
   const loadCategoriesData = async () => {
     try {
       const data = await fetchCategories();
       setCategories(data);
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const loadBlogsData = async () => {
+    try {
+      const data = await fetchBlogs();
+      setBlogs(data);
     } catch (e) {
       console.error(e);
     }
@@ -59,6 +78,7 @@ export default function AdminPage() {
       setIsLoggedIn(true);
       loadInventoryData(1, searchQuery);
       loadCategoriesData();
+      loadBlogsData();
       loadOrdersData();
     } else {
       setIsLoadingProducts(false);
@@ -107,6 +127,7 @@ export default function AdminPage() {
       setIsLoggedIn(true);
       loadInventoryData(1, '');
       loadCategoriesData();
+      loadBlogsData();
       loadOrdersData();
     } else {
       alert('Access Denied: Only users with account_type "admin" can access the Admin Panel. (Default admin: admin@yakda.ae / admin123)');
@@ -270,6 +291,67 @@ export default function AdminPage() {
     setSelectedFile(null);
   };
 
+  const resetBlogForm = () => {
+    setEditingBlogId(null);
+    setBlogTitle('');
+    setBlogContent('');
+    setBlogImage('');
+    setBlogPublished(false);
+  };
+
+  const handleSaveBlog = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!blogTitle.trim() || !blogContent.trim()) {
+      alert('Please fill in Title and Content.');
+      return;
+    }
+    setIsSavingBlog(true);
+    try {
+      const slug = blogTitle.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+      const payload = {
+        title: blogTitle.trim(),
+        slug,
+        content: blogContent.trim(),
+        image: blogImage.trim() || null,
+        published: blogPublished,
+      };
+      if (editingBlogId) {
+        await updateBlog(editingBlogId, payload);
+        alert('Blog updated successfully!');
+      } else {
+        await createBlog(payload);
+        alert('Blog created successfully!');
+      }
+      resetBlogForm();
+      loadBlogsData();
+    } catch (err: any) {
+      alert(`Error saving blog: ${err.message}`);
+    } finally {
+      setIsSavingBlog(false);
+    }
+  };
+
+  const handleEditBlog = (blog: Blog) => {
+    setEditingBlogId(blog.id);
+    setBlogTitle(blog.title);
+    setBlogContent(blog.content);
+    setBlogImage(blog.image || '');
+    setBlogPublished(!!blog.published);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleDeleteBlog = async (id: string) => {
+    if (confirm('Are you sure you want to delete this blog?')) {
+      try {
+        await deleteBlog(id);
+        alert('Blog deleted successfully!');
+        loadBlogsData();
+      } catch (e: any) {
+        alert(`Failed to delete blog: ${e.message}`);
+      }
+    }
+  };
+
   const filteredOrders = orders.filter((o) => {
     const matchesSearch = o.id.toLowerCase().includes(orderSearchQuery.toLowerCase()) ||
       o.customer_email.toLowerCase().includes(orderSearchQuery.toLowerCase()) ||
@@ -398,6 +480,18 @@ export default function AdminPage() {
             >
               <span className="material-symbols-outlined text-[18px]">receipt_long</span>
               <span>Customer Orders ({orders.length})</span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab('blogs')}
+              className={`px-4 py-2 text-xs font-bold rounded-lg transition-all flex items-center gap-2 ${
+                activeTab === 'blogs'
+                  ? 'bg-[#16A2D4] text-white shadow-sm'
+                  : 'text-white/80 hover:text-white hover:bg-white/10'
+              }`}
+            >
+              <span className="material-symbols-outlined text-[18px]">article</span>
+              <span>Blogs</span>
             </button>
           </div>
         </div>
@@ -704,6 +798,148 @@ export default function AdminPage() {
                     Last
                   </button>
                 </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* TAB 3: BLOGS MANAGEMENT */}
+        {activeTab === 'blogs' && (
+          <div className="flex flex-col gap-6">
+            <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-xs flex flex-col gap-6">
+              <div className="flex items-center justify-between border-b border-gray-200 pb-4">
+                <div className="flex items-center gap-2">
+                  <span className="material-symbols-outlined text-[#16A2D4] text-[24px]">
+                    {editingBlogId ? 'edit' : 'add_box'}
+                  </span>
+                  <h3 className="text-lg font-bold text-[#1A2A4E]">
+                    {editingBlogId ? 'Edit Blog' : 'Add New Blog'}
+                  </h3>
+                </div>
+                {editingBlogId && (
+                  <button onClick={resetBlogForm} className="text-xs font-semibold text-gray-500 hover:text-gray-700">
+                    Cancel Editing
+                  </button>
+                )}
+              </div>
+
+              <form onSubmit={handleSaveBlog} className="grid grid-cols-1 gap-4">
+                <div className="flex flex-col gap-1">
+                  <label className="text-xs font-semibold text-[#1A2A4E]">Blog Title *</label>
+                  <input
+                    type="text"
+                    value={blogTitle}
+                    onChange={(e) => setBlogTitle(e.target.value)}
+                    placeholder="e.g. Best 5 office pens..."
+                    className="w-full px-3.5 py-2 text-xs rounded-xl bg-gray-50 border border-gray-200 focus:outline-none focus:border-[#16A2D4] text-[#1A2A4E]"
+                    required
+                  />
+                </div>
+
+                <div className="flex flex-col gap-1">
+                  <label className="text-xs font-semibold text-[#1A2A4E]">Cover Image URL</label>
+                  <input
+                    type="text"
+                    value={blogImage}
+                    onChange={(e) => setBlogImage(e.target.value)}
+                    placeholder="https://..."
+                    className="w-full px-3.5 py-2 text-xs rounded-xl bg-gray-50 border border-gray-200 focus:outline-none focus:border-[#16A2D4] text-[#1A2A4E]"
+                  />
+                </div>
+
+                <div className="flex flex-col gap-1">
+                  <label className="text-xs font-semibold text-[#1A2A4E]">Content (Markdown/HTML supported) *</label>
+                  <textarea
+                    value={blogContent}
+                    onChange={(e) => setBlogContent(e.target.value)}
+                    placeholder="Write your blog content here..."
+                    rows={8}
+                    className="w-full px-3.5 py-2 text-xs rounded-xl bg-gray-50 border border-gray-200 focus:outline-none focus:border-[#16A2D4] text-[#1A2A4E]"
+                    required
+                  ></textarea>
+                </div>
+
+                <div className="flex items-center gap-2 mt-2">
+                  <input
+                    type="checkbox"
+                    id="blogPublished"
+                    checked={blogPublished}
+                    onChange={(e) => setBlogPublished(e.target.checked)}
+                    className="w-4 h-4 text-[#16A2D4] rounded border-gray-300 focus:ring-[#16A2D4]"
+                  />
+                  <label htmlFor="blogPublished" className="text-xs font-semibold text-[#1A2A4E]">Publish immediately?</label>
+                </div>
+
+                <div className="flex justify-end gap-3 mt-2">
+                  {editingBlogId && (
+                    <button
+                      type="button"
+                      onClick={resetBlogForm}
+                      className="px-5 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold text-xs rounded-xl transition-all"
+                    >
+                      Cancel
+                    </button>
+                  )}
+                  <button
+                    type="submit"
+                    disabled={isSavingBlog}
+                    className="px-6 py-2.5 bg-[#16A2D4] hover:bg-[#1288b3] text-white font-bold text-xs rounded-xl shadow-md transition-all btn-press flex items-center gap-2"
+                  >
+                    <span className="material-symbols-outlined text-[18px]">save</span>
+                    {isSavingBlog ? 'Saving...' : editingBlogId ? 'Update Blog' : 'Create Blog'}
+                  </button>
+                </div>
+              </form>
+            </div>
+
+            <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-xs flex flex-col gap-4">
+              <h3 className="text-lg font-bold text-[#1A2A4E] border-b border-gray-200 pb-4">
+                All Blogs ({blogs.length})
+              </h3>
+              <div className="overflow-x-auto">
+                <table className="w-full text-left border-collapse text-xs">
+                  <thead>
+                    <tr className="border-b border-gray-200 text-[#1A2A4E] font-bold bg-gray-50/50">
+                      <th className="p-3">Title</th>
+                      <th className="p-3">Slug</th>
+                      <th className="p-3">Status</th>
+                      <th className="p-3 text-right">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-100">
+                    {blogs.length === 0 ? (
+                      <tr>
+                        <td colSpan={4} className="p-8 text-center text-gray-500">No blogs found.</td>
+                      </tr>
+                    ) : (
+                      blogs.map((b) => (
+                        <tr key={b.id} className="hover:bg-gray-50/80 transition-colors">
+                          <td className="p-3 font-semibold text-[#1A2A4E]">{b.title}</td>
+                          <td className="p-3 text-gray-500 font-mono">{b.slug}</td>
+                          <td className="p-3">
+                            <span className={`px-2 py-0.5 text-[10px] font-bold rounded ${b.published ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'}`}>
+                              {b.published ? 'Published' : 'Draft'}
+                            </span>
+                          </td>
+                          <td className="p-3 text-right">
+                            <button
+                              onClick={() => handleEditBlog(b)}
+                              className="p-1.5 text-[#16A2D4] hover:bg-[#16A2D4]/10 rounded-lg transition-colors"
+                            >
+                              <span className="material-symbols-outlined text-[18px]">edit</span>
+                            </button>
+                            <button
+                              onClick={() => handleDeleteBlog(b.id)}
+                              className="p-1.5 text-[#D93630] hover:bg-[#D93630]/10 rounded-lg transition-colors"
+                            >
+                              <span className="material-symbols-outlined text-[18px]">delete</span>
+                            </button>
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
               </div>
             </div>
           </div>
