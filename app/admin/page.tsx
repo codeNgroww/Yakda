@@ -45,6 +45,15 @@ export default function AdminPage() {
   const [imagePreview, setImagePreview] = useState('');
   const [isSaving, setIsSaving] = useState(false);
 
+  // SEO Override State (all optional)
+  const [showSeoFields, setShowSeoFields] = useState(false);
+  const [seoCanonical, setSeoCanonical] = useState('');
+  const [seoH1, setSeoH1] = useState('');
+  const [seoImageAlt, setSeoImageAlt] = useState('');
+  const [seoOgTitle, setSeoOgTitle] = useState('');
+  const [seoOgDescription, setSeoOgDescription] = useState('');
+  const [seoOgImage, setSeoOgImage] = useState('');
+
   // Blogs State
   const [blogs, setBlogs] = useState<Blog[]>([]);
   const [editingBlogId, setEditingBlogId] = useState<string | null>(null);
@@ -233,6 +242,13 @@ export default function AdminPage() {
         badge: badge === 'none' ? null : badge,
         description: description.trim(),
         image: finalImg,
+        // SEO Overrides (only include if filled)
+        seo_canonical: seoCanonical.trim() || null,
+        seo_h1: seoH1.trim() || null,
+        seo_image_alt: seoImageAlt.trim() || null,
+        seo_og_title: seoOgTitle.trim() || null,
+        seo_og_description: seoOgDescription.trim() || null,
+        seo_og_image: seoOgImage.trim() || null,
       };
 
       if (editingProductId) {
@@ -263,6 +279,14 @@ export default function AdminPage() {
     setImageUrl(product.image);
     setImagePreview(product.image);
     setSelectedFile(null);
+    // SEO fields
+    setSeoCanonical(product.seo_canonical || '');
+    setSeoH1(product.seo_h1 || '');
+    setSeoImageAlt(product.seo_image_alt || '');
+    setSeoOgTitle(product.seo_og_title || '');
+    setSeoOgDescription(product.seo_og_description || '');
+    setSeoOgImage(product.seo_og_image || '');
+    setShowSeoFields(!!(product.seo_canonical || product.seo_h1 || product.seo_image_alt || product.seo_og_title || product.seo_og_description || product.seo_og_image));
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -289,6 +313,14 @@ export default function AdminPage() {
     setImageUrl('');
     setImagePreview('');
     setSelectedFile(null);
+    // SEO fields
+    setSeoCanonical('');
+    setSeoH1('');
+    setSeoImageAlt('');
+    setSeoOgTitle('');
+    setSeoOgDescription('');
+    setSeoOgImage('');
+    setShowSeoFields(false);
   };
 
   const resetBlogForm = () => {
@@ -630,6 +662,96 @@ export default function AdminPage() {
                     rows={2}
                     className="w-full px-3.5 py-2 text-xs rounded-xl bg-gray-50 border border-gray-200 focus:outline-none focus:border-[#16A2D4] text-[#1A2A4E]"
                   ></textarea>
+                </div>
+
+                {/* SEO Overrides — Collapsible */}
+                <div className="md:col-span-12">
+                  <button
+                    type="button"
+                    onClick={() => setShowSeoFields(!showSeoFields)}
+                    className="flex items-center gap-2 text-xs font-bold text-[#1A2A4E]/70 hover:text-[#16A2D4] transition-colors py-2"
+                  >
+                    <span className="material-symbols-outlined text-[16px]">{showSeoFields ? 'expand_less' : 'expand_more'}</span>
+                    <span className="material-symbols-outlined text-[16px]">search</span>
+                    SEO Overrides (Optional)
+                    <span className="text-[10px] font-normal text-gray-400 ml-1">— leave blank for auto-generated values</span>
+                  </button>
+
+                  {showSeoFields && (
+                    <div className="grid grid-cols-1 md:grid-cols-12 gap-4 mt-2 p-4 bg-blue-50/50 border border-blue-100 rounded-2xl">
+                      <div className="md:col-span-6 flex flex-col gap-1">
+                        <label className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Canonical URL</label>
+                        <input
+                          type="text"
+                          value={seoCanonical}
+                          onChange={(e) => setSeoCanonical(e.target.value)}
+                          placeholder={`Auto: https://yakdastationery.com/products/${sku ? sku.toLowerCase().replace(/[^a-z0-9]+/g, '-') : 'product-slug'}`}
+                          className="w-full px-3.5 py-2 text-xs rounded-xl bg-white border border-gray-200 focus:outline-none focus:border-[#16A2D4] text-[#1A2A4E]"
+                        />
+                      </div>
+
+                      <div className="md:col-span-6 flex flex-col gap-1">
+                        <label className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">H1 Override</label>
+                        <input
+                          type="text"
+                          value={seoH1}
+                          onChange={(e) => setSeoH1(e.target.value)}
+                          placeholder={`Auto: ${name || 'Product Name'}`}
+                          className="w-full px-3.5 py-2 text-xs rounded-xl bg-white border border-gray-200 focus:outline-none focus:border-[#16A2D4] text-[#1A2A4E]"
+                        />
+                      </div>
+
+                      <div className="md:col-span-6 flex flex-col gap-1">
+                        <label className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Image ALT Text</label>
+                        <input
+                          type="text"
+                          value={seoImageAlt}
+                          onChange={(e) => setSeoImageAlt(e.target.value)}
+                          placeholder={`Auto: ${name || 'Product Name'} - ${category || 'Brand'}`}
+                          className="w-full px-3.5 py-2 text-xs rounded-xl bg-white border border-gray-200 focus:outline-none focus:border-[#16A2D4] text-[#1A2A4E]"
+                        />
+                      </div>
+
+                      <div className="md:col-span-6 flex flex-col gap-1">
+                        <label className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Open Graph Title</label>
+                        <input
+                          type="text"
+                          value={seoOgTitle}
+                          onChange={(e) => setSeoOgTitle(e.target.value)}
+                          placeholder={`Auto: ${name || 'Product Name'} | Yakda UAE`}
+                          className="w-full px-3.5 py-2 text-xs rounded-xl bg-white border border-gray-200 focus:outline-none focus:border-[#16A2D4] text-[#1A2A4E]"
+                        />
+                      </div>
+
+                      <div className="md:col-span-6 flex flex-col gap-1">
+                        <label className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Open Graph Description</label>
+                        <textarea
+                          value={seoOgDescription}
+                          onChange={(e) => setSeoOgDescription(e.target.value)}
+                          placeholder={`Auto: ${description ? description.substring(0, 80) + '...' : 'Product Description'}`}
+                          rows={2}
+                          className="w-full px-3.5 py-2 text-xs rounded-xl bg-white border border-gray-200 focus:outline-none focus:border-[#16A2D4] text-[#1A2A4E]"
+                        />
+                      </div>
+
+                      <div className="md:col-span-6 flex flex-col gap-1">
+                        <label className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Open Graph Image URL</label>
+                        <input
+                          type="text"
+                          value={seoOgImage}
+                          onChange={(e) => setSeoOgImage(e.target.value)}
+                          placeholder="Auto: Product Main Image"
+                          className="w-full px-3.5 py-2 text-xs rounded-xl bg-white border border-gray-200 focus:outline-none focus:border-[#16A2D4] text-[#1A2A4E]"
+                        />
+                      </div>
+
+                      <div className="md:col-span-12">
+                        <p className="text-[10px] text-gray-400 leading-relaxed">
+                          <strong>Auto-generated:</strong> Canonical URL from product slug • H1 from Product Name • Image ALT as &quot;Product Name - Brand&quot; • Product Schema from Name, SKU, Price, Availability • OG Title as &quot;Product Name | Yakda UAE&quot; • OG Description from Product Description • OG Image from Main Image • Breadcrumbs as Home → Category → Product
+                        </p>
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 <div className="md:col-span-12 flex justify-end gap-3 mt-2">

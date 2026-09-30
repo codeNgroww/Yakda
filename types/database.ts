@@ -48,6 +48,13 @@ export type Product = {
   in_stock?: boolean;
   created_at?: string;
   updated_at?: string;
+  // SEO Override Fields (all optional)
+  seo_canonical?: string | null;
+  seo_h1?: string | null;
+  seo_image_alt?: string | null;
+  seo_og_title?: string | null;
+  seo_og_description?: string | null;
+  seo_og_image?: string | null;
 };
 
 export type Brand = {
