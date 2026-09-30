@@ -14,17 +14,21 @@ import { Category, Product } from '@/types/database';
 
 interface GlobalNavProps {
   categories: Category[];
-  allProducts: Product[]; // needed for search modal
+  allProducts: Product[];
 }
 
 export default function GlobalNav({ categories, allProducts }: GlobalNavProps) {
   const router = useRouter();
   
   const {
+    cart,
     cartCount,
     wishlistCount,
     currentUser,
     isAdmin,
+    addToCart,
+    updateQuantity,
+    removeFromCart,
     login,
     logout,
     isCartOpen,
@@ -46,7 +50,6 @@ export default function GlobalNav({ categories, allProducts }: GlobalNavProps) {
   };
 
   const handleSelectCategory = (slug: string) => {
-    // Navigate to homepage with category selected or just go to home
     router.push(`/?category=${slug}`);
   };
 
@@ -71,8 +74,11 @@ export default function GlobalNav({ categories, allProducts }: GlobalNavProps) {
 
       <CartDrawer
         isOpen={isCartOpen}
+        cart={cart}
         onClose={() => setIsCartOpen(false)}
-        onCheckout={() => {
+        onUpdateQuantity={updateQuantity}
+        onRemoveItem={removeFromCart}
+        onInitiateCheckout={() => {
           setIsCartOpen(false);
           setIsCheckoutOpen(true);
         }}
@@ -82,16 +88,13 @@ export default function GlobalNav({ categories, allProducts }: GlobalNavProps) {
         isOpen={isSearchOpen}
         onClose={() => setIsSearchOpen(false)}
         products={allProducts}
-        onSelectProduct={(p) => {
-          setIsSearchOpen(false);
-          router.push(`/products/${p.slug}`);
-        }}
+        onAddToCart={addToCart}
       />
 
       <AuthModal
         isOpen={isAuthOpen}
         onClose={() => setIsAuthOpen(false)}
-        onLogin={login}
+        onLoginSuccess={login}
       />
 
       <ProfileModal
@@ -107,13 +110,23 @@ export default function GlobalNav({ categories, allProducts }: GlobalNavProps) {
       <OrdersModal
         isOpen={isOrdersOpen}
         onClose={() => setIsOrdersOpen(false)}
-        user={currentUser}
+        currentUser={currentUser}
+        onOpenAuth={() => {
+          setIsOrdersOpen(false);
+          setIsAuthOpen(true);
+        }}
       />
 
       <CheckoutModal
         isOpen={isCheckoutOpen}
+        cart={cart}
+        currentUser={currentUser}
         onClose={() => setIsCheckoutOpen(false)}
+        onOrderSuccess={() => {
+          setIsCheckoutOpen(false);
+        }}
       />
     </>
   );
 }
+
