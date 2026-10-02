@@ -9,10 +9,11 @@ export default function WhatsAppCTA() {
   const dragRef = useRef<{ startX: number; startY: number; startPosX: number; startPosY: number } | null>(null);
   const wasDragged = useRef(false);
   const btnRef = useRef<HTMLButtonElement>(null);
+  const popupRef = useRef<HTMLDivElement>(null);
 
   const phoneNumber = '97145534286';
   const message = encodeURIComponent('Hi Yakda! I would like to know more about your products.');
-  const whatsappUrl = `https://wa.me/${phoneNumber}?text=${message}`;
+  const whatsappUrl = `https://api.whatsapp.com/send?phone=${phoneNumber}&text=${message}`;
 
   const handlePointerDown = useCallback((e: React.PointerEvent) => {
     wasDragged.current = false;
@@ -62,7 +63,10 @@ export default function WhatsAppCTA() {
   useEffect(() => {
     if (!isExpanded) return;
     const handler = (e: MouseEvent) => {
-      if (btnRef.current && !btnRef.current.contains(e.target as Node)) {
+      if (
+        btnRef.current && !btnRef.current.contains(e.target as Node) &&
+        popupRef.current && !popupRef.current.contains(e.target as Node)
+      ) {
         setIsExpanded(false);
       }
     };
@@ -70,11 +74,16 @@ export default function WhatsAppCTA() {
     return () => document.removeEventListener('mousedown', handler);
   }, [isExpanded]);
 
+  const openWhatsApp = (e?: React.MouseEvent) => {
+    if (e) e.preventDefault();
+    window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
+  };
 
   return (
     <>
       {/* Tooltip bubble */}
       <div
+        ref={popupRef}
         className={`fixed z-[9999] bg-white rounded-2xl shadow-2xl border border-gray-100 p-4 w-[260px] transition-all duration-300 ${
           isExpanded
             ? 'opacity-100 scale-100 translate-y-0'
@@ -104,7 +113,8 @@ export default function WhatsAppCTA() {
           href={whatsappUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="mt-3 block w-full text-center bg-[#25D366] hover:bg-[#20bd5a] text-white text-sm font-bold py-2.5 rounded-xl transition-colors"
+          onClick={openWhatsApp}
+          className="mt-3 block w-full text-center bg-[#25D366] hover:bg-[#20bd5a] text-white text-sm font-bold py-2.5 rounded-xl transition-colors cursor-pointer"
         >
           Start Chat
         </a>
