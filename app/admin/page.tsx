@@ -2,8 +2,9 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import * as XLSX from 'xlsx';
 import { Product, Order, Category, Blog } from '@/types/database';
-import { fetchPaginatedProducts, fetchTotalProductCount, createProduct, updateProduct, deleteProduct, fetchCategories, createCategory } from '@/lib/actions/products';
+import { fetchPaginatedProducts, fetchTotalProductCount, createProduct, updateProduct, deleteProduct, fetchCategories, createCategory, fetchAllProductsForExport } from '@/lib/actions/products';
 import { fetchBlogs, createBlog, updateBlog, deleteBlog } from '@/lib/actions/blogs';
 import { fetchAllOrdersForAdmin, updateOrderStatusInDb } from '@/lib/actions/orders';
 import { createClient } from '@/lib/supabase/client';
@@ -23,7 +24,9 @@ export default function AdminPage() {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [pageSize] = useState<number>(20);
   const [searchQuery, setSearchQuery] = useState('');
+  const [inventoryCategoryFilter, setInventoryCategoryFilter] = useState('all');
   const [isLoadingProducts, setIsLoadingProducts] = useState(true);
+  const [isExportingCatalogue, setIsExportingCatalogue] = useState(false);
 
   // Orders State
   const [orders, setOrders] = useState<Order[]>([]);
@@ -112,7 +115,7 @@ export default function AdminPage() {
     const adminSession = sessionStorage.getItem('yakda_admin_logged_in') === 'true';
     if (adminSession) {
       setIsLoggedIn(true);
-      loadInventoryData(1, searchQuery);
+      loadInventoryData(1, searchQuery, inventoryCategoryFilter);
       loadCategoriesData();
       loadBlogsData();
       loadOrdersData();
@@ -121,17 +124,21 @@ export default function AdminPage() {
     }
   }, []);
 
-  const loadInventoryData = async (page: number = currentPage, query: string = searchQuery) => {
+  const loadInventoryData = async (
+    page: number = currentPage,
+    query: string = searchQuery,
+    catFilter: string = inventoryCategoryFilter
+  ) => {
     setIsLoadingProducts(true);
     try {
-      // 1. Get exact total product count (2910+)
+      // 1. Get exact total product count
       const count = await fetchTotalProductCount();
       setTotalInventoryCount(count);
 
-      // 2. Fetch paginated products range
-      const { products: paginatedData, totalCount: queryCount } = await fetchPaginatedProducts(page, pageSize, query);
+      // 2. Fetch paginated products range with optional category filter
+      const { products: paginatedData, totalCount: queryCount } = await fetchPaginatedProducts(page, pageSize, query, catFilter);
       setProducts(paginatedData);
-      if (query.trim()) {
+      if (query.trim() || (catFilter && catFilter !== 'all')) {
         setTotalInventoryCount(queryCount);
       }
     } catch (e) {
@@ -153,6 +160,110 @@ export default function AdminPage() {
     }
   };
 
+  const generateAutoSku = (categorySlug: string, titleName: string): string => {
+    const catPrefix = (categorySlug || 'GEN').replace(/[^a-zA-Z]/g, '').slice(0, 3).toUpperCase() || 'GEN';
+    const cleanTitle = (titleName || 'YAK').replace(/[^a-zA-Z0-9]/g, '').slice(0, 3).toUpperCase() || 'YAK';
+    const randomSuffix = Math.floor(10000 + Math.random() * 90000);
+    return `YAK-${catPrefix}-${cleanTitle}-${randomSuffix}`;
+  };
+
+  const handleExportCatalogueToExcel = async () => {
+    setIsExportingCatalogue(true);
+    try {
+      const allProducts = await fetchAllProductsForExport();
+      if (!allProducts || allProducts.length === 0) {
+        alert('No products available to export.');
+        return;
+      }
+
+      const exportData = allProducts.map((p, idx) => ({
+        'S.No': idx + 1,
+        'SKU Code': p.sku || 'N/A',
+        'Product Name': p.title || '',
+        'Category': p.category || '',
+        'Price (AED)': Number(p.price || 0).toFixed(2),
+        'Badge': p.badge || 'None',
+        'Image URL': p.image || '',
+        'Description': p.description || '',
+        'Created Date': p.created_at ? new Date(p.created_at).toLocaleDateString() : ''
+      }));
+
+      const worksheet = XLSX.utils.json_to_sheet(exportData);
+      worksheet['!cols'] = [
+        { wch: 6 },
+        { wch: 22 },
+        { wch: 45 },
+        { wch: 20 },
+        { wch: 15 },
+        { wch: 15 },
+        { wch: 35 },
+        { wch: 50 },
+        { wch: 15 }
+      ];
+
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, 'Catalogue');
+
+      const dateStr = new Date().toISOString().split('T')[0];
+      XLSX.writeFile(workbook, `Yakda_Catalogue_${dateStr}.xlsx`);
+    } catch (err: any) {
+      alert(`Failed to export catalogue: ${err.message}`);
+    } finally {
+      setIsExportingCatalogue(false);
+    }
+  };
+
+  const handleExportOrdersToExcel = () => {
+    try {
+      if (!filteredOrders || filteredOrders.length === 0) {
+        alert('No orders available to export.');
+        return;
+      }
+
+      const exportData = filteredOrders.map((ord, idx) => {
+        let itemsSummary = '';
+        if (Array.isArray(ord.items)) {
+          itemsSummary = ord.items
+            .map((it: any) => `${it.title} (Qty: ${it.quantity}, Price: AED ${Number(it.price || 0).toFixed(2)})`)
+            .join(' | ');
+        }
+
+        return {
+          'S.No': idx + 1,
+          'Order ID': ord.id,
+          'Order Date': ord.created_at ? new Date(ord.created_at).toLocaleString() : 'N/A',
+          'Customer Email': ord.customer_email || 'N/A',
+          'Customer Phone': ord.contact_phone || 'N/A',
+          'Order Status': (ord.status || 'pending').toUpperCase(),
+          'Delivery Address': ord.delivery_address || 'N/A',
+          'Items Purchased': itemsSummary,
+          'Total Amount (AED)': Number(ord.total_amount || 0).toFixed(2)
+        };
+      });
+
+      const worksheet = XLSX.utils.json_to_sheet(exportData);
+      worksheet['!cols'] = [
+        { wch: 6 },
+        { wch: 28 },
+        { wch: 22 },
+        { wch: 30 },
+        { wch: 20 },
+        { wch: 15 },
+        { wch: 45 },
+        { wch: 60 },
+        { wch: 18 }
+      ];
+
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, 'Customer Orders');
+
+      const dateStr = new Date().toISOString().split('T')[0];
+      XLSX.writeFile(workbook, `Yakda_Customer_Orders_${dateStr}.xlsx`);
+    } catch (err: any) {
+      alert(`Failed to export customer orders: ${err.message}`);
+    }
+  };
+
   const handleAdminLogin = (e: React.FormEvent) => {
     e.preventDefault();
     const cleanEmail = loginEmail.trim().toLowerCase();
@@ -161,7 +272,7 @@ export default function AdminPage() {
     if (isExactAdmin) {
       sessionStorage.setItem('yakda_admin_logged_in', 'true');
       setIsLoggedIn(true);
-      loadInventoryData(1, '');
+      loadInventoryData(1, '', 'all');
       loadCategoriesData();
       loadBlogsData();
       loadOrdersData();
@@ -178,7 +289,7 @@ export default function AdminPage() {
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setCurrentPage(1);
-    loadInventoryData(1, searchQuery);
+    loadInventoryData(1, searchQuery, inventoryCategoryFilter);
   };
 
   const handlePageChange = (newPage: number) => {
@@ -186,7 +297,7 @@ export default function AdminPage() {
     const maxPages = Math.ceil(totalInventoryCount / pageSize) || 1;
     if (newPage > maxPages) return;
     setCurrentPage(newPage);
-    loadInventoryData(newPage, searchQuery);
+    loadInventoryData(newPage, searchQuery, inventoryCategoryFilter);
     window.scrollTo({ top: 400, behavior: 'smooth' });
   };
 
@@ -247,8 +358,8 @@ export default function AdminPage() {
 
   const handleSaveProduct = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name.trim() || !sku.trim() || !price) {
-      alert('Please fill in Product Name, SKU code, and Price.');
+    if (!name.trim() || !price) {
+      alert('Please fill in Product Name and Price.');
       return;
     }
 
@@ -261,9 +372,14 @@ export default function AdminPage() {
         finalImg = imagePreview;
       }
 
+      let finalSku = sku.trim();
+      if (!editingProductId || !finalSku) {
+        finalSku = generateAutoSku(category, name);
+      }
+
       const productPayload: Partial<Product> = {
         title: name.trim(),
-        sku: sku.trim(),
+        sku: finalSku,
         category,
         price: parseFloat(price),
         badge: badge === 'none' ? null : badge,
@@ -283,11 +399,11 @@ export default function AdminPage() {
         alert('Product updated successfully!');
       } else {
         await createProduct(productPayload);
-        alert('Product created successfully!');
+        alert(`Product created successfully with Auto SKU: ${finalSku}`);
       }
 
       resetForm();
-      loadInventoryData(currentPage, searchQuery);
+      loadInventoryData(currentPage, searchQuery, inventoryCategoryFilter);
     } catch (err: any) {
       alert(`Error saving product: ${err.message}`);
     } finally {
@@ -588,7 +704,7 @@ export default function AdminPage() {
               </div>
 
               <form onSubmit={handleSaveProduct} className="grid grid-cols-1 md:grid-cols-12 gap-4">
-                <div className="md:col-span-6 flex flex-col gap-1">
+                <div className={editingProductId ? "md:col-span-6 flex flex-col gap-1" : "md:col-span-6 flex flex-col gap-1"}>
                   <label className="text-xs font-semibold text-[#1A2A4E]">Product Title *</label>
                   <input
                     type="text"
@@ -600,17 +716,17 @@ export default function AdminPage() {
                   />
                 </div>
 
-                <div className="md:col-span-3 flex flex-col gap-1">
-                  <label className="text-xs font-semibold text-[#1A2A4E]">SKU Code *</label>
-                  <input
-                    type="text"
-                    value={sku}
-                    onChange={(e) => setSku(e.target.value)}
-                    placeholder="e.g. DBL-A4-80"
-                    className="w-full px-3.5 py-2 text-xs rounded-xl bg-gray-50 border border-gray-200 focus:outline-none focus:border-[#16A2D4] text-[#1A2A4E]"
-                    required
-                  />
-                </div>
+                {editingProductId ? (
+                  <div className="md:col-span-3 flex flex-col gap-1">
+                    <label className="text-xs font-semibold text-[#1A2A4E]">SKU Code (Auto-generated)</label>
+                    <input
+                      type="text"
+                      value={sku}
+                      readOnly
+                      className="w-full px-3.5 py-2 text-xs rounded-xl bg-gray-100 border border-gray-200 font-mono font-bold text-gray-600 cursor-not-allowed"
+                    />
+                  </div>
+                ) : null}
 
                 <div className="md:col-span-3 flex flex-col gap-1">
                   <label className="text-xs font-semibold text-[#1A2A4E]">Category *</label>
@@ -636,7 +752,7 @@ export default function AdminPage() {
                     }}
                     className="w-full px-3.5 py-2 text-xs rounded-xl bg-gray-50 border border-gray-200 focus:outline-none focus:border-[#16A2D4] text-[#1A2A4E]"
                   >
-                    {categories.map((c) => (
+                    {categories.filter(c => c.slug !== 'all').map((c) => (
                       <option key={c.id || c.slug} value={c.slug}>
                         {c.name}
                       </option>
@@ -672,7 +788,7 @@ export default function AdminPage() {
                   </select>
                 </div>
 
-                <div className="md:col-span-6 flex flex-col gap-1">
+                <div className={editingProductId ? "md:col-span-6 flex flex-col gap-1" : "md:col-span-6 flex flex-col gap-1"}>
                   <label className="text-xs font-semibold text-[#1A2A4E]">Image Upload (&lt;200KB) / URL</label>
                   <div className="flex gap-2">
                     <input
@@ -823,19 +939,53 @@ export default function AdminPage() {
                   </p>
                 </div>
 
-                {/* Instant Inventory Search Form */}
-                <form onSubmit={handleSearchSubmit} className="w-full sm:w-80 relative flex items-center">
-                  <input
-                    type="text"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Search by Title, SKU, Category..."
-                    className="w-full pl-3.5 pr-10 py-2 text-xs rounded-xl bg-gray-50 border border-gray-200 focus:outline-none focus:border-[#16A2D4] text-[#1A2A4E]"
-                  />
-                  <button type="submit" className="absolute right-2 text-gray-400 hover:text-[#16A2D4]">
-                    <span className="material-symbols-outlined text-[20px]">search</span>
+                {/* Controls: Category Filter, Search, Excel Export */}
+                <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+                  {/* Category Filter Dropdown */}
+                  <select
+                    value={inventoryCategoryFilter}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      setInventoryCategoryFilter(val);
+                      setCurrentPage(1);
+                      loadInventoryData(1, searchQuery, val);
+                    }}
+                    className="px-3 py-2 text-xs rounded-xl bg-gray-50 border border-gray-200 focus:outline-none focus:border-[#16A2D4] text-[#1A2A4E]"
+                  >
+                    <option value="all">All Categories</option>
+                    {categories.filter(c => c.slug !== 'all').map((c) => (
+                      <option key={c.id || c.slug} value={c.slug}>
+                        {c.name}
+                      </option>
+                    ))}
+                  </select>
+
+                  {/* Search Form */}
+                  <form onSubmit={handleSearchSubmit} className="w-full sm:w-60 relative flex items-center">
+                    <input
+                      type="text"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      placeholder="Search Title, SKU, Category..."
+                      className="w-full pl-3.5 pr-10 py-2 text-xs rounded-xl bg-gray-50 border border-gray-200 focus:outline-none focus:border-[#16A2D4] text-[#1A2A4E]"
+                    />
+                    <button type="submit" className="absolute right-2 text-gray-400 hover:text-[#16A2D4]">
+                      <span className="material-symbols-outlined text-[20px]">search</span>
+                    </button>
+                  </form>
+
+                  {/* Excel Export Catalogue Button */}
+                  <button
+                    type="button"
+                    onClick={handleExportCatalogueToExcel}
+                    disabled={isExportingCatalogue}
+                    className="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow-sm transition-all flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+                    title="Export Catalogue to Excel (.xlsx)"
+                  >
+                    <span className="material-symbols-outlined text-[18px]">download</span>
+                    <span>{isExportingCatalogue ? 'Exporting...' : 'Export Catalogue Excel'}</span>
                   </button>
-                </form>
+                </div>
               </div>
 
               {/* Table */}
@@ -1115,12 +1265,12 @@ export default function AdminPage() {
                 </p>
               </div>
 
-              {/* Order Search Bar */}
+              {/* Order Controls: Status Filter, Search, Excel Export */}
               <div className="flex flex-col sm:flex-row items-center gap-2 w-full sm:w-auto">
                 <select
                   value={orderStatusFilter}
                   onChange={(e) => setOrderStatusFilter(e.target.value)}
-                  className="w-full sm:w-40 px-3 py-2 text-xs rounded-xl bg-gray-50 border border-gray-200 focus:outline-none focus:border-[#16A2D4] text-[#1A2A4E]"
+                  className="w-full sm:w-36 px-3 py-2 text-xs rounded-xl bg-gray-50 border border-gray-200 focus:outline-none focus:border-[#16A2D4] text-[#1A2A4E]"
                 >
                   <option value="all">All Statuses</option>
                   <option value="pending">Pending</option>
@@ -1129,7 +1279,7 @@ export default function AdminPage() {
                   <option value="delivered">Delivered</option>
                   <option value="cancelled">Cancelled</option>
                 </select>
-                <div className="w-full sm:w-64 relative flex items-center">
+                <div className="w-full sm:w-56 relative flex items-center">
                   <input
                     type="text"
                     value={orderSearchQuery}
@@ -1139,6 +1289,17 @@ export default function AdminPage() {
                   />
                   <span className="material-symbols-outlined text-[20px] text-gray-400 absolute right-3 pointer-events-none">search</span>
                 </div>
+
+                {/* Export Orders Excel Button */}
+                <button
+                  type="button"
+                  onClick={handleExportOrdersToExcel}
+                  className="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow-sm transition-all flex items-center gap-1.5 cursor-pointer"
+                  title="Export Customer Orders to Excel (.xlsx)"
+                >
+                  <span className="material-symbols-outlined text-[18px]">download</span>
+                  <span>Export Orders Excel</span>
+                </button>
               </div>
             </div>
 

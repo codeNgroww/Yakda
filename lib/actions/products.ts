@@ -38,16 +38,35 @@ export async function fetchTotalProductCount(): Promise<number> {
   return count || 0;
 }
 
+export async function fetchAllProductsForExport(): Promise<Product[]> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from('products')
+    .select('*')
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    console.error('Error fetching all products for export:', error);
+    return [];
+  }
+  return data || [];
+}
+
 export async function fetchPaginatedProducts(
   page: number = 1,
   pageSize: number = 20,
-  searchQuery: string = ''
+  searchQuery: string = '',
+  categoryFilter: string = 'all'
 ): Promise<{ products: Product[]; totalCount: number }> {
   const supabase = await createClient();
   const from = (page - 1) * pageSize;
   const to = page * pageSize - 1;
 
   let query = supabase.from('products').select('*', { count: 'exact' });
+
+  if (categoryFilter && categoryFilter !== 'all') {
+    query = query.eq('category', categoryFilter);
+  }
 
   if (searchQuery.trim()) {
     const q = `%${searchQuery.trim().toLowerCase()}%`;
@@ -71,40 +90,71 @@ export async function fetchPaginatedProducts(
 
 export async function fetchCategories(): Promise<Category[]> {
   const supabase = await createClient();
-  const { data, error } = await supabase
-    .from('categories')
-    .select('*');
-
-  let baseCategories = data || [];
-  if (error || baseCategories.length === 0) {
-    console.error('Error fetching categories or empty:', error?.message);
-    baseCategories = [
-      { id: '1', name: 'All', slug: 'all', icon: 'border_all' },
-      { id: '2', name: 'Writing & Pens', slug: 'writing', icon: 'edit_note' },
-      { id: '3', name: 'Paper & Envelopes', slug: 'paper', icon: 'description' },
-      { id: '4', name: 'Office Machines', slug: 'machines', icon: 'print' },
-      { id: '5', name: 'Executive Furniture', slug: 'furniture', icon: 'desk' },
-    ];
-  }
-
-  // Inject requested virtual categories at the top so they appear in the pill bar
-  const virtualCategories: Category[] = [
-    { id: 'vc-eco', name: 'Eco Friendly Picks', slug: 'eco', icon: 'eco' },
-    { id: 'vc-kawaii', name: 'Kawaii Stationery', slug: 'kawaii', icon: 'favorite' },
-    { id: 'vc-books', name: 'Books & Novels', slug: 'books', icon: 'menu_book' },
-    { id: 'vc-toys', name: 'Toys & Games', slug: 'toys', icon: 'toys' },
-    { id: 'vc-crafts', name: 'Arts & Crafts', slug: 'crafts', icon: 'palette' }
+  
+  // Standard storefront categories with clean display names & icons
+  const standardStorefrontCategories: Category[] = [
+    { id: 'cat-all', name: 'All Categories', slug: 'all', icon: 'border_all' },
+    { id: 'cat-writing', name: 'Writing & Pens', slug: 'writing', icon: 'edit_note' },
+    { id: 'cat-paper', name: 'Paper & Envelopes', slug: 'paper', icon: 'description' },
+    { id: 'cat-machines', name: 'Office Machines', slug: 'machines', icon: 'print' },
+    { id: 'cat-furniture', name: 'Executive Furniture', slug: 'furniture', icon: 'desk' },
+    { id: 'cat-eco', name: 'Eco Friendly Picks', slug: 'eco', icon: 'eco' },
+    { id: 'cat-kawaii', name: 'Kawaii Stationery', slug: 'kawaii', icon: 'favorite' },
+    { id: 'cat-books', name: 'Books & Novels', slug: 'books', icon: 'menu_book' },
+    { id: 'cat-toys', name: 'Toys & Games', slug: 'toys', icon: 'toys' },
+    { id: 'cat-crafts', name: 'Arts & Crafts', slug: 'crafts', icon: 'palette' },
+    { id: 'cat-labels', name: 'Labels & Tapes', slug: 'labels', icon: 'label' },
+    { id: 'cat-binders', name: 'Binders & Filing', slug: 'binders', icon: 'folder_open' },
+    { id: 'cat-basics', name: 'Office Supplies', slug: 'basics', icon: 'inventory_2' },
+    { id: 'cat-boards', name: 'Boards & Easels', slug: 'boards', icon: 'dashboard' },
+    { id: 'cat-storage', name: 'Storage Solutions', slug: 'storage', icon: 'inventory' },
+    { id: 'cat-shipping', name: 'Mailing & Shipping', slug: 'shipping', icon: 'local_shipping' },
+    { id: 'cat-print-copy', name: 'Print Room', slug: 'print-copy', icon: 'file_copy' },
+    { id: 'cat-computers', name: 'Computers & Tech', slug: 'computers', icon: 'laptop_mac' },
   ];
 
-  // Merge avoiding duplicates by slug
-  const allCategories = [...baseCategories];
-  for (const vc of virtualCategories) {
-    if (!allCategories.some(c => c.slug === vc.slug)) {
-      allCategories.push(vc);
-    }
+  const categoryMap = new Map<string, Category>();
+  standardStorefrontCategories.forEach(c => categoryMap.set(c.slug, c));
+
+  // 1. Merge categories table
+  const { data: dbCategories } = await supabase.from('categories').select('*');
+  if (dbCategories) {
+    dbCategories.forEach((c: any) => {
+      if (c.slug) {
+        const existing = categoryMap.get(c.slug);
+        categoryMap.set(c.slug, {
+          id: c.id || existing?.id || c.slug,
+          name: c.name || existing?.name || c.slug,
+          slug: c.slug,
+          icon: c.icon || existing?.icon || 'category'
+        });
+      }
+    });
   }
 
-  return allCategories;
+  // 2. Collect any unique categories stored on existing products
+  const { data: productCats } = await supabase.from('products').select('category');
+  if (productCats) {
+    productCats.forEach((p: any) => {
+      if (p.category && p.category.trim()) {
+        const slug = p.category.trim().toLowerCase();
+        if (!categoryMap.has(slug)) {
+          const formattedName = slug
+            .split(/[-_]+/)
+            .map((w: string) => w.charAt(0).toUpperCase() + w.slice(1))
+            .join(' ');
+          categoryMap.set(slug, {
+            id: `prod-cat-${slug}`,
+            name: formattedName,
+            slug: slug,
+            icon: 'category'
+          });
+        }
+      }
+    });
+  }
+
+  return Array.from(categoryMap.values());
 }
 
 export async function fetchSubCategories(): Promise<any[]> {
