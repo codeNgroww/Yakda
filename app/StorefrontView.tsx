@@ -417,12 +417,32 @@ export default function StorefrontView({
               <h3 className="text-2xl font-black uppercase tracking-wide text-[#1A2A4E]">
                 {activeCategory === 'all'
                   ? "Shop Catalog"
-                  : `Category: ${activeCategory}`}
+                  : `Category: ${categories.find(c => c.slug === activeCategory)?.name || activeCategory}`}
               </h3>
               <p className="text-xs md:text-sm mt-1 text-[#1A2A4E]/70">
                 Top engineered stationery essentials for your modern workspace
               </p>
             </div>
+          </div>
+
+          {/* Dedicated Category Search Option */}
+          <div className="w-full bg-white border border-[#16A2D4]/30 focus-within:border-[#16A2D4] rounded-2xl p-3 shadow-xs flex items-center gap-3 mb-4 transition-all">
+            <span className="material-symbols-outlined text-[22px] text-[#16A2D4]">search</span>
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder={`Search in ${activeCategory === 'all' ? 'All Items' : (categories.find(c => c.slug === activeCategory)?.name || activeCategory)}... (e.g. gel pens, A4 paper)`}
+              className="w-full text-xs sm:text-sm font-semibold text-[#1A2A4E] placeholder:text-gray-400 bg-transparent focus:outline-none"
+            />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery('')}
+                className="text-gray-400 hover:text-gray-600 p-1.5 rounded-full hover:bg-gray-100 transition-colors"
+              >
+                <span className="material-symbols-outlined text-[18px]">close</span>
+              </button>
+            )}
           </div>
 
           {/* Mobile Filter & Category Control Strip (< md) */}
