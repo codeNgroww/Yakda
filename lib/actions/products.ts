@@ -38,6 +38,8 @@ export async function fetchTotalProductCount(): Promise<number> {
   return count || 0;
 }
 
+import { STANDARD_CATEGORIES, normalizeCategorySlug, getCategoryAliases, isCategoryMatch } from '@/lib/utils/categories';
+
 export async function fetchAllProductsForExport(): Promise<Product[]> {
   const supabase = await createClient();
   const { data, error } = await supabase
@@ -65,7 +67,9 @@ export async function fetchPaginatedProducts(
   let query = supabase.from('products').select('*', { count: 'exact' });
 
   if (categoryFilter && categoryFilter !== 'all') {
-    query = query.eq('category', categoryFilter);
+    const aliases = getCategoryAliases(categoryFilter);
+    const orFilter = aliases.map(a => `category.ilike.${a}`).join(',');
+    query = query.or(orFilter);
   }
 
   if (searchQuery.trim()) {
@@ -91,43 +95,38 @@ export async function fetchPaginatedProducts(
 export async function fetchCategories(): Promise<Category[]> {
   const supabase = await createClient();
   
-  // Standard storefront categories with clean display names & icons
-  const standardStorefrontCategories: Category[] = [
-    { id: 'cat-all', name: 'All Categories', slug: 'all', icon: 'border_all' },
-    { id: 'cat-writing', name: 'Writing & Pens', slug: 'writing', icon: 'edit_note' },
-    { id: 'cat-paper', name: 'Paper & Envelopes', slug: 'paper', icon: 'description' },
-    { id: 'cat-machines', name: 'Office Machines', slug: 'machines', icon: 'print' },
-    { id: 'cat-furniture', name: 'Executive Furniture', slug: 'furniture', icon: 'desk' },
-    { id: 'cat-eco', name: 'Eco Friendly Picks', slug: 'eco', icon: 'eco' },
-    { id: 'cat-kawaii', name: 'Kawaii Stationery', slug: 'kawaii', icon: 'favorite' },
-    { id: 'cat-books', name: 'Books & Novels', slug: 'books', icon: 'menu_book' },
-    { id: 'cat-toys', name: 'Toys & Games', slug: 'toys', icon: 'toys' },
-    { id: 'cat-crafts', name: 'Arts & Crafts', slug: 'crafts', icon: 'palette' },
-    { id: 'cat-labels', name: 'Labels & Tapes', slug: 'labels', icon: 'label' },
-    { id: 'cat-binders', name: 'Binders & Filing', slug: 'binders', icon: 'folder_open' },
-    { id: 'cat-basics', name: 'Office Supplies', slug: 'basics', icon: 'inventory_2' },
-    { id: 'cat-boards', name: 'Boards & Easels', slug: 'boards', icon: 'dashboard' },
-    { id: 'cat-storage', name: 'Storage Solutions', slug: 'storage', icon: 'inventory' },
-    { id: 'cat-shipping', name: 'Mailing & Shipping', slug: 'shipping', icon: 'local_shipping' },
-    { id: 'cat-print-copy', name: 'Print Room', slug: 'print-copy', icon: 'file_copy' },
-    { id: 'cat-computers', name: 'Computers & Tech', slug: 'computers', icon: 'laptop_mac' },
-  ];
-
   const categoryMap = new Map<string, Category>();
-  standardStorefrontCategories.forEach(c => categoryMap.set(c.slug, c));
+  
+  STANDARD_CATEGORIES.forEach(c => {
+    categoryMap.set(c.slug, {
+      id: `cat-${c.slug}`,
+      name: c.name,
+      slug: c.slug,
+      icon: c.icon
+    });
+  });
 
   // 1. Merge categories table
   const { data: dbCategories } = await supabase.from('categories').select('*');
   if (dbCategories) {
     dbCategories.forEach((c: any) => {
-      if (c.slug) {
-        const existing = categoryMap.get(c.slug);
-        categoryMap.set(c.slug, {
-          id: c.id || existing?.id || c.slug,
-          name: c.name || existing?.name || c.slug,
-          slug: c.slug,
-          icon: c.icon || existing?.icon || 'category'
-        });
+      if (c.slug || c.name) {
+        const normSlug = normalizeCategorySlug(c.slug || c.name);
+        const existing = categoryMap.get(normSlug);
+        if (existing) {
+          categoryMap.set(normSlug, {
+            ...existing,
+            id: c.id || existing.id,
+            name: existing.name,
+          });
+        } else {
+          categoryMap.set(normSlug, {
+            id: c.id || normSlug,
+            name: c.name || normSlug,
+            slug: normSlug,
+            icon: c.icon || 'category'
+          });
+        }
       }
     });
   }
@@ -137,16 +136,16 @@ export async function fetchCategories(): Promise<Category[]> {
   if (productCats) {
     productCats.forEach((p: any) => {
       if (p.category && p.category.trim()) {
-        const slug = p.category.trim().toLowerCase();
-        if (!categoryMap.has(slug)) {
-          const formattedName = slug
+        const normSlug = normalizeCategorySlug(p.category.trim());
+        if (!categoryMap.has(normSlug)) {
+          const formattedName = normSlug
             .split(/[-_]+/)
             .map((w: string) => w.charAt(0).toUpperCase() + w.slice(1))
             .join(' ');
-          categoryMap.set(slug, {
-            id: `prod-cat-${slug}`,
+          categoryMap.set(normSlug, {
+            id: `prod-cat-${normSlug}`,
             name: formattedName,
-            slug: slug,
+            slug: normSlug,
             icon: 'category'
           });
         }

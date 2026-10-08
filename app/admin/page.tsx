@@ -5,6 +5,7 @@ import Link from 'next/link';
 import * as XLSX from 'xlsx';
 import { Product, Order, Category, Blog } from '@/types/database';
 import { fetchPaginatedProducts, fetchTotalProductCount, createProduct, updateProduct, deleteProduct, fetchCategories, createCategory, fetchAllProductsForExport } from '@/lib/actions/products';
+import { normalizeCategorySlug } from '@/lib/utils/categories';
 import { fetchBlogs, createBlog, updateBlog, deleteBlog } from '@/lib/actions/blogs';
 import { fetchAllOrdersForAdmin, updateOrderStatusInDb } from '@/lib/actions/orders';
 import { createClient } from '@/lib/supabase/client';
@@ -380,7 +381,7 @@ export default function AdminPage() {
       const productPayload: Partial<Product> = {
         title: name.trim(),
         sku: finalSku,
-        category,
+        category: normalizeCategorySlug(category),
         price: parseFloat(price),
         badge: badge === 'none' ? null : badge,
         description: description.trim(),
@@ -415,7 +416,7 @@ export default function AdminPage() {
     setEditingProductId(product.id);
     setName(product.title);
     setSku(product.sku);
-    setCategory(product.category || 'writing');
+    setCategory(normalizeCategorySlug(product.category || 'writing'));
     setPrice(product.price.toString());
     setBadge(product.badge || 'none');
     setDescription(product.description || '');

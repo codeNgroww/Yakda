@@ -23,6 +23,7 @@ import MobileFilterDrawer from '@/components/MobileFilterDrawer';
 import OrdersModal from '@/components/OrdersModal';
 import BrandMarquee from '@/components/BrandMarquee';
 import { useCart } from '@/context/CartContext';
+import { isCategoryMatch } from '@/lib/utils/categories';
 
 interface StorefrontViewProps {
   initialProducts: Product[];
@@ -98,19 +99,13 @@ export default function StorefrontView({
     if (activeCategory !== 'all') {
       const pCat = (p.category || '').toLowerCase();
       const combinedText = `${p.title} ${p.description || ''} ${p.badge || ''} ${pCat}`.toLowerCase();
-      if (activeCategory === 'eco') {
-        const isEcoMatch =
+      if (activeCategory === 'eco' || activeCategory === 'eco-friendly') {
+        const isStrictEco =
           pCat === 'eco' ||
-          combinedText.includes('recycled') ||
-          combinedText.includes('eco') ||
-          combinedText.includes('bamboo') ||
-          combinedText.includes('biodegradable') ||
-          combinedText.includes('sustainable') ||
-          combinedText.includes('fsc') ||
-          combinedText.includes('plastic-free') ||
-          combinedText.includes('kraft');
-
-        if (!isEcoMatch && p.is_eco_friendly !== true && !p.collection_ids?.includes('eco-friendly')) return false;
+          pCat === 'eco-friendly' ||
+          p.category_id === 'eco-friendly' ||
+          p.is_eco_friendly === true;
+        if (!isStrictEco) return false;
 
       } else if (activeCategory === 'kawaii') {
         const isKawaiiMatch = matchKeywords(p, ['color', 'colour', 'fun', 'sticker', 'pastel', 'pink', 'glitter']);
@@ -124,7 +119,7 @@ export default function StorefrontView({
       } else if (activeCategory === 'crafts') {
         const isCraftsMatch = matchKeywords(p, ['craft', 'art', 'paint', 'clay', 'diy', 'origami', 'glue', 'scissor', 'sketch']);
         if (!isCraftsMatch && p.category_id !== 'arts-crafts' && p.category !== 'arts-crafts') return false;
-      } else if (pCat !== activeCategory.toLowerCase()) {
+      } else if (!isCategoryMatch(p.category, activeCategory)) {
         return false;
       }
     }
@@ -173,11 +168,16 @@ export default function StorefrontView({
   const computersProducts = products.filter((p) => p.category === 'computers').slice(0, 8);
   const featuredProducts = products.slice(0, 12);
 
-  // Curated Virtual Collections (keyword-matched across all categories)
-  // Foolproof fallback: if strict taxonomy yields nothing (because migration hasn't run or is partial), fallback to keywords
-  let ecoProducts = products.filter((p: any) => p.is_eco_friendly === true || p.collection_ids?.includes('eco-friendly'));
-  if (ecoProducts.length === 0) ecoProducts = products.filter((p: any) => matchKeywords(p, ['recycl', 'eco', 'bamboo', 'biodegradable', 'sustainable', 'fsc', 'kraft', 'natural', 'green', 'organic']));
-  ecoProducts = ecoProducts.slice(0, 8);
+  // Curated Virtual Collections (Strict category matching for Eco Friendly)
+  let ecoProducts = products.filter((p: any) => {
+    const pCat = (p.category || '').toLowerCase();
+    return (
+      pCat === 'eco' ||
+      pCat === 'eco-friendly' ||
+      p.category_id === 'eco-friendly' ||
+      p.is_eco_friendly === true
+    );
+  }).slice(0, 8);
 
   let kawaiiProducts = products.filter((p: any) => p.collection_ids?.includes('kawaii-stationery'));
   if (kawaiiProducts.length === 0) kawaiiProducts = products.filter((p: any) => matchKeywords(p, ['color', 'colour', 'fun', 'sticker', 'pastel', 'pink', 'glitter']));
