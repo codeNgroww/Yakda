@@ -23,7 +23,7 @@ import MobileFilterDrawer from '@/components/MobileFilterDrawer';
 import OrdersModal from '@/components/OrdersModal';
 import BrandMarquee from '@/components/BrandMarquee';
 import { useCart } from '@/context/CartContext';
-import { isCategoryMatch } from '@/lib/utils/categories';
+import { isCategoryMatch, hasKnownCategory } from '@/lib/utils/categories';
 
 interface StorefrontViewProps {
   initialProducts: Product[];
@@ -98,8 +98,9 @@ export default function StorefrontView({
     // 1. Category Filter
     if (activeCategory !== 'all') {
       const pCat = (p.category || '').toLowerCase();
-      const combinedText = `${p.title} ${p.description || ''} ${p.badge || ''} ${pCat}`.toLowerCase();
+
       if (activeCategory === 'eco' || activeCategory === 'eco-friendly') {
+        // Strict eco check — no keyword fallback
         const isStrictEco =
           pCat === 'eco' ||
           pCat === 'eco-friendly' ||
@@ -108,17 +109,56 @@ export default function StorefrontView({
         if (!isStrictEco) return false;
 
       } else if (activeCategory === 'kawaii') {
-        const isKawaiiMatch = matchKeywords(p, ['color', 'colour', 'fun', 'sticker', 'pastel', 'pink', 'glitter']);
-        if (!isKawaiiMatch && !p.collection_ids?.includes('kawaii-stationery')) return false;
+        // First check direct category match
+        if (isCategoryMatch(p.category, 'kawaii')) {
+          // Direct match — include
+        } else if (p.collection_ids?.includes('kawaii-stationery')) {
+          // Collection match — include
+        } else if (!hasKnownCategory(p.category)) {
+          // Product has no recognized category — use keyword fallback
+          const isKawaiiMatch = matchKeywords(p, ['color', 'colour', 'fun', 'sticker', 'pastel', 'pink', 'glitter']);
+          if (!isKawaiiMatch) return false;
+        } else {
+          // Product has a different known category — exclude
+          return false;
+        }
+
       } else if (activeCategory === 'books') {
-        const isBooksMatch = matchKeywords(p, ['book', 'notebook', 'journal', 'diary', 'planner', 'ruled', 'spiral', 'hardcover', 'writing pad', 'exercise']);
-        if (!isBooksMatch && p.category_id !== 'books-novels' && p.category !== 'books-novels') return false;
+        if (isCategoryMatch(p.category, 'books')) {
+          // Direct match — include
+        } else if (p.category_id === 'books-novels' || p.category === 'books-novels') {
+          // Legacy category_id match — include
+        } else if (!hasKnownCategory(p.category)) {
+          const isBooksMatch = matchKeywords(p, ['book', 'notebook', 'journal', 'diary', 'planner', 'ruled', 'spiral', 'hardcover', 'writing pad', 'exercise']);
+          if (!isBooksMatch) return false;
+        } else {
+          return false;
+        }
+
       } else if (activeCategory === 'toys') {
-        const isToysMatch = matchKeywords(p, ['toy', 'game', 'puzzle', 'play', 'craft kit', 'activity', 'clay', 'paint', 'crayon', 'pencil color', 'colour pencil', 'drawing']);
-        if (!isToysMatch && p.category_id !== 'toys-games' && p.category !== 'toys-games') return false;
+        if (isCategoryMatch(p.category, 'toys')) {
+          // Direct match — include
+        } else if (p.category_id === 'toys-games' || p.category === 'toys-games') {
+          // Legacy match — include
+        } else if (!hasKnownCategory(p.category)) {
+          const isToysMatch = matchKeywords(p, ['toy', 'game', 'puzzle', 'play', 'craft kit', 'activity', 'clay', 'paint', 'crayon', 'pencil color', 'colour pencil', 'drawing']);
+          if (!isToysMatch) return false;
+        } else {
+          return false;
+        }
+
       } else if (activeCategory === 'crafts') {
-        const isCraftsMatch = matchKeywords(p, ['craft', 'art', 'paint', 'clay', 'diy', 'origami', 'glue', 'scissor', 'sketch']);
-        if (!isCraftsMatch && p.category_id !== 'arts-crafts' && p.category !== 'arts-crafts') return false;
+        if (isCategoryMatch(p.category, 'crafts')) {
+          // Direct match — include
+        } else if (p.category_id === 'arts-crafts' || p.category === 'arts-crafts') {
+          // Legacy match — include
+        } else if (!hasKnownCategory(p.category)) {
+          const isCraftsMatch = matchKeywords(p, ['craft', 'art', 'paint', 'clay', 'diy', 'origami', 'glue', 'scissor', 'sketch']);
+          if (!isCraftsMatch) return false;
+        } else {
+          return false;
+        }
+
       } else if (!isCategoryMatch(p.category, activeCategory)) {
         return false;
       }
@@ -179,16 +219,28 @@ export default function StorefrontView({
     );
   }).slice(0, 8);
 
-  let kawaiiProducts = products.filter((p: any) => p.collection_ids?.includes('kawaii-stationery'));
-  if (kawaiiProducts.length === 0) kawaiiProducts = products.filter((p: any) => matchKeywords(p, ['color', 'colour', 'fun', 'sticker', 'pastel', 'pink', 'glitter']));
+  let kawaiiProducts = products.filter((p: any) => {
+    if (isCategoryMatch(p.category, 'kawaii')) return true;
+    if (p.collection_ids?.includes('kawaii-stationery')) return true;
+    if (hasKnownCategory(p.category)) return false; // Don't keyword-match products with a known different category
+    return matchKeywords(p, ['color', 'colour', 'fun', 'sticker', 'pastel', 'pink', 'glitter']);
+  });
   kawaiiProducts = kawaiiProducts.slice(0, 8);
 
-  let booksProducts = products.filter((p: any) => p.category_id === 'books-novels' || p.category === 'books-novels');
-  if (booksProducts.length === 0) booksProducts = products.filter((p: any) => matchKeywords(p, ['book', 'notebook', 'journal', 'diary', 'planner', 'ruled', 'spiral', 'hardcover', 'writing pad', 'exercise']));
+  let booksProducts = products.filter((p: any) => {
+    if (isCategoryMatch(p.category, 'books')) return true;
+    if (p.category_id === 'books-novels' || p.category === 'books-novels') return true;
+    if (hasKnownCategory(p.category)) return false;
+    return matchKeywords(p, ['book', 'notebook', 'journal', 'diary', 'planner', 'ruled', 'spiral', 'hardcover', 'writing pad', 'exercise']);
+  });
   booksProducts = booksProducts.slice(0, 8);
 
-  let toysProducts = products.filter((p: any) => p.category_id === 'toys-games' || p.category === 'toys-games');
-  if (toysProducts.length === 0) toysProducts = products.filter((p: any) => matchKeywords(p, ['toy', 'game', 'puzzle', 'play', 'craft kit', 'activity', 'clay', 'paint', 'crayon', 'pencil color', 'colour pencil', 'drawing']));
+  let toysProducts = products.filter((p: any) => {
+    if (isCategoryMatch(p.category, 'toys')) return true;
+    if (p.category_id === 'toys-games' || p.category === 'toys-games') return true;
+    if (hasKnownCategory(p.category)) return false;
+    return matchKeywords(p, ['toy', 'game', 'puzzle', 'play', 'craft kit', 'activity', 'clay', 'paint', 'crayon', 'pencil color', 'colour pencil', 'drawing']);
+  });
   toysProducts = toysProducts.slice(0, 8);
 
   // Initiate Checkout

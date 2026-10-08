@@ -55,3 +55,15 @@ export function isCategoryMatch(productCat: string, targetSlug: string): boolean
   const targetNorm = normalizeCategorySlug(targetSlug);
   return prodNorm === targetNorm;
 }
+
+/**
+ * Returns true if the product's category resolves to a known standard category
+ * (i.e. not a fallback slug and not 'all'). Used to prevent keyword-based
+ * matching from overriding a product's explicitly assigned category.
+ */
+export function hasKnownCategory(productCat: string): boolean {
+  if (!productCat || !productCat.trim()) return false;
+  const norm = normalizeCategorySlug(productCat);
+  return STANDARD_CATEGORIES.some(c => c.slug === norm && c.slug !== 'all');
+}
+
