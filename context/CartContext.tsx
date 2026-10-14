@@ -41,6 +41,12 @@ interface CartContextType {
   isCheckoutOpen: boolean;
   setIsCheckoutOpen: (open: boolean) => void;
 
+  // Checkout Selection
+  checkoutItems: CartItem[];
+  isDirectBuyNow: boolean;
+  initiateCheckout: () => void;
+  closeCheckout: () => void;
+
   // Toast
   toast: ToastType | null;
   showToast: (message: string, variant?: 'success' | 'error' | 'info') => void;
@@ -64,6 +70,10 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isOrdersOpen, setIsOrdersOpen] = useState(false);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
+
+  // Dedicated checkout item selection (for Buy Now vs full Cart Checkout)
+  const [checkoutItems, setCheckoutItems] = useState<CartItem[]>([]);
+  const [isDirectBuyNow, setIsDirectBuyNow] = useState(false);
 
   // Toast
   const [toast, setToast] = useState<ToastType | null>(null);
@@ -162,42 +172,44 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     showToast(`${product.title} added to cart`, 'success');
   }, [currentUser, cart, showToast]);
 
-  // Buy Now: add to cart silently (no drawer), then go straight to checkout
+  // Buy Now: selects ONLY that product (with selected quantity) for checkout
   const buyNow = useCallback((product: Product, quantity: number = 1) => {
-    setCart((prev) => {
-      const existing = prev.find((item) => item.id === product.id);
-      if (existing) {
-        return prev.map((item) =>
-          item.id === product.id ? { ...item, quantity: existing.quantity + quantity } : item
-        );
-      }
-      return [
-        ...prev,
-        {
-          id: product.id,
-          sku: product.sku,
-          title: product.title,
-          price: Number(product.price),
-          quantity,
-          image: product.image,
-        },
-      ];
-    });
+    const directItem: CartItem = {
+      id: product.id,
+      sku: product.sku,
+      title: product.title,
+      price: Number(product.price),
+      quantity,
+      image: product.image,
+    };
+    setCheckoutItems([directItem]);
+    setIsDirectBuyNow(true);
+    setIsCartOpen(false);
+    setIsCheckoutOpen(true);
+  }, []);
 
-    // Sync to DB if logged in
-    if (currentUser?.id) {
-      const existing = cart.find((item) => item.id === product.id);
-      const finalQty = existing ? existing.quantity + quantity : quantity;
-      syncCartItemToDb(currentUser.id, product.id, finalQty);
-    }
+  // Initiate Checkout from Cart Drawer: selects all cart items
+  const initiateCheckout = useCallback(() => {
+    setCheckoutItems(cart);
+    setIsDirectBuyNow(false);
+    setIsCartOpen(false);
+    setIsCheckoutOpen(true);
+  }, [cart]);
 
-    // Go directly to checkout (or auth if not logged in)
-    if (!currentUser) {
-      setIsAuthOpen(true);
-    } else {
-      setIsCheckoutOpen(true);
+  // Close Checkout Modal & reset checkout selection
+  const closeCheckout = useCallback(() => {
+    setIsCheckoutOpen(false);
+    setIsDirectBuyNow(false);
+    setCheckoutItems([]);
+  }, []);
+
+  const handleSetIsCheckoutOpen = useCallback((open: boolean) => {
+    setIsCheckoutOpen(open);
+    if (!open) {
+      setIsDirectBuyNow(false);
+      setCheckoutItems([]);
     }
-  }, [currentUser, cart]);
+  }, []);
 
   const updateQuantity = useCallback((id: string, newQty: number) => {
     setCart((prev) => {
@@ -289,7 +301,11 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         isOrdersOpen,
         setIsOrdersOpen,
         isCheckoutOpen,
-        setIsCheckoutOpen,
+        setIsCheckoutOpen: handleSetIsCheckoutOpen,
+        checkoutItems,
+        isDirectBuyNow,
+        initiateCheckout,
+        closeCheckout,
         toast,
         showToast,
       }}

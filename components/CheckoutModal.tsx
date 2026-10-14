@@ -12,6 +12,7 @@ interface CheckoutModalProps {
   currentUser: UserProfile | null;
   onClose: () => void;
   onOrderSuccess: () => void;
+  isDirectBuyNow?: boolean;
 }
 
 export default function CheckoutModal({
@@ -20,6 +21,7 @@ export default function CheckoutModal({
   currentUser,
   onClose,
   onOrderSuccess,
+  isDirectBuyNow = false,
 }: CheckoutModalProps) {
   const [phone, setPhone] = useState('');
   const [address, setAddress] = useState('');
@@ -52,7 +54,7 @@ export default function CheckoutModal({
         deliveryAddress: address.trim(),
       });
 
-      if (currentUser?.id) {
+      if (currentUser?.id && !isDirectBuyNow) {
         await clearCartInDb(currentUser.id);
       }
 

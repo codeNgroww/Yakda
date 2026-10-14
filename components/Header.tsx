@@ -20,6 +20,7 @@ interface HeaderProps {
   searchQuery: string;
   onSearchChange: (query: string) => void;
   categories?: Category[];
+  hideMobileNav?: boolean;
 }
 
 export default function Header({
@@ -37,6 +38,7 @@ export default function Header({
   searchQuery,
   onSearchChange,
   categories = [],
+  hideMobileNav = false,
 }: HeaderProps) {
   const [activeMobileTab, setActiveMobileTab] = useState<'home' | 'orders' | 'favorites' | 'account' | 'cart'>('home');
   const [isMegaMenuOpen, setIsMegaMenuOpen] = useState(false);
@@ -156,16 +158,16 @@ export default function Header({
               )}
             </nav>
 
-            {/* Desktop Cart Trigger */}
+            {/* Cart Trigger */}
             <button
               onClick={onOpenCart}
-              className="hidden md:flex relative px-4 py-2 bg-[#1A2A4E] hover:bg-[#13203c] text-white text-xs font-bold rounded-xl shadow-xs transition-all items-center gap-2 btn-press"
+              className={`${hideMobileNav ? 'flex' : 'hidden md:flex'} relative px-3 md:px-4 py-2 bg-[#1A2A4E] hover:bg-[#13203c] text-white text-xs font-bold rounded-xl shadow-xs transition-all items-center gap-2 btn-press`}
               title="Shopping Cart"
             >
               <span className="material-symbols-outlined text-[20px] text-[#16A2D4]">shopping_cart</span>
-              <span>Cart</span>
+              <span className="hidden sm:inline">Cart</span>
               {cartCount > 0 && (
-                <span className="ml-1 px-2 py-0.5 bg-[#D93630] text-white text-[11px] font-black rounded-full">
+                <span className="ml-0.5 md:ml-1 px-1.5 md:px-2 py-0.5 bg-[#D93630] text-white text-[10px] md:text-[11px] font-black rounded-full">
                   {cartCount}
                 </span>
               )}
@@ -209,122 +211,124 @@ export default function Header({
       </header>
 
       {/* Instagram-Style Mobile Bottom Navigation Bar */}
-      <nav className="fixed bottom-0 inset-x-0 z-50 md:hidden bg-[#1A2A4E] text-white border-t border-white/10 shadow-[0_-4px_20px_rgba(0,0,0,0.25)] pb-safe backdrop-blur-lg">
-        <div className="grid grid-cols-5 h-16 max-w-md mx-auto items-center">
-          
-          {/* Tab 1: Home */}
-          <button
-            onClick={() => scrollToSection('top', 'home')}
-            className={`flex flex-col items-center justify-center py-1 transition-all active:scale-90 ${
-              activeMobileTab === 'home' ? 'text-[#16A2D4]' : 'text-white/70 hover:text-white'
-            }`}
-          >
-            <span
-              className="material-symbols-outlined text-[24px] mb-0.5"
-              style={{ fontVariationSettings: activeMobileTab === 'home' ? "'FILL' 1" : "'FILL' 0" }}
+      {!hideMobileNav && (
+        <nav className="fixed bottom-0 inset-x-0 z-50 md:hidden bg-[#1A2A4E] text-white border-t border-white/10 shadow-[0_-4px_20px_rgba(0,0,0,0.25)] pb-safe backdrop-blur-lg">
+          <div className="grid grid-cols-5 h-16 max-w-md mx-auto items-center">
+            
+            {/* Tab 1: Home */}
+            <button
+              onClick={() => scrollToSection('top', 'home')}
+              className={`flex flex-col items-center justify-center py-1 transition-all active:scale-90 ${
+                activeMobileTab === 'home' ? 'text-[#16A2D4]' : 'text-white/70 hover:text-white'
+              }`}
             >
-              home
-            </span>
-            <span className="text-[10px] font-semibold tracking-tight">Home</span>
-          </button>
-
-          {/* Tab 2: Orders */}
-          <button
-            onClick={() => {
-              setActiveMobileTab('orders');
-              if (onOpenOrders) onOpenOrders();
-            }}
-            className={`flex flex-col items-center justify-center py-1 transition-all active:scale-90 ${
-              activeMobileTab === 'orders' ? 'text-[#16A2D4]' : 'text-white/70 hover:text-white'
-            }`}
-          >
-            <span
-              className="material-symbols-outlined text-[24px] mb-0.5"
-              style={{ fontVariationSettings: activeMobileTab === 'orders' ? "'FILL' 1" : "'FILL' 0" }}
-            >
-              receipt_long
-            </span>
-            <span className="text-[10px] font-semibold tracking-tight">Orders</span>
-          </button>
-
-          {/* Tab 3: Favorites */}
-          <button
-            onClick={() => scrollToSection('favorites-section', 'favorites')}
-            className={`relative flex flex-col items-center justify-center py-1 transition-all active:scale-90 ${
-              activeMobileTab === 'favorites' ? 'text-[#16A2D4]' : 'text-white/70 hover:text-white'
-            }`}
-          >
-            <span
-              className="material-symbols-outlined text-[24px] mb-0.5"
-              style={{ fontVariationSettings: activeMobileTab === 'favorites' ? "'FILL' 1" : "'FILL' 0" }}
-            >
-              favorite
-            </span>
-            <span className="text-[10px] font-semibold tracking-tight">Favorites</span>
-            {wishlistCount > 0 && (
-              <span className="absolute top-1.5 right-3 min-w-[15px] h-[15px] px-1 bg-[#F4B21B] text-[#1A2A4E] text-[9px] font-black rounded-full flex items-center justify-center shadow-xs">
-                {wishlistCount}
-              </span>
-            )}
-          </button>
-
-          {/* Tab 4: Account */}
-          <button
-            onClick={() => {
-              setActiveMobileTab('account');
-              currentUser ? onOpenProfile() : onOpenAuth();
-            }}
-            className={`flex flex-col items-center justify-center py-1 transition-all active:scale-90 ${
-              activeMobileTab === 'account' ? 'text-[#16A2D4]' : 'text-white/70 hover:text-white'
-            }`}
-          >
-            {currentUser ? (
-              <div
-                className={`w-6 h-6 rounded-full flex items-center justify-center font-bold text-[11px] mb-0.5 border ${
-                  activeMobileTab === 'account'
-                    ? 'bg-[#16A2D4] text-white border-white'
-                    : 'bg-white/20 text-white border-white/40'
-                }`}
-              >
-                {(currentUser.email || 'U')[0].toUpperCase()}
-              </div>
-            ) : (
               <span
                 className="material-symbols-outlined text-[24px] mb-0.5"
-                style={{ fontVariationSettings: activeMobileTab === 'account' ? "'FILL' 1" : "'FILL' 0" }}
+                style={{ fontVariationSettings: activeMobileTab === 'home' ? "'FILL' 1" : "'FILL' 0" }}
               >
-                account_circle
+                home
               </span>
-            )}
-            <span className="text-[10px] font-semibold tracking-tight">Account</span>
-          </button>
+              <span className="text-[10px] font-semibold tracking-tight">Home</span>
+            </button>
 
-          {/* Tab 5: Cart */}
-          <button
-            onClick={() => {
-              setActiveMobileTab('cart');
-              onOpenCart();
-            }}
-            className={`relative flex flex-col items-center justify-center py-1 transition-all active:scale-90 ${
-              activeMobileTab === 'cart' ? 'text-[#16A2D4]' : 'text-white/70 hover:text-white'
-            }`}
-          >
-            <span
-              className="material-symbols-outlined text-[24px] mb-0.5"
-              style={{ fontVariationSettings: activeMobileTab === 'cart' ? "'FILL' 1" : "'FILL' 0" }}
+            {/* Tab 2: Orders */}
+            <button
+              onClick={() => {
+                setActiveMobileTab('orders');
+                if (onOpenOrders) onOpenOrders();
+              }}
+              className={`flex flex-col items-center justify-center py-1 transition-all active:scale-90 ${
+                activeMobileTab === 'orders' ? 'text-[#16A2D4]' : 'text-white/70 hover:text-white'
+              }`}
             >
-              shopping_cart
-            </span>
-            <span className="text-[10px] font-semibold tracking-tight">Cart</span>
-            {cartCount > 0 && (
-              <span className="absolute top-1 right-2.5 min-w-[16px] h-[16px] px-1 bg-[#D93630] text-white text-[9px] font-black rounded-full flex items-center justify-center shadow-xs">
-                {cartCount}
+              <span
+                className="material-symbols-outlined text-[24px] mb-0.5"
+                style={{ fontVariationSettings: activeMobileTab === 'orders' ? "'FILL' 1" : "'FILL' 0" }}
+              >
+                receipt_long
               </span>
-            )}
-          </button>
+              <span className="text-[10px] font-semibold tracking-tight">Orders</span>
+            </button>
 
-        </div>
-      </nav>
+            {/* Tab 3: Favorites */}
+            <button
+              onClick={() => scrollToSection('favorites-section', 'favorites')}
+              className={`relative flex flex-col items-center justify-center py-1 transition-all active:scale-90 ${
+                activeMobileTab === 'favorites' ? 'text-[#16A2D4]' : 'text-white/70 hover:text-white'
+              }`}
+            >
+              <span
+                className="material-symbols-outlined text-[24px] mb-0.5"
+                style={{ fontVariationSettings: activeMobileTab === 'favorites' ? "'FILL' 1" : "'FILL' 0" }}
+              >
+                favorite
+              </span>
+              <span className="text-[10px] font-semibold tracking-tight">Favorites</span>
+              {wishlistCount > 0 && (
+                <span className="absolute top-1.5 right-3 min-w-[15px] h-[15px] px-1 bg-[#F4B21B] text-[#1A2A4E] text-[9px] font-black rounded-full flex items-center justify-center shadow-xs">
+                  {wishlistCount}
+                </span>
+              )}
+            </button>
+
+            {/* Tab 4: Account */}
+            <button
+              onClick={() => {
+                setActiveMobileTab('account');
+                currentUser ? onOpenProfile() : onOpenAuth();
+              }}
+              className={`flex flex-col items-center justify-center py-1 transition-all active:scale-90 ${
+                activeMobileTab === 'account' ? 'text-[#16A2D4]' : 'text-white/70 hover:text-white'
+              }`}
+            >
+              {currentUser ? (
+                <div
+                  className={`w-6 h-6 rounded-full flex items-center justify-center font-bold text-[11px] mb-0.5 border ${
+                    activeMobileTab === 'account'
+                      ? 'bg-[#16A2D4] text-white border-white'
+                      : 'bg-white/20 text-white border-white/40'
+                  }`}
+                >
+                  {(currentUser.email || 'U')[0].toUpperCase()}
+                </div>
+              ) : (
+                <span
+                  className="material-symbols-outlined text-[24px] mb-0.5"
+                  style={{ fontVariationSettings: activeMobileTab === 'account' ? "'FILL' 1" : "'FILL' 0" }}
+                >
+                  account_circle
+                </span>
+              )}
+              <span className="text-[10px] font-semibold tracking-tight">Account</span>
+            </button>
+
+            {/* Tab 5: Cart */}
+            <button
+              onClick={() => {
+                setActiveMobileTab('cart');
+                onOpenCart();
+              }}
+              className={`relative flex flex-col items-center justify-center py-1 transition-all active:scale-90 ${
+                activeMobileTab === 'cart' ? 'text-[#16A2D4]' : 'text-white/70 hover:text-white'
+              }`}
+            >
+              <span
+                className="material-symbols-outlined text-[24px] mb-0.5"
+                style={{ fontVariationSettings: activeMobileTab === 'cart' ? "'FILL' 1" : "'FILL' 0" }}
+              >
+                shopping_cart
+              </span>
+              <span className="text-[10px] font-semibold tracking-tight">Cart</span>
+              {cartCount > 0 && (
+                <span className="absolute top-1 right-2.5 min-w-[16px] h-[16px] px-1 bg-[#D93630] text-white text-[9px] font-black rounded-full flex items-center justify-center shadow-xs">
+                  {cartCount}
+                </span>
+              )}
+            </button>
+
+          </div>
+        </nav>
+      )}
     </>
   );
 }

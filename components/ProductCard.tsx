@@ -10,7 +10,6 @@ interface ProductCardProps {
   isFavorite: boolean;
   onToggleFavorite: (product: Product) => void;
   onAddToCart: (product: Product) => void;
-  onBuyNow?: (product: Product) => void;
   onQuickView?: (product: Product) => void;
   isEcoTheme?: boolean;
 }
@@ -20,7 +19,6 @@ export default function ProductCard({
   isFavorite,
   onToggleFavorite,
   onAddToCart,
-  onBuyNow,
   onQuickView,
   isEcoTheme,
 }: ProductCardProps) {
@@ -115,28 +113,16 @@ export default function ProductCard({
           </div>
 
           {/* Action Buttons Row */}
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center">
             {/* Add to Cart Button in Vibrant Cyan (#16A2D4) */}
             <button
               onClick={() => onAddToCart(product)}
-              className="flex-1 px-2 py-2 bg-[#16A2D4] hover:bg-[#1288b3] text-white rounded-xl shadow-xs transition-all btn-press flex items-center justify-center gap-1 text-xs font-bold"
+              className="w-full py-2 px-3 bg-[#16A2D4] hover:bg-[#1288b3] text-white rounded-xl shadow-xs transition-all btn-press flex items-center justify-center gap-1.5 text-xs font-bold"
               title="Add to Cart"
             >
               <span className="material-symbols-outlined text-[16px]">add_shopping_cart</span>
-              <span className="hidden sm:inline">Cart</span>
+              <span>Add to Cart</span>
             </button>
-
-            {/* Buy Now Button in Green */}
-            {onBuyNow && (
-              <button
-                onClick={() => onBuyNow(product)}
-                className="flex-1 px-2 py-2 bg-[#1A8C5B] hover:bg-[#15703F] text-white rounded-xl shadow-xs transition-all btn-press flex items-center justify-center gap-1 text-xs font-bold"
-                title="Buy Now"
-              >
-                <span className="material-symbols-outlined text-[16px]">shopping_bag</span>
-                <span className="hidden sm:inline">Buy</span>
-              </button>
-            )}
           </div>
         </div>
       </div>

@@ -66,6 +66,13 @@ export default function StorefrontView({
     setIsProfileOpen,
     isOrdersOpen,
     setIsOrdersOpen,
+    isCheckoutOpen,
+    setIsCheckoutOpen,
+    checkoutItems,
+    isDirectBuyNow,
+    initiateCheckout,
+    closeCheckout,
+    clearCart,
     showToast
   } = useCart();
 
@@ -73,7 +80,6 @@ export default function StorefrontView({
 
   // Modals & Mobile Drawers state
   const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const [isMobileCategoryOpen, setIsMobileCategoryOpen] = useState(false);
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
   const [quickViewProduct, setQuickViewProduct] = useState<Product | null>(null);
@@ -243,16 +249,7 @@ export default function StorefrontView({
   });
   toysProducts = toysProducts.slice(0, 8);
 
-  // Initiate Checkout
-  const handleInitiateCheckout = () => {
-    if (!currentUser) {
-      setIsCartOpen(false);
-      setIsAuthOpen(true);
-      return;
-    }
-    setIsCartOpen(false);
-    setIsCheckoutOpen(true);
-  };
+
 
   return (
     <div className="min-h-screen flex flex-col justify-between pb-16 md:pb-0">
@@ -599,7 +596,7 @@ export default function StorefrontView({
         onClose={() => setIsCartOpen(false)}
         onUpdateQuantity={updateQuantity}
         onRemoveItem={removeFromCart}
-        onInitiateCheckout={handleInitiateCheckout}
+        onInitiateCheckout={initiateCheckout}
       />
 
       <SearchModal
@@ -624,10 +621,12 @@ export default function StorefrontView({
 
       <CheckoutModal
         isOpen={isCheckoutOpen}
-        cart={cart}
+        cart={checkoutItems.length > 0 ? checkoutItems : cart}
+        isDirectBuyNow={isDirectBuyNow}
         currentUser={currentUser}
-        onClose={() => setIsCheckoutOpen(false)}
+        onClose={closeCheckout}
         onOrderSuccess={() => {
+          if (!isDirectBuyNow) clearCart();
           showToast('Order saved! Redirecting to WhatsApp to send confirmation...', 'success');
         }}
       />

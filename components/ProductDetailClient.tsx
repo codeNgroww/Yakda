@@ -8,6 +8,10 @@ import Footer from '@/components/Footer';
 import { useCart } from '@/context/CartContext';
 import ProductCard from '@/components/ProductCard';
 import CheckoutModal from '@/components/CheckoutModal';
+import CartDrawer from '@/components/CartDrawer';
+import AuthModal from '@/components/AuthModal';
+import ProfileModal from '@/components/ProfileModal';
+import OrdersModal from '@/components/OrdersModal';
 
 interface ProductDetailClientProps {
   product: Product;
@@ -28,13 +32,26 @@ export default function ProductDetailClient({ product, relatedProducts, brand, c
     buyNow,
     wishlist,
     toggleFavorite,
+    isCartOpen,
     setIsCartOpen,
+    isAuthOpen,
     setIsAuthOpen,
+    isProfileOpen,
     setIsProfileOpen,
+    isOrdersOpen,
     setIsOrdersOpen,
     isCheckoutOpen,
     setIsCheckoutOpen,
+    updateQuantity,
+    removeFromCart,
+    clearCart,
+    login,
+    logout,
     showToast,
+    checkoutItems,
+    isDirectBuyNow,
+    initiateCheckout,
+    closeCheckout,
   } = useCart();
 
   const handleAddToCart = () => {
@@ -65,6 +82,7 @@ export default function ProductDetailClient({ product, relatedProducts, brand, c
         searchQuery=""
         onSearchChange={() => {}}
         onOpenOrders={() => setIsOrdersOpen(true)}
+        hideMobileNav={true}
       />
 
       <main className="flex-1 w-full max-w-[1280px] mx-auto px-margin-mobile md:px-gutter pt-24 pb-16">
@@ -193,7 +211,6 @@ export default function ProductDetailClient({ product, relatedProducts, brand, c
                   isFavorite={wishlist.has(p.id)}
                   onToggleFavorite={toggleFavorite}
                   onAddToCart={(prod) => addToCart(prod, 1)}
-                  onBuyNow={(prod) => buyNow(prod, 1)}
                 />
               ))}
             </div>
@@ -202,7 +219,7 @@ export default function ProductDetailClient({ product, relatedProducts, brand, c
       </main>
 
       {/* Mobile Sticky Bottom Purchase Bar */}
-      <div className="fixed bottom-0 inset-x-0 z-40 md:hidden bg-white border-t border-gray-200 p-3 shadow-[0_-4px_16px_rgba(0,0,0,0.1)] flex items-center justify-between gap-2 pb-safe">
+      <div className="fixed bottom-0 inset-x-0 z-50 md:hidden bg-white border-t border-gray-200 p-3 shadow-[0_-4px_16px_rgba(0,0,0,0.1)] flex items-center justify-between gap-2 pb-safe">
         <div className="shrink-0">
           <span className="text-[10px] text-gray-400 font-bold block">Total Price</span>
           <span className="text-lg font-black text-[#D93630]">AED {(Number(product.price) * quantity).toFixed(2)}</span>
@@ -211,7 +228,7 @@ export default function ProductDetailClient({ product, relatedProducts, brand, c
           onClick={handleAddToCart}
           className="flex-1 py-3 bg-[#16A2D4] hover:bg-[#1288b3] text-white font-black text-xs rounded-xl shadow-md transition-all btn-press flex items-center justify-center gap-1.5"
         >
-          <span className="material-symbols-outlined text-[18px]">shopping_cart</span> Cart
+          <span className="material-symbols-outlined text-[18px]">shopping_cart</span> Add to Cart
         </button>
         <button
           onClick={handleBuyNow}
@@ -221,13 +238,51 @@ export default function ProductDetailClient({ product, relatedProducts, brand, c
         </button>
       </div>
 
-      {/* Checkout Modal (triggered by Buy Now on PDP) */}
+      {/* Cart Drawer Popup */}
+      <CartDrawer
+        isOpen={isCartOpen}
+        cart={cart}
+        onClose={() => setIsCartOpen(false)}
+        onUpdateQuantity={updateQuantity}
+        onRemoveItem={removeFromCart}
+        onInitiateCheckout={initiateCheckout}
+      />
+
+      {/* Auth Modal */}
+      <AuthModal
+        isOpen={isAuthOpen}
+        onClose={() => setIsAuthOpen(false)}
+        onLoginSuccess={login}
+      />
+
+      {/* Profile Modal */}
+      <ProfileModal
+        isOpen={isProfileOpen}
+        user={currentUser}
+        onClose={() => setIsProfileOpen(false)}
+        onLogout={logout}
+      />
+
+      {/* Orders Modal */}
+      <OrdersModal
+        isOpen={isOrdersOpen}
+        currentUser={currentUser}
+        onClose={() => setIsOrdersOpen(false)}
+        onOpenAuth={() => {
+          setIsOrdersOpen(false);
+          setIsAuthOpen(true);
+        }}
+      />
+
+      {/* Checkout Modal (triggered by Buy Now on PDP or Proceed to Checkout from Cart) */}
       <CheckoutModal
         isOpen={isCheckoutOpen}
-        cart={cart}
+        cart={checkoutItems.length > 0 ? checkoutItems : cart}
+        isDirectBuyNow={isDirectBuyNow}
         currentUser={currentUser}
-        onClose={() => setIsCheckoutOpen(false)}
+        onClose={closeCheckout}
         onOrderSuccess={() => {
+          if (!isDirectBuyNow) clearCart();
           showToast('Order saved! Redirecting to WhatsApp to send confirmation...', 'success');
         }}
       />

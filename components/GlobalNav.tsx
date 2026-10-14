@@ -39,11 +39,17 @@ export default function GlobalNav({ categories, allProducts }: GlobalNavProps) {
     setIsProfileOpen,
     isOrdersOpen,
     setIsOrdersOpen,
+    isCheckoutOpen,
+    setIsCheckoutOpen,
+    checkoutItems,
+    isDirectBuyNow,
+    initiateCheckout,
+    closeCheckout,
+    clearCart,
   } = useCart();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
 
   const handleSearchChange = (q: string) => {
     setSearchQuery(q);
@@ -78,10 +84,7 @@ export default function GlobalNav({ categories, allProducts }: GlobalNavProps) {
         onClose={() => setIsCartOpen(false)}
         onUpdateQuantity={updateQuantity}
         onRemoveItem={removeFromCart}
-        onInitiateCheckout={() => {
-          setIsCartOpen(false);
-          setIsCheckoutOpen(true);
-        }}
+        onInitiateCheckout={initiateCheckout}
       />
       
       <SearchModal
@@ -119,11 +122,13 @@ export default function GlobalNav({ categories, allProducts }: GlobalNavProps) {
 
       <CheckoutModal
         isOpen={isCheckoutOpen}
-        cart={cart}
+        cart={checkoutItems.length > 0 ? checkoutItems : cart}
+        isDirectBuyNow={isDirectBuyNow}
         currentUser={currentUser}
-        onClose={() => setIsCheckoutOpen(false)}
+        onClose={closeCheckout}
         onOrderSuccess={() => {
-          setIsCheckoutOpen(false);
+          if (!isDirectBuyNow) clearCart();
+          closeCheckout();
         }}
       />
     </>
