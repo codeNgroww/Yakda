@@ -10,6 +10,7 @@ interface ProductCardProps {
   isFavorite: boolean;
   onToggleFavorite: (product: Product) => void;
   onAddToCart: (product: Product) => void;
+  onBuyNow?: (product: Product) => void;
   onQuickView?: (product: Product) => void;
   isEcoTheme?: boolean;
 }
@@ -19,6 +20,7 @@ export default function ProductCard({
   isFavorite,
   onToggleFavorite,
   onAddToCart,
+  onBuyNow,
   onQuickView,
   isEcoTheme,
 }: ProductCardProps) {
@@ -101,26 +103,44 @@ export default function ProductCard({
           </Link>
         </div>
 
-        <div className="flex items-center justify-between mt-2 pt-2 border-t border-gray-100">
-          <div>
-            <span className="text-[11px] text-gray-400 font-bold">AED</span>
-            {/* Highlighted Price Tag in Deep Red (#D93630) */}
-            <span className="text-lg sm:text-xl font-black text-[#D93630] ml-1">
-              {Number(product.price).toFixed(2)}
-            </span>
+        <div className="flex flex-col gap-2 mt-2 pt-2 border-t border-gray-100">
+          <div className="flex items-center justify-between">
+            <div>
+              <span className="text-[11px] text-gray-400 font-bold">AED</span>
+              {/* Highlighted Price Tag in Deep Red (#D93630) */}
+              <span className="text-lg sm:text-xl font-black text-[#D93630] ml-1">
+                {Number(product.price).toFixed(2)}
+              </span>
+            </div>
           </div>
 
-          {/* Add to Cart Button in Vibrant Cyan (#16A2D4) */}
-          <button
-            onClick={() => onAddToCart(product)}
-            className="px-3 py-2 bg-[#16A2D4] hover:bg-[#1288b3] text-white rounded-xl shadow-xs transition-all btn-press flex items-center justify-center gap-1 text-xs font-bold"
-            title="Add to Cart"
-          >
-            <span className="material-symbols-outlined text-[16px]">add_shopping_cart</span>
-            <span className="hidden sm:inline">Add</span>
-          </button>
+          {/* Action Buttons Row */}
+          <div className="flex items-center gap-1.5">
+            {/* Add to Cart Button in Vibrant Cyan (#16A2D4) */}
+            <button
+              onClick={() => onAddToCart(product)}
+              className="flex-1 px-2 py-2 bg-[#16A2D4] hover:bg-[#1288b3] text-white rounded-xl shadow-xs transition-all btn-press flex items-center justify-center gap-1 text-xs font-bold"
+              title="Add to Cart"
+            >
+              <span className="material-symbols-outlined text-[16px]">add_shopping_cart</span>
+              <span className="hidden sm:inline">Cart</span>
+            </button>
+
+            {/* Buy Now Button in Green */}
+            {onBuyNow && (
+              <button
+                onClick={() => onBuyNow(product)}
+                className="flex-1 px-2 py-2 bg-[#1A8C5B] hover:bg-[#15703F] text-white rounded-xl shadow-xs transition-all btn-press flex items-center justify-center gap-1 text-xs font-bold"
+                title="Buy Now"
+              >
+                <span className="material-symbols-outlined text-[16px]">shopping_bag</span>
+                <span className="hidden sm:inline">Buy</span>
+              </button>
+            )}
+          </div>
         </div>
       </div>
     </div>
   );
 }
+

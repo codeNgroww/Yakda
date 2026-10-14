@@ -12,6 +12,7 @@ interface CartContextType {
   // Cart
   cart: CartItem[];
   addToCart: (product: Product, quantity?: number) => void;
+  buyNow: (product: Product, quantity?: number) => void;
   updateQuantity: (id: string, newQty: number) => void;
   removeFromCart: (id: string) => void;
   clearCart: () => void;
@@ -37,6 +38,8 @@ interface CartContextType {
   setIsProfileOpen: (open: boolean) => void;
   isOrdersOpen: boolean;
   setIsOrdersOpen: (open: boolean) => void;
+  isCheckoutOpen: boolean;
+  setIsCheckoutOpen: (open: boolean) => void;
 
   // Toast
   toast: ToastType | null;
@@ -60,6 +63,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const [isAuthOpen, setIsAuthOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isOrdersOpen, setIsOrdersOpen] = useState(false);
+  const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
 
   // Toast
   const [toast, setToast] = useState<ToastType | null>(null);
@@ -158,6 +162,43 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     showToast(`${product.title} added to cart`, 'success');
   }, [currentUser, cart, showToast]);
 
+  // Buy Now: add to cart silently (no drawer), then go straight to checkout
+  const buyNow = useCallback((product: Product, quantity: number = 1) => {
+    setCart((prev) => {
+      const existing = prev.find((item) => item.id === product.id);
+      if (existing) {
+        return prev.map((item) =>
+          item.id === product.id ? { ...item, quantity: existing.quantity + quantity } : item
+        );
+      }
+      return [
+        ...prev,
+        {
+          id: product.id,
+          sku: product.sku,
+          title: product.title,
+          price: Number(product.price),
+          quantity,
+          image: product.image,
+        },
+      ];
+    });
+
+    // Sync to DB if logged in
+    if (currentUser?.id) {
+      const existing = cart.find((item) => item.id === product.id);
+      const finalQty = existing ? existing.quantity + quantity : quantity;
+      syncCartItemToDb(currentUser.id, product.id, finalQty);
+    }
+
+    // Go directly to checkout (or auth if not logged in)
+    if (!currentUser) {
+      setIsAuthOpen(true);
+    } else {
+      setIsCheckoutOpen(true);
+    }
+  }, [currentUser, cart]);
+
   const updateQuantity = useCallback((id: string, newQty: number) => {
     setCart((prev) => {
       if (newQty <= 0) {
@@ -227,6 +268,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       value={{
         cart,
         addToCart,
+        buyNow,
         updateQuantity,
         removeFromCart,
         clearCart,
@@ -246,6 +288,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         setIsProfileOpen,
         isOrdersOpen,
         setIsOrdersOpen,
+        isCheckoutOpen,
+        setIsCheckoutOpen,
         toast,
         showToast,
       }}

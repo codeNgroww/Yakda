@@ -7,12 +7,14 @@ interface QuickViewModalProps {
   product: Product | null;
   onClose: () => void;
   onAddToCart: (product: Product) => void;
+  onBuyNow?: (product: Product) => void;
 }
 
 export default function QuickViewModal({
   product,
   onClose,
   onAddToCart,
+  onBuyNow,
 }: QuickViewModalProps) {
   if (!product) return null;
 
@@ -69,18 +71,33 @@ export default function QuickViewModal({
               </div>
             </div>
 
-            <button
-              onClick={() => {
-                onAddToCart(product);
-                onClose();
-              }}
-              className="w-full py-3 bg-[#16A2D4] hover:bg-[#1288b3] text-white font-bold text-xs rounded-xl shadow-md transition-all btn-press flex items-center justify-center gap-2"
-            >
-              <span className="material-symbols-outlined text-[18px]">add_shopping_cart</span> Add to Shopping Cart
-            </button>
+            <div className="flex flex-col gap-2">
+              <button
+                onClick={() => {
+                  onAddToCart(product);
+                  onClose();
+                }}
+                className="w-full py-3 bg-[#16A2D4] hover:bg-[#1288b3] text-white font-bold text-xs rounded-xl shadow-md transition-all btn-press flex items-center justify-center gap-2"
+              >
+                <span className="material-symbols-outlined text-[18px]">add_shopping_cart</span> Add to Shopping Cart
+              </button>
+
+              {onBuyNow && (
+                <button
+                  onClick={() => {
+                    onBuyNow(product);
+                    onClose();
+                  }}
+                  className="w-full py-3 bg-[#1A8C5B] hover:bg-[#15703F] text-white font-bold text-xs rounded-xl shadow-md transition-all btn-press flex items-center justify-center gap-2"
+                >
+                  <span className="material-symbols-outlined text-[18px]">shopping_bag</span> Buy Now
+                </button>
+              )}
+            </div>
           </div>
         </div>
       </div>
     </div>
   );
 }
+

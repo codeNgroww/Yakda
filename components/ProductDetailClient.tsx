@@ -7,6 +7,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { useCart } from '@/context/CartContext';
 import ProductCard from '@/components/ProductCard';
+import CheckoutModal from '@/components/CheckoutModal';
 
 interface ProductDetailClientProps {
   product: Product;
@@ -18,21 +19,30 @@ interface ProductDetailClientProps {
 export default function ProductDetailClient({ product, relatedProducts, brand, categoryName }: ProductDetailClientProps) {
   const [quantity, setQuantity] = useState(1);
   const {
+    cart,
     cartCount,
     wishlistCount,
     currentUser,
     isAdmin,
     addToCart,
+    buyNow,
     wishlist,
     toggleFavorite,
     setIsCartOpen,
     setIsAuthOpen,
     setIsProfileOpen,
     setIsOrdersOpen,
+    isCheckoutOpen,
+    setIsCheckoutOpen,
+    showToast,
   } = useCart();
 
   const handleAddToCart = () => {
     addToCart(product, quantity);
+  };
+
+  const handleBuyNow = () => {
+    buyNow(product, quantity);
   };
 
   // Image ALT text: {Product Name} - {Brand}
@@ -156,9 +166,16 @@ export default function ProductDetailClient({ product, relatedProducts, brand, c
 
               <button
                 onClick={handleAddToCart}
-                className="w-full sm:flex-1 py-3 h-12 bg-[#D93630] hover:bg-[#b82a25] text-white font-bold text-sm rounded-xl shadow-md transition-all btn-press flex items-center justify-center gap-2"
+                className="w-full sm:flex-1 py-3 h-12 bg-[#16A2D4] hover:bg-[#1288b3] text-white font-bold text-sm rounded-xl shadow-md transition-all btn-press flex items-center justify-center gap-2"
               >
                 <span className="material-symbols-outlined text-[18px]">add_shopping_cart</span> Add to Cart
+              </button>
+
+              <button
+                onClick={handleBuyNow}
+                className="w-full sm:flex-1 py-3 h-12 bg-[#1A8C5B] hover:bg-[#15703F] text-white font-bold text-sm rounded-xl shadow-md transition-all btn-press flex items-center justify-center gap-2"
+              >
+                <span className="material-symbols-outlined text-[18px]">shopping_bag</span> Buy Now
               </button>
             </div>
           </div>
@@ -176,6 +193,7 @@ export default function ProductDetailClient({ product, relatedProducts, brand, c
                   isFavorite={wishlist.has(p.id)}
                   onToggleFavorite={toggleFavorite}
                   onAddToCart={(prod) => addToCart(prod, 1)}
+                  onBuyNow={(prod) => buyNow(prod, 1)}
                 />
               ))}
             </div>
@@ -184,20 +202,38 @@ export default function ProductDetailClient({ product, relatedProducts, brand, c
       </main>
 
       {/* Mobile Sticky Bottom Purchase Bar */}
-      <div className="fixed bottom-0 inset-x-0 z-40 md:hidden bg-white border-t border-gray-200 p-3 shadow-[0_-4px_16px_rgba(0,0,0,0.1)] flex items-center justify-between gap-3 pb-safe">
-        <div>
+      <div className="fixed bottom-0 inset-x-0 z-40 md:hidden bg-white border-t border-gray-200 p-3 shadow-[0_-4px_16px_rgba(0,0,0,0.1)] flex items-center justify-between gap-2 pb-safe">
+        <div className="shrink-0">
           <span className="text-[10px] text-gray-400 font-bold block">Total Price</span>
           <span className="text-lg font-black text-[#D93630]">AED {(Number(product.price) * quantity).toFixed(2)}</span>
         </div>
         <button
           onClick={handleAddToCart}
-          className="flex-1 py-3 bg-[#D93630] hover:bg-[#b82a25] text-white font-black text-xs rounded-xl shadow-md transition-all btn-press flex items-center justify-center gap-1.5"
+          className="flex-1 py-3 bg-[#16A2D4] hover:bg-[#1288b3] text-white font-black text-xs rounded-xl shadow-md transition-all btn-press flex items-center justify-center gap-1.5"
         >
-          <span className="material-symbols-outlined text-[18px]">shopping_cart</span> Add to Cart
+          <span className="material-symbols-outlined text-[18px]">shopping_cart</span> Cart
+        </button>
+        <button
+          onClick={handleBuyNow}
+          className="flex-1 py-3 bg-[#1A8C5B] hover:bg-[#15703F] text-white font-black text-xs rounded-xl shadow-md transition-all btn-press flex items-center justify-center gap-1.5"
+        >
+          <span className="material-symbols-outlined text-[18px]">shopping_bag</span> Buy Now
         </button>
       </div>
+
+      {/* Checkout Modal (triggered by Buy Now on PDP) */}
+      <CheckoutModal
+        isOpen={isCheckoutOpen}
+        cart={cart}
+        currentUser={currentUser}
+        onClose={() => setIsCheckoutOpen(false)}
+        onOrderSuccess={() => {
+          showToast('Order saved! Redirecting to WhatsApp to send confirmation...', 'success');
+        }}
+      />
 
       <Footer />
     </div>
   );
 }
+
